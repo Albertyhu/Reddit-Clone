@@ -1,0 +1,17 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\components",
+    "\\src\\global",
+    "\\src\\global\\header",
+    "\\src\\helperTools",
+    "\\src\\old",
+    "\\src\\screens",
+    "\\src\\sort",
+    "\\src\\test",
+    "\\src\\thread"
+  ],
+  "SelectedNode": "\\src\\thread\\renderAllComments.js",
+  "PreviewInSolutionExplorer": false
+}

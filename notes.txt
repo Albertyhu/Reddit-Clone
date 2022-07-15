@@ -1,0 +1,1 @@
+Use slater JS for rich text editor 
