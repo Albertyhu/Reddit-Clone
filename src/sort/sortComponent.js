@@ -5,11 +5,13 @@ import uuid from 'react-uuid';
 export const RenderCommentSort = props => {
     const {
         optionsArr,
-        dispatchFunc
+        dispatchFunc,
+        selected, 
     } = props;
 
     const handleChange = e => {
         dispatchFunc(e.target.value)
+        console.log(e.target.value)
     }
 
     return (
@@ -17,7 +19,7 @@ export const RenderCommentSort = props => {
             <SortContainer>
                 <Text>Sort By:</Text>
                 {optionsArr !== null && optionsArr !== undefined && optionsArr.length !== 0 ?
-                    <SortSelection onChange={handleChange}>
+                    <SortSelection onChange={handleChange} value={selected}>
                         {optionsArr.map(opt => <option key={uuid()}>{opt}</option>)}
                     </SortSelection>
                         :

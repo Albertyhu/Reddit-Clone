@@ -40,7 +40,8 @@ const RenderThread = props => {
     const context = {
         ...threadData, 
         filterOption,
-        commentArr, 
+        commentArr,
+        setCommentArr,
         upvoted, 
         downvoted, 
         upvoteNum,
@@ -89,6 +90,7 @@ const RenderThread = props => {
                         /> 
                     </CommentWrapper>
                     <RenderCommentSort
+                        selected={filterOption}
                         optionsArr={sortOptions}
                         dispatchFunc={setFilter}
                     />

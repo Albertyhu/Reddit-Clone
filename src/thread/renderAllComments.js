@@ -14,9 +14,16 @@ import uuid from 'react-uuid';
 //Question: 
 
 const RenderAllComments = () => {
+    //commentArr stores all the comments of the thread, but they are not 
+    //...sorted in the right order yet.
+    //ThreadContext provides information from renderThread.js 
     const { filterOption, commentArr } = useContext(ThreadContext)
-    
-    const [sortedComments, setSortedCom] = useState([]); 
+    const [sortedComments, setSortedCom] = useState([]);
+
+    const RenderTree = () => {
+
+    }
+
     useEffect(() => {
         const MyPromise = new Promise((resolve, reject) => {
             resolve(CreateCommentTree(commentArr, null, filterOption, []));
@@ -36,7 +43,8 @@ const RenderAllComments = () => {
             arrayVal = removeClone(arrayVal, "children")
             setSortedCom(removeClone(arrayVal, "ancestors"))
         })
-    }, [commentArr])
+    }, [commentArr, filterOption])
+
       
     const context = {
         sortedComments,
@@ -48,8 +56,6 @@ const RenderAllComments = () => {
         <Container id="RenderAllCommentsContainer">
             {sortedComments !== null && sortedComments.length !== 0 ? 
                 sortedComments.map(elem => <Comment
-                    /*
-                    grandParents={elem.grandParents}*/
                     {...elem}
                     key={uuid()}
                 />)

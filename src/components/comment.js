@@ -10,6 +10,10 @@ import uuid from 'react-uuid';
 import { RenderAllCommentsContext } from './contextItem.js'; 
 import RenderAllComments from '../thread/renderAllComments';
 
+
+// Import the Slate components and React plugin.
+import { Slate, Editable, withReact } from 'slate-react'
+
 const Comment = props => {
     //isLastDescendant determinse if the comment is the last reply in the chain. 
     //...It's important for the rendering of threadlines 
@@ -495,6 +499,7 @@ const VoteIcon = styled.img`
     height: 24px; 
     margin-top: auto;
     margin-bottom: auto;
+    cursor: pointer;
 `
 
 const VoteNumber = styled.div`

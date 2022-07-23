@@ -39,8 +39,8 @@ const Container = styled.div`
     column-gap: 10px;
     background-color: #ffffff;
     padding-top: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
 `
 
 const InnerCont = styled.div`

@@ -1,3 +1,7 @@
 body {
 margin: 0px; 
 }
+
+#Editable:focus {
+    border: 2px solid #474747;
+}

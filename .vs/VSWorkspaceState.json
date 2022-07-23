@@ -3,8 +3,7 @@
     "",
     "\\src",
     "\\src\\components",
-    "\\src\\global",
-    "\\src\\global\\header",
+    "\\src\\components\\slateJSComponents",
     "\\src\\helperTools",
     "\\src\\old",
     "\\src\\screens",
@@ -12,6 +11,6 @@
     "\\src\\test",
     "\\src\\thread"
   ],
-  "SelectedNode": "\\src\\thread\\renderAllComments.js",
+  "SelectedNode": "\\src\\old\\tempfile.js",
   "PreviewInSolutionExplorer": false
 }
