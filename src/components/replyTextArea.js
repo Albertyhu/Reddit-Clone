@@ -15,10 +15,21 @@ import { Slate, Editable, withReact, useSlate } from 'slate-react'
 import { withHistory } from 'slate-history'; 
 import '../global/myStyle.css'; 
 import { useSelection } from './slateJSComponents/useSelection.js'; 
-import { AiOutlineStrikethrough } from 'react-icons/ai';
+import { AiOutlineStrikethrough,
+    AiOutlineAlignRight,
+    AiOutlineAlignCenter, 
+    AiOutlineAlignLeft, 
+    AiOutlineUndo, 
+ } from 'react-icons/ai';
 import { FaQuoteRight } from 'react-icons/fa';
 import { BsExclamationTriangle, BsListUl, BsListOl } from 'react-icons/bs';
 import { ImListNumbered } from 'react-icons/im';
+
+const ALIGN_OBJECT = {
+    "alignLeft": "left",
+    "alignRight": "right",
+    "alignCenter": "center",
+} 
 
 const RenderReplyTextArea = props => {
     const {
@@ -33,37 +44,28 @@ const RenderReplyTextArea = props => {
         author,
     } = props;
 
-    const initialValue = [
-        {
-            type: 'paragraph',
-            children: [{ text: 'What are your thoughts? ' }],
-        },
-    ]
-
-    useEffect(() => {
-        if (commentArr !== null && commentArr !== undefined && commentArr.length !== 0) {
-            var obj = {
-                type: 'paragraph',
-                children: [{ text: 'What are your thoughts? ' }],
-            }
-            commentArr.forEach(val => {
-                initialValue.push(obj)
-            })
-        }
-    }, [commentArr])
-
     //  const editor = useMemo(()=> withReact(withHistory(createEditor())), [])
     // const [editor] = useState(() => withReact(createEditor()))
-    const [editor] = useState(useMemo(() => withReact(createEditor()), []))
-
-    const [response, setResponse] = useState([
+    /*
+    const initialValue = [
         {
             children: [{
                 type: "paragraph",
                 text: ''
             }],
         }
-    ])
+    ]
+    */
+    const initialValue = [
+        {
+            type: "paragraph",
+            children: [{ text: '' }]
+        }
+    ]
+
+    const [editor] = useState(useMemo(() => withReact(createEditor()), []))
+    const [response, setResponse] = useState(initialValue)
+
     //const [selectedText, setSelected] = useState(editor.selection); 
     const [selection, setSelectedOptimized] = useSelection(editor)
 
@@ -90,6 +92,7 @@ const RenderReplyTextArea = props => {
     useEffect(() => {
         document.addEventListener("mousedown", clickEvent)
         return () => { document.removeEventListener("mousedown", clickEvent) }
+
     }, [])
 
     const [slateElement, setSlateEle] = useState(null)
@@ -101,32 +104,30 @@ const RenderReplyTextArea = props => {
     const [isSuper, setIsSuper] = useState(false)
     const [isHeading, setIsHeading] = useState(false)
 
-
     const renderElement = useCallback(props => {
+        console.log(props.element.type)
         switch (props.element.type) {
             case 'code':
-                return <CodeElement {...props} />
+                return <CodeElement {...props} id="RenderedElement" />
             case 'bulleted':
-                return <BulletedListElement {...props}/>
+                return <BulletedListElement  {...props} id="RenderedElement"/>
             case 'orderedList': 
-                return <OrderedListElement {...props} node={editor.children} />
+                return <OrderedListElement  {...props} node={editor.children} id="RenderedElement" />
             case 'list-item':
                 return <ListElement {...props} />; 
             default:
-                return <DivElement {...props} />
+                return <DivElement  {...props} id="RenderedElement" />
         }
     }, [])
 
     const LIST_TYPES = ['bulleted', 'orderedList']; 
-    const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
+    const TEXT_ALIGN_TYPES = ['alignLeft', 'alignCenter', 'alignRight']
 
     const renderLeaf = useCallback(props => {
-        if (CheckIfBulleted(editor)) {
-            return <li><Leaf {...props}/></li>
-        }
         return <Leaf {...props} />
     }, [])
 
+    //not in use
     const CustomEditor = {
         isBoldMarkActive(editor) {
             const [match] = Editor.nodes(editor, {
@@ -182,6 +183,7 @@ const RenderReplyTextArea = props => {
         const [match] = Editor.nodes(editor, {
             match: n => n.type === 'orderedList',
         })
+
         Transforms.unwrapNodes(editor, {
             match: n => !Editor.isEditor(n)
                 && LIST_TYPES.includes(n.type)
@@ -189,15 +191,60 @@ const RenderReplyTextArea = props => {
             ,
             split: true
         })
+        
         Transforms.setNodes(editor,
             { type: match ? 'default' : 'list-item' },
             {
                 match: n => Editor.isBlock(editor, n)
             }
         )
-        if (LIST_TYPES.includes('orderedList')){
+        const block = {
+            type: 'orderedList',
+            children: []
+        }
+       Transforms.wrapNodes(editor, block)
+    }
+
+    const isBlockActive = (editor, format, blockType = 'type') => {
+        const { selection } = editor
+        if (!selection) return false
+        const [match] = Array.from(
+            Editor.nodes(editor, {
+                //The SlateJS document doesn't explain what unhanRange does
+                //...but it still does want I want it to do
+                at: Editor.unhangRange(editor, selection),
+                match: n =>
+                    !Editor.isEditor(n) &&
+                    SlateElement.isElement(n) &&
+                    n[blockType] === format,
+            })
+        )
+        return !!match
+    }
+   
+    function toggleList(editor, listType) {
+        const isActive = isBlockActive(editor, listType, 'type')
+        const [match] = Editor.nodes(editor, {
+            match: n=> n.type === listType,
+        })
+        Transforms.unwrapNodes(editor, {
+            match: n => !Editor.isEditor(n)
+                && LIST_TYPES.includes(n.type)
+                && SlateElement.isElement(n)
+            ,
+            split: true
+        })
+
+        //this only executes if the current content is already a list-item 
+            Transforms.setNodes(editor,
+                { type: isActive ? 'paragraph' : match ? 'paragraph' : 'list-item' },
+                {
+                    match: n => Editor.isBlock(editor, n)
+                }
+        )
+        if (!isActive) {
             const block = {
-                type: 'orderedList',
+                type: listType,
                 children: []
             }
             Transforms.wrapNodes(editor, block)
@@ -215,6 +262,15 @@ const RenderReplyTextArea = props => {
         return new Set(Object.keys(Editor.marks(editor) ?? {}))
     }
 
+    //returns align property that is active
+    const getActiveAlignment = (editor) => {
+        
+        const [match] = Editor.nodes(editor, {
+           match: n => n.align !== 'alignLeft'
+        })
+        return !!match; 
+    }
+
     const toggleStyle = (editor, style) => {
         const activeStyles = getActiveStyles(editor)
         if (activeStyles.has(style)) {
@@ -224,20 +280,24 @@ const RenderReplyTextArea = props => {
             Editor.addMark(editor, style, true)
     }
 
-    const RenderBoldButton = props => {
-        return (
-            <StylingButton
-                colorVal={isBold ? "#000000" : "#828282"}
-                onMouseDown={event => {
-                    event.preventDefault();
-                    toggleStyle(editor, 'bold')
-                }}><b>B</b></StylingButton>
-        )
+    const alignContent = (editor, alignment) => {
+        const defaultAlignment =  "alignLeft"; 
+        const [match] = Editor.nodes(editor, {
+            match: n => n.align === alignment
+        })
+        let newProperties = {
+            align: match ? defaultAlignment : alignment, 
+        }; 
+        Transforms.setNodes(editor, newProperties); 
     }
 
     const RenderButton = props => {
         const { style } = props; 
-        var isActive = getActiveStyles(editor).has(style)
+        var isActive = getActiveStyles(editor).has(style);
+        if (TEXT_ALIGN_TYPES.includes(style)) {
+            isActive = getActiveAlignment(editor)
+        }
+
         var display = null; 
         switch (style) {
             case 'bold':
@@ -273,6 +333,15 @@ const RenderReplyTextArea = props => {
             case 'orderedList':
                 display = <ImListNumbered alt="numbered list" />;
                 break; 
+            case 'alignLeft':
+                display = <AiOutlineAlignLeft alt="align left" />;
+                break; 
+            case 'alignCenter':
+                display = <AiOutlineAlignCenter alt="center content" />;
+                break; 
+            case 'alignRight':
+                display = <AiOutlineAlignRight alt="align right" />;
+                break; 
             default:
                 break; 
         }
@@ -282,14 +351,14 @@ const RenderReplyTextArea = props => {
                 fWeight={isActive ? "bold" : "normal"}
                 onMouseDown={event => {
                     event.preventDefault();
-                    if (style === 'bulleted') {
-                        toggleBulleted(editor)
+                    if (style === 'orderedList' || style === 'bulleted') {
+                        toggleList(editor, style)
                     }
-                    else if (style === 'orderedList') {
-                        toggleOrderedList(editor)
+                    else if(TEXT_ALIGN_TYPES.includes(style)){
+                        alignContent(editor, style)
                     }
-                    
-                    toggleStyle(editor, style)
+                    else
+                        toggleStyle(editor, style)
                 }}>{display}</StylingButton>
         )
     }
@@ -312,6 +381,38 @@ const RenderReplyTextArea = props => {
         return match;
     }
 
+    const SubmitEvent = () => {
+        //check if the reply is empty 
+        var isValid = false; 
+        if (response.length !== 0) {
+            response.forEach(child => {
+                child.children.forEach(val => {
+                    if (val.text !== '') {
+                        isValid = true;
+                    }
+                })
+
+            })
+        }
+        
+        //if it is not empty, execute the following block of code
+        if (isValid) {
+                // Save the value to Local Storage.
+                const content = JSON.stringify(response)
+                console.log(content)
+                localStorage.setItem('content', content)
+
+            //The following block of code resets the editor 
+            Transforms.delete(editor, {
+                at: {
+                    anchor: Editor.start(editor, []),
+                    focus: Editor.end(editor, []),
+                },
+            })
+            setResponse(initialValue)
+        }
+    }
+
     return (
         <Container
             borderFocus={borderStyle}
@@ -332,8 +433,8 @@ const RenderReplyTextArea = props => {
                 >
                 <Slate
                     editor={editor}
-                    // setValue={setResponse}
                     value={response}
+                   // value={initialValue}
                     id="Editable"
                     onChange={onChangeHandler}
                 >
@@ -393,12 +494,14 @@ const RenderReplyTextArea = props => {
                         <RenderButton style='spoiler' />
                         <RenderButton style='bulleted' />
                         <RenderButton style='orderedList' />
+                        <RenderButton style='alignLeft' />
+                        <RenderButton style='alignCenter' />
+                        <RenderButton style='alignRight' />
                         <SubmitButton
-                            onMouseDown={consoleType}
+                            onMouseDown={SubmitEvent}
                         >Comment</SubmitButton>
                     </CommentButtonContainer>
                 </Slate>
-                {/*<ReplyTextArea rows={5} maxLength={10000} placeholder = "What are your thoughts? " />*/}
                 </ReplyCont>
         </Container> 
         )
@@ -407,16 +510,22 @@ const RenderReplyTextArea = props => {
 export default RenderReplyTextArea; 
 
 const CodeElement = props => {
+    var alignment = { textAlign: ALIGN_OBJECT[props.element.align] }
     return (
-        <pre {...props.attributes}>
+        <pre {...props.attributes} style={alignment} id ="CodeBlock">
             <code>{props.children}</code>
         </pre>
     )
 }
 
 const DivElement = props => {
+    var alignment = { textAlign: ALIGN_OBJECT[props.element.align]}
     return (
-        <div {...props.attributes}>{props.children}</div>
+        <div
+            {...props.attributes}
+            style={alignment}
+            id="DefaultBlock"
+        >{props.children}</div>
         )
 }
 
@@ -449,14 +558,17 @@ const Leaf = props => {
     if (props.leaf.spoiler) {
         element = <SpoilerBlock>{element}</SpoilerBlock>
     }
+    /*
     if (props.leaf.bulleted || props.leaf.orderedList) {
         return <li {...props.attributes} >{element}</li>
-    }
+    }*/
+
     return <span {...props.attributes} >{element}</span>; 
 }
 
 const DefaultElement = props => {
-    return <p {...props.attributes}>{props.children}</p>
+    var alignment = { textAlign: ALIGN_OBJECT[props.element.align] }
+    return <p {...props.attributes} style={alignment}>{props.children}</p>
 }
 
 const BulletedListElement = props => {
@@ -466,6 +578,10 @@ const BulletedListElement = props => {
 const OrderedListElement = props => {
     return <ol {...props.attributes}>{props.children}</ol>
 }
+
+const AlignElement = styled.div`
+    text-align: ${props => props.textAlignment}; 
+`
 
 /*
 const OrderedListElement = props => {
@@ -483,10 +599,8 @@ const Container = styled.div`
     margin-left: ${props => props.MarginLeft || "10px"};
     margin-right: ${props => props.MarginRight || "10px"};
     margin-top: ${props => props.MarginTop || 0};
-    width: ${props => props.ReplyWidth || "100%"}; 
-    
+    width: ${props => props.ReplyWidth || "100%"};    
 `
-
 
 const ReplyCont = styled.div`
     border: ${props => props.borderFocus || "2px solid #d6d6d6"}; 
