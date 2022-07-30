@@ -5,7 +5,7 @@ import CrossedArms from '../asset/images/crossed-arms.jpg';
 import { downArrow, upArrow, upvote, downvote } from '../asset/icons'; 
 import { FaRegCommentAlt } from 'react-icons/fa';
 import { CommentContext } from './contextItem.js';
-import RenderReplyTextArea from './replyTextArea.js'; 
+import RenderReplyTextArea from './richTextEditor.js'; 
 import uuid from 'react-uuid'; 
 import { RenderAllCommentsContext } from './contextItem.js'; 
 import RenderAllComments from '../thread/renderAllComments';

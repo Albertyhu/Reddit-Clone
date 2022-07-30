@@ -6,14 +6,15 @@ import {
     SideBar,
     Title, 
 } from '../global/styledComponents.js'; 
-import { threads, comments } from '../helperTools/dummyData.js'; 
+import { threads, comments, SampleCommunity } from '../helperTools/dummyData.js'; 
 import { RenderVerticalVoting } from '../components/votingComponent.js'; 
 import { ThreadContext } from '../components/contextItem.js'; 
 import RenderMainPost from './renderMainPost.js'; 
-import RenderReplyTextArea from '../components/replyTextArea.js'; 
+import RenderReplyTextArea from '../components/richTextEditor.js'; 
 import styled from 'styled-components'; 
 import { RenderCommentSort } from '../sort/sortComponent.js'; 
 import RenderAllComments from './renderAllComments.js'; 
+import RenderSideBar from '../sidebar/sidebar.js'; 
 
 const RenderThread = props => {
     const { threadID } = props 
@@ -21,6 +22,9 @@ const RenderThread = props => {
     //threadData stores the information about the individual thread
     //...such as the body of the text, the author's name, etc. 
     const [threadData, setThreadData] = useState(null)
+
+    //communityData stores information of the community that the thread belongs to
+    const [communityData, setCommunityData] = useState(null)
 
     //commentArr stores all the comments that have the threadID
     const [commentArr, setCommentArr] = useState(comments.filter(elem => elem.threadID === threadID))
@@ -58,7 +62,6 @@ const RenderThread = props => {
         changeDownvoteNum: num => {
             setDownvoteNum(num)
         },
-
     }
 
     useEffect(() => {
@@ -72,6 +75,7 @@ const RenderThread = props => {
         if (threadData !== null) {
             setUpvoteNum(threadData.votes.upvote)
             setDownvoteNum(threadData.votes.downvote)
+            setCommunityData(SampleCommunity.find(elem => elem.communityID === threadData.communityID))
         }
     }, [threadData])
 
@@ -103,7 +107,26 @@ const RenderThread = props => {
                         null
                         }
                 </PanelContainer>
-                <SideBar id = "ThreadSideBar"></SideBar>
+                <SideBar id="ThreadSideBar">
+                    {communityData !== undefined && communityData !== null ?
+
+                        <RenderSideBar
+                            members={communityData.members}
+                            customNamedMembers={communityData.customNamedMembers}
+                            onlineMembers={communityData.onlineMembers}
+                            dateCreated={communityData.dateCreated}
+                            description={communityData.description}
+                            communityTitle={communityData.communityTitle}
+                            CommunityTheme={communityData.CommunityTheme}
+                            rules={communityData.rules}
+                            moderators={communityData.moderators}
+                            onThread={true}
+                            communityImage={communityData.communityImage}
+                        />
+                        : 
+                        null
+                        }
+                </SideBar>
             </MainContainer> 
         </ThreadContext.Provider>
         )

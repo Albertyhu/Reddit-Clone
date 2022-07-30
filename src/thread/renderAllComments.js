@@ -219,4 +219,5 @@ const Container = styled.div`
     width: 100%; 
     background-color: #fff;
     padding-bottom: 20px;
+    border-radius: 0 0 5px 5px;
 `

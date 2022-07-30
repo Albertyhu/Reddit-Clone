@@ -7,7 +7,6 @@ import {
 } from '../global/styledComponents.js'; 
 import RenderRIcon from '../asset/icons/r_icon.js'; 
 import RenderPostFooter from './postFooter.js'; 
-import RenderReplyTextArea from '../components/replyTextArea.js'; 
 
 //This functional component renders the main body of the post. 
 const RenderMainPost = props => {
@@ -41,6 +40,7 @@ const Container = styled.div`
     padding-top: 20px;
     padding-left: 10px;
     padding-right: 10px;
+    border-radius: 5px;
 `
 
 const InnerCont = styled.div`

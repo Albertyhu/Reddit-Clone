@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const MainContainer = styled.div`
 display: grid; 
-grid-template-columns: 70% 30%; 
+grid-template-columns: 64% 36%; 
 grid-column-gap: 24px;
 width: 100%; 
 background-color: #e6e6e6;
@@ -28,6 +28,7 @@ export const PanelContainer = styled.div`
 
 export const SideBar = styled.div`
 width: 312px; 
+margin-top: 20px;
 @media screen and (max-width: 540px){
     display: none; 
 }
@@ -41,3 +42,11 @@ margin-bottom: 10px;
 line-height: 5px;
 `
 
+export const Divider = styled.div`
+width: 100%; 
+margin-right: auto;
+margin-left: auto; 
+border-top: 2px solid rgba(0,0,0,0.1); 
+margin-top: 10px;
+margin-bottom: 10px;
+`

@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\components",
-    "\\src\\components\\slateJSComponents",
-    "\\src\\helperTools",
-    "\\src\\old",
-    "\\src\\screens",
-    "\\src\\sort",
-    "\\src\\test",
+    "\\src\\asset",
+    "\\src\\asset\\icons",
+    "\\src\\asset\\images",
+    "\\src\\global",
+    "\\src\\navBar",
+    "\\src\\searchBar",
+    "\\src\\sidebar",
     "\\src\\thread"
   ],
-  "SelectedNode": "\\src\\components\\replyTextArea.js",
+  "SelectedNode": "\\src\\helperTools\\assets",
   "PreviewInSolutionExplorer": false
 }

@@ -44,18 +44,6 @@ const RenderReplyTextArea = props => {
         author,
     } = props;
 
-    //  const editor = useMemo(()=> withReact(withHistory(createEditor())), [])
-    // const [editor] = useState(() => withReact(createEditor()))
-    /*
-    const initialValue = [
-        {
-            children: [{
-                type: "paragraph",
-                text: ''
-            }],
-        }
-    ]
-    */
     const initialValue = [
         {
             type: "paragraph",
@@ -66,7 +54,6 @@ const RenderReplyTextArea = props => {
     const [editor] = useState(useMemo(() => withReact(createEditor()), []))
     const [response, setResponse] = useState(initialValue)
 
-    //const [selectedText, setSelected] = useState(editor.selection); 
     const [selection, setSelectedOptimized] = useSelection(editor)
 
     //this works because the following code directly changes editor.selection
@@ -95,17 +82,7 @@ const RenderReplyTextArea = props => {
 
     }, [])
 
-    const [slateElement, setSlateEle] = useState(null)
-
-    const [isBold, setIsBold] = useState(false)
-    const [isItalic, setIsItalic] = useState(false)
-    const [isStrikeThrough, setIsStrikeThrough] = useState(false)
-    const [isCode, setIsCode] = useState(false)
-    const [isSuper, setIsSuper] = useState(false)
-    const [isHeading, setIsHeading] = useState(false)
-
     const renderElement = useCallback(props => {
-        console.log(props.element.type)
         switch (props.element.type) {
             case 'code':
                 return <CodeElement {...props} id="RenderedElement" />
@@ -127,106 +104,46 @@ const RenderReplyTextArea = props => {
         return <Leaf {...props} />
     }, [])
 
-    //not in use
-    const CustomEditor = {
-        isBoldMarkActive(editor) {
-            const [match] = Editor.nodes(editor, {
-                match: n => n.bold === true,
-                //universal: true,
-            })
-            return !!match
-        },
-
-        isCodeBlockActive(editor) {
-            const [match] = Editor.nodes(editor, {
-                match: n => n.type === 'code',
-            })
-            return !!match
-        },
-
-        toggleBoldMark(editor) {
-            const isActive = CustomEditor.isBoldMarkActive(editor)
-
-            Transforms.setNodes(
-                editor,
-                {
-                    bold: isActive ? null : true
-                },
-                { match: n => Text.isText(n), split: true }
-            )
-        },
-
-        toggleCodeBlock(editor) {
-            const isActive = CustomEditor.isCodeBlockActive(editor)
-            setIsCode(!isActive)
-            Transforms.setNodes(
-                editor,
-                { type: isActive ? null : 'code' },
-                { match: n => Editor.isBlock(editor, n) }
-            )
-        },
-    }
-
-    function toggleBulleted(editor) {
-        const [match] = Editor.nodes(editor, {
-            match: n => n.type === 'bulleted',
-        })
-        Transforms.setNodes(editor,
-            { type: match ? 'default' : 'bulleted' },
-            {
-                match: n => Editor.isBlock(editor, n)
-            }
-        )
-    }
-
-    function toggleOrderedList(editor) {
-        const [match] = Editor.nodes(editor, {
-            match: n => n.type === 'orderedList',
-        })
-
-        Transforms.unwrapNodes(editor, {
-            match: n => !Editor.isEditor(n)
-                && LIST_TYPES.includes(n.type)
-                && SlateElement.isElement(n)
-            ,
-            split: true
-        })
-        
-        Transforms.setNodes(editor,
-            { type: match ? 'default' : 'list-item' },
-            {
-                match: n => Editor.isBlock(editor, n)
-            }
-        )
-        const block = {
-            type: 'orderedList',
-            children: []
-        }
-       Transforms.wrapNodes(editor, block)
-    }
-
+    //This code is copied from the doc 
+    //it's purpose is to find if the format is currently active 
     const isBlockActive = (editor, format, blockType = 'type') => {
+        //destructure selection 
         const { selection } = editor
         if (!selection) return false
+        //Array.from will return undefined if format is not active 
         const [match] = Array.from(
             Editor.nodes(editor, {
-                //The SlateJS document doesn't explain what unhanRange does
-                //...but it still does want I want it to do
+                //Editor.unhangRange converts a range into a non-hanging one.
+                //Editor.unhangRange returns the location in form of anchor and focus
+                //more info: https://docs.slatejs.org/api/nodes/editor
                 at: Editor.unhangRange(editor, selection),
+                //return true if the type of the selected content is the desired type of list
                 match: n =>
                     !Editor.isEditor(n) &&
                     SlateElement.isElement(n) &&
                     n[blockType] === format,
             })
         )
+        console.log(Editor.unhangRange(editor, selection))
+        //returns a truthy value 
+        //If any element 
         return !!match
     }
-   
+
+    //listType evalutes whether the current content is already an unordered or ordered list 
+    //If the current content to be change is not the same as the listType, 
+    //...this function will change the parent component into either an unordered 
+    //... or ordered list, and it will change the children into a list item 
+    //The opposite happens when changing the content from list to a normal paragraph
     function toggleList(editor, listType) {
         const isActive = isBlockActive(editor, listType, 'type')
+
+        //return true if the the content is of the list type 
         const [match] = Editor.nodes(editor, {
             match: n=> n.type === listType,
         })
+
+        //Unwrap the parent nodes 
         Transforms.unwrapNodes(editor, {
             match: n => !Editor.isEditor(n)
                 && LIST_TYPES.includes(n.type)
@@ -234,14 +151,19 @@ const RenderReplyTextArea = props => {
             ,
             split: true
         })
-
-        //this only executes if the current content is already a list-item 
+        //If the type current content is already the same as the listType
+        //...change the type of  the children to be a normal paragraph
+        //If type of the current content is not the same as the listType, 
+        //...change the type of the children to be a list-item
+        //The method renderElements will render the children accordingly
             Transforms.setNodes(editor,
                 { type: isActive ? 'paragraph' : match ? 'paragraph' : 'list-item' },
                 {
                     match: n => Editor.isBlock(editor, n)
                 }
         )
+        //rewrap the nodes only if the we're changing the content from a paragraph to a list 
+        //Make the the type of parent nodes the same as the listType
         if (!isActive) {
             const block = {
                 type: listType,
@@ -264,12 +186,12 @@ const RenderReplyTextArea = props => {
 
     //returns align property that is active
     const getActiveAlignment = (editor) => {
-        
         const [match] = Editor.nodes(editor, {
            match: n => n.align !== 'alignLeft'
         })
         return !!match; 
     }
+
 
     const toggleStyle = (editor, style) => {
         const activeStyles = getActiveStyles(editor)
@@ -280,11 +202,14 @@ const RenderReplyTextArea = props => {
             Editor.addMark(editor, style, true)
     }
 
+    //functional component that is responsible for the alignment functionality 
     const alignContent = (editor, alignment) => {
         const defaultAlignment =  "alignLeft"; 
         const [match] = Editor.nodes(editor, {
             match: n => n.align === alignment
         })
+        //if the current content's alignment is already  the same as the 
+        //...'alignment' parameter, make the alignment of the content default 
         let newProperties = {
             align: match ? defaultAlignment : alignment, 
         }; 
@@ -361,24 +286,6 @@ const RenderReplyTextArea = props => {
                         toggleStyle(editor, style)
                 }}>{display}</StylingButton>
         )
-    }
-
-    const consoleType = () => {
-        console.log(editor)
-    }
-
-    const CheckIfBulleted = (editor) => {
-        const [match] = Editor.nodes(editor, {
-            match: n => n.type === 'bulleted',
-        })
-        return match;
-    }
-
-    const CheckIfOrderedList = (editor) => {
-        const [match] = Editor.nodes(editor, {
-            match: n => n.type === 'orderedList',
-        })
-        return match;
     }
 
     const SubmitEvent = () => {
@@ -558,10 +465,6 @@ const Leaf = props => {
     if (props.leaf.spoiler) {
         element = <SpoilerBlock>{element}</SpoilerBlock>
     }
-    /*
-    if (props.leaf.bulleted || props.leaf.orderedList) {
-        return <li {...props.attributes} >{element}</li>
-    }*/
 
     return <span {...props.attributes} >{element}</span>; 
 }
@@ -579,18 +482,6 @@ const OrderedListElement = props => {
     return <ol {...props.attributes}>{props.children}</ol>
 }
 
-const AlignElement = styled.div`
-    text-align: ${props => props.textAlignment}; 
-`
-
-/*
-const OrderedListElement = props => {
-    const { node } = props; 
-    return <ol {...props.attributes}>
-        {node.map(n => <li>{Node.string(n)}</li>)}
-    </ol>
-}
-*/
 const ListElement = props => {
     return <li {...props.attributes}>{props.children}</li>
 }
@@ -666,7 +557,6 @@ const SlateStyle = {
     fontFamily: "Verdana",
     overflowY: 'auto',
 }
-
 
 const StylingButton = styled.div`
 //display: inline-block; 
