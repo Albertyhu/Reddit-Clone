@@ -2,11 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\asset",
-    "\\src\\asset\\icons",
-    "\\src\\asset\\images",
-    "\\src\\global",
+    "\\src\\components",
+    "\\src\\feed",
+    "\\src\\helperTools",
     "\\src\\navBar",
+    "\\src\\screens",
     "\\src\\searchBar",
     "\\src\\sidebar",
     "\\src\\thread"

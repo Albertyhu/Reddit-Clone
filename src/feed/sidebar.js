@@ -3,8 +3,7 @@ import styled, { ThemeProvider } from 'styled-components';
 import { GiCakeSlice } from 'react-icons/gi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import { BsEye } from 'react-icons/bs';
-import { GrMailOption } from 'react-icons/gr';
-import './switchStyle.css'; 
+import { GrMailOption } from 'react-icons/gr'; 
 import RenderSwitchButton from '../components/switchButton.js'; 
 import uuid from 'react-uuid';
 

@@ -1,6 +1,7 @@
 import { comments } from '../helperTools/dummyData.js'; 
-import { SortByTop, SortByControversial  } from '../sort/sortMethods.js'; 
-import { formatTotalNumber } from '../sidebar/sidebar.js'; 
+import { SortByTop, SortByControversial, SortByNew, SortByOld  } from '../sort/sortMethods.js'; 
+import { formatTotalNumber } from '../thread/sidebar.js'; 
+
 //this will be outdated once Firebase is applied 
 describe('Test SortByTop funciton', () => {
     it.skip('Test basic. Array should be sorted in descending order', () => {
@@ -48,5 +49,151 @@ describe('Test formatTotalNumber() method from sidebar.js', () => {
     it('9.235k', () => {
         var num = 9235
         expect(formatTotalNumber(num)).toEqual('9.2k')
+    })
+})
+
+var arr1 = [
+    {
+        name: "A",
+        timePosted: new Date(2022, 6, 29, 23, 5, 7),
+    },
+    {
+        name: "B",
+        timePosted: new Date(2022, 6, 30, 2, 5, 7),
+    },
+    {
+        name: "C",
+        timePosted: new Date(2022, 6, 27, 23, 5, 7),
+    },
+
+]; 
+
+//array where time is only different by hours 
+var arr2 = [
+    {
+        name: "A",
+        timePosted: new Date(2022, 6, 30, 4, 5, 8),
+    },
+    {
+        name: "B",
+        timePosted: new Date(2022, 6, 30, 1, 5, 8),
+    },
+    {
+        name: "C",
+        timePosted: new Date(2022, 6, 30, 5, 5, 8),
+    },
+    {
+        name: "D",
+        timePosted: new Date(2022, 6, 30, 6, 5, 8),
+    },
+    {
+        name: "E",
+        timePosted: new Date(2022, 6, 30, 4, 5, 8),
+    },
+
+]; 
+
+
+var Arr3 = [
+    {
+        name: "A",
+        timePosted: new Date(2022, 6, 30, 4, 5, 8),
+    },
+    {
+        name: "B",
+        timePosted: new Date(2022, 6, 29, 1, 5, 8),
+    },
+    {
+        name: "C",
+        timePosted: new Date(2022, 6, 30, 23, 5, 8),
+    },
+    {
+        name: "D",
+        timePosted: new Date(2022, 6, 30, 23, 10, 8),
+    },
+    {
+        name: "E",
+        timePosted: new Date(2022, 6, 26, 21, 5, 8),
+    },
+
+];
+
+//If Arr3 was sorted by newest dates 
+var SortedByNew_Arr3 = [
+    {
+        name: "D",
+        timePosted: new Date(2022, 6, 30, 23, 10, 8),
+    },
+    {
+        name: "C",
+        timePosted: new Date(2022, 6, 30, 23, 5, 8),
+    },
+    {
+        name: "A",
+        timePosted: new Date(2022, 6, 30, 4, 5, 8),
+    },
+    {
+        name: "B",
+        timePosted: new Date(2022, 6, 29, 1, 5, 8),
+    },
+    {
+        name: "E",
+        timePosted: new Date(2022, 6, 26, 21, 5, 8),
+    },
+
+];
+
+
+//If Arr3 was sorted by oldest dates 
+var SortedByOld_Arr3 = [
+    {
+        name: "E",
+        timePosted: new Date(2022, 6, 26, 21, 5, 8),
+    },
+    {
+        name: "B",
+        timePosted: new Date(2022, 6, 29, 1, 5, 8),
+    },
+    {
+        name: "A",
+        timePosted: new Date(2022, 6, 30, 4, 5, 8),
+    },
+    {
+        name: "C",
+        timePosted: new Date(2022, 6, 30, 23, 5, 8),
+    },
+    {
+        name: "D",
+        timePosted: new Date(2022, 6, 30, 23, 10, 8),
+    },
+];
+
+describe("Test SortByNew Method", () => {
+    it("Test with Arr1", () => {
+        var arr = SortByNew(arr1)
+        expect(arr[0].name).toBe("B")
+    })
+    it("Test with Arr2", () => {
+        var arr = SortByNew(arr2)
+        expect(arr[0].name).toBe("D")
+    })
+    it("Test with Arr3", () => {
+        var arr = SortByNew(Arr3)
+        expect(arr).toEqual(SortedByNew_Arr3)
+    })
+})
+
+describe("Test SortByOld Method", () => {
+    it("Test with Arr1", () => {
+        var arr = SortByOld(arr1)
+        expect(arr[0].name).toBe("C")
+    })
+    it("Test with Arr2", () => {
+        var arr = SortByOld(arr2)
+        expect(arr[0].name).toBe("B")
+    })
+    it("Test with Arr3", () => {
+        var arr = SortByOld(Arr3)
+        expect(arr).toEqual(SortedByOld_Arr3)
     })
 })

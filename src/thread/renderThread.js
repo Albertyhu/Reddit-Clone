@@ -14,7 +14,7 @@ import RenderReplyTextArea from '../components/richTextEditor.js';
 import styled from 'styled-components'; 
 import { RenderCommentSort } from '../sort/sortComponent.js'; 
 import RenderAllComments from './renderAllComments.js'; 
-import RenderSideBar from '../sidebar/sidebar.js'; 
+import RenderSideBar from './sidebar.js'; 
 
 const RenderThread = props => {
     const { threadID } = props 
@@ -34,7 +34,7 @@ const RenderThread = props => {
 
     //sortOptions is the available options for methods for sorting
     //const sortOptions = ["Hot", "Top", "New", "Oldest"]
-    const sortOptions = ["Top", "Controversial"]
+    const sortOptions = ["Top", "Controversial", "Newest", "Oldest"]
 
     const [upvoted, setUpvoted] = useState(false);
     const [downvoted, setDownvoted] = useState(false);

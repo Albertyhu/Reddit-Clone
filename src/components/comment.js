@@ -22,7 +22,7 @@ const Comment = props => {
         bodyText,
         children, 
         timePosted,
-        dummyVote,
+        votes,
         replies,
         isLastDescendant = true,
         count = 0,
@@ -57,8 +57,8 @@ const Comment = props => {
     const [columnFormat, setColumnFormat] = useState(createThreadLineSpace())
     const [upvoted, setUpvoted] = useState(false);
     const [downvoted, setDownvoted] = useState(false); 
-    const [upvoteNum, setUpvoteNum] = useState(dummyVote.upvote);
-    const [downvoteNum, setDownvoteNum] = useState(dummyVote.downvote)
+    const [upvoteNum, setUpvoteNum] = useState(votes.upvote);
+    const [downvoteNum, setDownvoteNum] = useState(votes.downvote)
     const [displayReplyInput, setDisplayReplyInput] = useState(false)
     const [containerElem, setContainerElem] = useState(null); 
     const ExpandIconID= `expandIconID-${commentID}`

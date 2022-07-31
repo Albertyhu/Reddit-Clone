@@ -46,7 +46,7 @@ const RenderNavBar = props => {
             <MainContainer defaultMenu={defaultMenu}>
                 <Logo src={normalMode && defaultMenu ? RedditLogo : DarkRedditLogo} /> 
                 {defaultMenu ?
-                    <>{!userData ?
+                    <>{userData ?
                         <MenuComponent>
                             <MenuShell>
                                 <Logo src={Silhouette} id="silhouette" />
@@ -86,7 +86,7 @@ const MainContainer = styled.div`
 const Logo = styled.img`
     height: 60%; 
     width: fit-content; 
-    margin: auto 0 auto 10px;
+    margin: auto 0 auto 20px;
     cursor: pointer;
     &#silhouette{
         height: 25px;
@@ -124,6 +124,7 @@ const UserName = styled.div`
 `
 const Karma = styled.div`
     color: ${props => props.theme.SoftTextColor}; 
+    font-size: 10px; 
 `
 
 const BurgerMenuWrapper = styled.div`

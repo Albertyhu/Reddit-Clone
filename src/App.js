@@ -2,7 +2,8 @@ import React, { useState, useContext } from 'react';
 import RenderThread from './thread/renderThread.js'; 
 import RenderNavBar from './navBar/navBar.js'; 
 import { AppContext } from './components/contextItem.js'; 
-import { sampleUser } from './helperTools/dummyData.js'; 
+import { sampleUser, threads } from './helperTools/dummyData.js'; 
+import RenderFeed from './feed/renderFeed.js'; 
 
 function App() {
     const [normalMode, setNormal] = useState(true)
@@ -52,7 +53,8 @@ function App() {
         <AppContext.Provider value={context}>
             <RenderNavBar />
             <div id="EmptyDiv" style={{ height: "50px", width: "100%", resize: "none", }}></div>
-            <RenderThread threadID='SGASEFxgs423' />
+            {/* <RenderThread threadID='SGASEFxgs423' /> */}
+              <RenderFeed data={threads} />
         </AppContext.Provider>
   );
 }

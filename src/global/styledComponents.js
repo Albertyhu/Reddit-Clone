@@ -1,5 +1,6 @@
 import styled from 'styled-components'; 
 
+//This component is mainly for pages with two columns such as the thread page and the home page
 export const MainContainer = styled.div`
 display: grid; 
 grid-template-columns: 64% 36%; 

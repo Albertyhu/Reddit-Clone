@@ -1,1 +1,50 @@
 Use slater JS for rich text editor 
+
+
+//Sending information from one page to another using react router 
+//The sender 
+import { useNavigate } from 'react-router-dom';
+    const navigate = useNavigate(); 
+    const goProductProfile = useCallback(() => navigate('../product_profile', {
+        replace: true, 
+        state: {
+            id: ID, 
+        }
+    }), [navigate])
+
+//The receiver
+import { useLocation, useNavigate } from 'react-router-dom';
+
+    const location = useLocation(); 
+    const {
+        id,
+    } = location.state;
+
+
+ reddit feed item with text are around 410px high 
+ and 640px wide 
+
+
+Converting firebase timestamp to javascript date 
+https://thewebdev.info/2022/04/28/how-to-convert-a-firestore-date-or-timestamp-to-a-javascript-date/
+
+To Do List Before Firestore is implemented 
+1.)
+components/RenderTimePosted
+write the function 
+
+To Do List once Firestore is implemented 
+1.)
+file(s): 
+    feed/renderFeed.js
+    helperTools/dummyDataj.s
+Change the way timePosted is extracted; 
+Currently, the 
+
+2.) 
+files(s): 
+    cardItem.js 
+Need to decide how to retrieve the number of comments to be displayed on each card.
+The ideal situation is to make a query request from firebase once from the root
+component, then pass that information along to the lower components such 
+as RenderCardItem.

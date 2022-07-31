@@ -12,7 +12,6 @@ export const RenderVerticalVoting = props => {
         downvoted, 
         upvoteNum,
         downvoteNum, 
-
         changeUpvoted,
         changeDownvoted,
         changeUpvoteNum,

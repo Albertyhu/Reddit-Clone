@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import Comment from '../components/comment.js';
 import styled from "styled-components"; 
 import { ThreadContext, RenderAllCommentsContext } from '../components/contextItem.js'; 
-import { SortByTop, SortByControversial } from '../sort/sortMethods.js'; 
+import { SortArray } from '../sort/sortMethods.js'; 
 import uuid from 'react-uuid'; 
 //Overall Goal: 
 //Pass the array of comments to a function that gathers all the parents and returns it
@@ -11,7 +11,6 @@ import uuid from 'react-uuid';
 //Sort them 
 //Look for the children of those children
 //repeat until there aren't any children left 
-//Question: 
 
 const RenderAllComments = () => {
     //commentArr stores all the comments of the thread, but they are not 
@@ -19,10 +18,6 @@ const RenderAllComments = () => {
     //ThreadContext provides information from renderThread.js 
     const { filterOption, commentArr } = useContext(ThreadContext)
     const [sortedComments, setSortedCom] = useState([]);
-
-    const RenderTree = () => {
-
-    }
 
     useEffect(() => {
         const MyPromise = new Promise((resolve, reject) => {
@@ -196,23 +191,6 @@ function removeDuplicates(arr, property) {
         }
     })
     return obj; 
-}
-
-//Function that decides how the comments should be sorted 
-function SortArray(arr, sortMethod) {
-    var sortedArr = null; 
-   switch (sortMethod) {
-       case "Top": {
-           sortedArr = SortByTop(arr)
-           return sortedArr; 
-       }
-       case "Controversial": {
-           sortedArr = SortByControversial(arr);
-           return sortedArr;
-       }
-        default:
-            return [];
-    }
 }
 
 const Container = styled.div`

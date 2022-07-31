@@ -1,5 +1,7 @@
 
-export const SortByBest = data => { } 
+export const SortByBest = data => {
+    return data; 
+} 
 
 //to be changed 
 export const SortByTop = data => {
@@ -9,8 +11,8 @@ export const SortByTop = data => {
     console.log(arr)*/
     for (var i = 0; i < arr.length; i++) {
         for (var j = i + 1; j < arr.length; j++) {
-            var iVote = arr[i].dummyVote.upvote - arr[i].dummyVote.downvote; 
-            var jVote = arr[j].dummyVote.upvote - arr[j].dummyVote.downvote; 
+            var iVote = arr[i].votes.upvote - arr[i].votes.downvote; 
+            var jVote = arr[j].votes.upvote - arr[j].votes.downvote; 
             if (jVote > iVote) {
                 var obj = arr[j];
                 arr = arr.filter(ele => ele.commentID !== obj.commentID)
@@ -23,10 +25,6 @@ export const SortByTop = data => {
  
     return arr; 
 } 
-export const SortByNew = data => {
-
-} 
-export const SortByOld = data => { } 
 
 //Sort the comments by the ammount of controversy each on has
 //Controversy is defined as having the near same number of upvotes and downvotes
@@ -50,8 +48,8 @@ export const SortByControversial = data => {
 
     for (var i = 0; i < arr.length; i++) {
         for (var j = i + 1; j < arr.length; j++) {
-            var iControversy = calcControversy(arr[i].dummyVote.upvote, arr[i].dummyVote.downvote);
-            var jControversy = calcControversy(arr[j].dummyVote.upvote, arr[j].dummyVote.downvote);
+            var iControversy = calcControversy(arr[i].votes.upvote, arr[i].votes.downvote);
+            var jControversy = calcControversy(arr[j].votes.upvote, arr[j].votes.downvote);
             if (jControversy > iControversy) {
                 /*
                 console.log("Switching " + arr[i].commentID + " with " + arr[j].commentID)
@@ -67,3 +65,71 @@ export const SortByControversial = data => {
     }
     return arr; 
 } 
+
+
+export const SortByNew = data => {
+    var Arr = data; 
+    for (var i = 0; i < Arr.length; i++) {
+        for (var j = i + 1; j < Arr.length; j++) {
+            if (Arr[i].timePosted < Arr[j].timePosted) {
+                var obj = Arr[i]; 
+                Arr[i] = Arr[j]; 
+                Arr[j] = obj; 
+            }
+        }
+    }
+
+    return Arr; 
+}
+
+export const SortByOld = data => {
+    var Arr = data;
+    for (var i = 0; i < Arr.length; i++) {
+        for (var j = i + 1; j < Arr.length; j++) {
+            if (Arr[i].timePosted > Arr[j].timePosted) {
+                var obj = Arr[i];
+                Arr[i] = Arr[j];
+                Arr[j] = obj;
+            }
+        }
+    }
+    return Arr;
+}
+
+export const SortByHot = data => {
+    return data; 
+}
+
+
+//Function that decides how the comments should be sorted 
+export function SortArray(arr, sortMethod) {
+    var sortedArr = null;
+    switch (sortMethod) {
+        case "Top": {
+            sortedArr = SortByTop(arr);
+            return sortedArr;
+        }
+        case "Controversial": {
+            sortedArr = SortByControversial(arr);
+            return sortedArr;
+        }
+        case "Newest": {
+            sortedArr = SortByNew(arr);
+            return sortedArr;
+        }
+        case "Oldest": {
+            sortedArr = SortByOld(arr); 
+            return sortedArr;
+        }
+        case "Hot": {
+            sortedArr = SortByHot(arr); 
+            return sortedArr;
+        }
+        case "Best": {
+            sortedArr = SortByBest(arr); 
+            return sortedArr;
+        }
+        default:
+            return [];
+    }
+}
