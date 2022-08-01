@@ -1,6 +1,7 @@
 import { comments } from '../helperTools/dummyData.js'; 
 import { SortByTop, SortByControversial, SortByNew, SortByOld  } from '../sort/sortMethods.js'; 
 import { formatTotalNumber } from '../thread/sidebar.js'; 
+import { RenderTimePosted} from '../components/renderTimePosted'
 
 //this will be outdated once Firebase is applied 
 describe('Test SortByTop funciton', () => {

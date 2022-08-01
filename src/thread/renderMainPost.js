@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'; 
-import { ThreadContext } from '../components/contextItem.js'
+import { ThreadContext, AppContext } from '../components/contextItem.js'
 import { RenderVerticalVoting } from '../components/votingComponent.js'; 
-import styled from 'styled-components'; 
+import styled, { ThemeProvider } from 'styled-components'; 
 import {
     Title, 
 } from '../global/styledComponents.js'; 
@@ -11,12 +11,18 @@ import RenderPostFooter from './postFooter.js';
 //This functional component renders the main body of the post. 
 const RenderMainPost = props => {
     const { ...threadData } = useContext(ThreadContext); 
+    const {
+        normalMode, 
+        DefaultTheme,
+        DarkTheme, 
+    } = useContext(AppContext);
     return (
+        <ThemeProvider theme={normalMode? DefaultTheme : DarkTheme}>
         <Container>
-            <RenderVerticalVoting /> 
+            <RenderVerticalVoting contextType={ThreadContext} /> 
             <InnerCont>
                 <Header>
-                    <RenderRIcon image='' /> 
+                    <RenderRIcon /> 
                     <Community>r/{threadData.community}</Community>
                     <AuthorInfo> &#x2022; Posted by <span>u/{threadData.authorName}</span></AuthorInfo>
                     <TimePosted>4 hours ago</TimePosted>
@@ -26,6 +32,7 @@ const RenderMainPost = props => {
                 <RenderPostFooter />
             </InnerCont>  
         </Container>
+        </ThemeProvider>
         )
 } 
 
@@ -41,6 +48,8 @@ const Container = styled.div`
     padding-left: 10px;
     padding-right: 10px;
     border-radius: 5px;
+    color: ${props => props.theme.TextColor}; 
+    background-color: ${props => props.theme.ContentBodyBackgroundColor}; 
 `
 
 const InnerCont = styled.div`
@@ -60,8 +69,7 @@ const Header = styled.div`
 
 const Community = styled.div`
     font-weight: bold; 
-    color: #000000;
-       
+    color: ${props => props.theme.TextColor};       
 `
 const AuthorInfo = styled.div`
     cursor: pointer; 

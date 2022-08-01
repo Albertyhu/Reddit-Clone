@@ -48,3 +48,8 @@ Need to decide how to retrieve the number of comments to be displayed on each ca
 The ideal situation is to make a query request from firebase once from the root
 component, then pass that information along to the lower components such 
 as RenderCardItem.
+
+3.) 
+file(s): 
+    renderThread.js 
+ Need to incorporate firebase into the voting system.

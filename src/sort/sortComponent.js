@@ -22,24 +22,32 @@ export const RenderCommentSort = props => {
         selected, 
     } = props;
 
+    const {
+        normalMode,
+        DefaultTheme,
+        DarkTheme,
+    } = useContext(AppContext);
+
     const handleChange = e => {
         dispatchFunc(e.target.value)
         //console.log(e.target.value)
     }
 
     return (
-        <Container>
-            <SortContainer>
-                <Text>Sort By:</Text>
-                {optionsArr !== null && optionsArr !== undefined && optionsArr.length !== 0 ?
-                    <SortSelection onChange={handleChange} value={selected}>
-                        {optionsArr.map(opt => <option key={uuid()}>{opt}</option>)}
-                    </SortSelection>
-                        :
-                        null
-                        }
-             </SortContainer> 
-        </Container>
+        <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
+            <Container>
+                <SortContainer>
+                    <Text>Sort By:</Text>
+                    {optionsArr !== null && optionsArr !== undefined && optionsArr.length !== 0 ?
+                        <SortSelection onChange={handleChange} value={selected}>
+                            {optionsArr.map(opt => <option key={uuid()}>{opt}</option>)}
+                        </SortSelection>
+                            :
+                            null
+                            }
+                 </SortContainer> 
+                </Container>
+        </ThemeProvider>
         )
 }
 
@@ -123,7 +131,7 @@ background-color:rgba(0,0,0,0.1);
 
 const Container = styled.div`
     width: 100%; 
-    background-color: ${props => props.theme.PanelBackgroundColor || "#ffffff"};
+    background-color: ${props => props.theme.ContentBodyBackgroundColor || "#ffffff"};
     font-family: Noto Sans,Arial,sans-serif;
     padding-bottom: 20px;
     color: ${props => props.theme.TextColor || "#222222"}
@@ -131,11 +139,12 @@ const Container = styled.div`
 
 const SortContainer = styled.div`
     font-family: "Verdana"; 
-    background-color: #ffffff;
+    background-color: ${props => props.theme.ContentBodyBackgroundColor};
     width: 90%;
     margin-left: auto;
     margin-right: auto; 
-    border-bottom: 1px solid #e8e8e8;
+    padding-bottom: 10px;
+    border-bottom: 2px solid ${props => props.theme.BorderColor};
    
     & > *{
       display: inline-block;
@@ -146,7 +155,15 @@ const SortContainer = styled.div`
 `
 const SortSelection = styled.select`
     border: none;
+    background-color: ${props => props.theme.ContentBodyBackgroundColor};
+    color: ${props => props.theme.ClickableText};
+    & > *{
+        color: ${props => props.theme.TextColor};
+        margin: 10px 5px;
+    }
 `
 
 const Text = styled.div`
+    color: ${props => props.theme.ClickableText};
+
 `

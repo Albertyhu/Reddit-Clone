@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useContext, useMemo, useCallback } from 'react'; 
 import styled from 'styled-components'; 
-import { ThreadContext } from './contextItem.js';
+import { ThreadContext, AppContext } from './contextItem.js';
 // Import the Slate editor factory.
 import {
     createEditor,
@@ -216,6 +216,8 @@ const RenderReplyTextArea = props => {
         Transforms.setNodes(editor, newProperties); 
     }
 
+    const {normalMode} = useContext(AppContext);
+
     const RenderButton = props => {
         const { style } = props; 
         var isActive = getActiveStyles(editor).has(style);
@@ -272,7 +274,7 @@ const RenderReplyTextArea = props => {
         }
         return (
             <StylingButton
-                colorVal={isActive ? "#000000" : "#828282"}
+                colorVal={isActive ? normalMode ? "#000000" : "#ffffff" : "#828282"}
                 fWeight={isActive ? "bold" : "normal"}
                 onMouseDown={event => {
                     event.preventDefault();
@@ -495,6 +497,7 @@ const Container = styled.div`
 
 const ReplyCont = styled.div`
     border: ${props => props.borderFocus || "2px solid #d6d6d6"}; 
+    background-color: ${props => props.theme.PanelBackgroundColor};
     border-radius: 4px;
     width: 100%;
     outline: none;
@@ -548,7 +551,7 @@ const UserName = styled.div`
 `
 
 const SlateStyle = {
-    resize: "none", 
+    /*resize: "none", */
     width: "-webkit-fill-available",
     height: "170px",
     outline: "none",
@@ -566,7 +569,7 @@ vertical-align: middle;
 padding-top: 5px;
 padding-bottom: 5px;
 border-radius: 5px; 
-background-color: #e5e5e5;
+background-color: ${props => props.theme.ContentBodyBackgroundColor || "#e5e5e5"};
 color: ${props => props.colorVal || "#828282"};
 font-weight: ${props => props.fWeight || "normal" };
 margin-left: 5px;
@@ -581,19 +584,20 @@ border-radius: 15px;
 padding-left: 10px; 
 padding-right: 10px; 
 fontWeight: bold; 
-background-color: #0a73dd; 
-color: #ffffff;
-//display: inline-block; 
-
+background-color: ${props => props.theme.ButtonBackgroundC || "#0a73dd"}; 
+color: ${props => props.theme.ButtonTextC || "#ffffff"};
 padding-top: 5px;
 padding-bottom: 5px;
+&:hover{
+    background-color: ${props => props.theme.ButtonBackgroundCHover || "#1B90E7"};
+}
 `
 
 const CommentButtonContainer = styled.div`
 width: 100%; 
 height: 35px; 
 display: flex;
-background-color: #e5e5e5;
+background-color: ${props => props.theme.ContentBodyBackgroundColor || "#e5e5e5"};
 & > * {
     vertical-align: middle; 
     margin-top: auto;

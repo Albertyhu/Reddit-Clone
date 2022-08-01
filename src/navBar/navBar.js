@@ -21,6 +21,10 @@ const RenderNavBar = props => {
         setOpenMenu(prev => !prev); 
     }
 
+    const CloseMenu = () => {
+        setOpenMenu(false); 
+    }
+
     //determines whether the default or mobile menu should be rendered
     const [defaultMenu, setMenu] = useState(true); 
     const [screenWidth, setScreenWidth] = React.useState(window.innerWidth);
@@ -47,7 +51,7 @@ const RenderNavBar = props => {
                 <Logo src={normalMode && defaultMenu ? RedditLogo : DarkRedditLogo} /> 
                 {defaultMenu ?
                     <>{userData ?
-                        <MenuComponent>
+                        <MenuComponent onClick={toggleMenu}>
                             <MenuShell>
                                 <Logo src={Silhouette} id="silhouette" />
                                 <MenuDiv>
@@ -61,11 +65,16 @@ const RenderNavBar = props => {
                         <RenderSignInComponent />
                     }</>
                     :
-                    <BurgerMenuWrapper>
+                    <BurgerMenuWrapper onClick={toggleMenu}>
                         <GiHamburgerMenu />
                     </BurgerMenuWrapper>
                 }
             </MainContainer>
+            {openMenu &&
+                <RenderMenu
+                    closeMenu={CloseMenu}
+                />
+            }
         </ThemeProvider>
     )
 }
@@ -76,7 +85,7 @@ const MainContainer = styled.div`
     width: 100%; 
     height: 50px; 
     resize: none; 
-    position: fixed;
+    position: fixed;    
     background-color: ${props => { return props.defaultMenu ? props.theme.PanelBackgroundColor : "#1d2535" }}; 
     color: ${props => { return props.defaultMenu ? props.theme.TextColor : "#ffffff" }};
     display: flex; 

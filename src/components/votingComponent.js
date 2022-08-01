@@ -1,12 +1,13 @@
 import { useContext } from 'react'; 
-import { downArrow, upArrow, upvote, downvote } from '../asset/icons'; 
-import styled from 'styled-components'; 
-import { ThreadContext } from './contextItem.js'; 
+import { downArrow, upArrow, upvote, downvote, UpArrowDarkMode, DownArrowDarkMode  } from '../asset/icons'; 
+import styled, { ThemeProvider } from 'styled-components'; 
+import { ThreadContext, AppContext } from './contextItem.js'; 
 
 //requires passing data through useContext 
 //The element that wraps this component needs to have a width of at least 30px in order for 
 //... the elements of this component to align 
 export const RenderVerticalVoting = props => {
+    const { contextType } = props; 
     const {
         upvoted,
         downvoted, 
@@ -16,7 +17,13 @@ export const RenderVerticalVoting = props => {
         changeDownvoted,
         changeUpvoteNum,
         changeDownvoteNum,
-    } = useContext(ThreadContext); 
+    } = useContext(contextType); 
+
+    const {
+        normalMode, 
+        DefaultTheme, 
+        DarkTheme, 
+    } = useContext(AppContext);
 
     const upvoteOnclick = () => {
         if (upvoted) {
@@ -48,19 +55,21 @@ export const RenderVerticalVoting = props => {
         }
     }
     return (
-        <Container>
-            {upvoted ?
-                <VoteIcon src={upvote} onClick={upvoteOnclick} />
-                :
-                <VoteIcon src={upArrow} onClick={upvoteOnclick} />
-            }
-            <VoteNumber>{upvoteNum - downvoteNum}</VoteNumber>
-            {downvoted ?
-                <VoteIcon src={downvote} onClick={downvoteOnclick} />
-                :
-                <VoteIcon src={downArrow} onClick={downvoteOnclick} />
-            }
-        </Container>
+        <ThemeProvider theme = {normalMode ? DefaultTheme : DarkTheme}>
+            <Container>
+                {upvoted ?
+                    <VoteIcon src={upvote} onClick={upvoteOnclick} />
+                    :
+                    <VoteIcon src={normalMode ? upArrow : UpArrowDarkMode} onClick={upvoteOnclick} />
+                }
+                <VoteNumber>{upvoteNum - downvoteNum}</VoteNumber>
+                {downvoted ?
+                    <VoteIcon src={downvote} onClick={downvoteOnclick} />
+                    :
+                    <VoteIcon src={normalMode ? downArrow : DownArrowDarkMode} onClick={downvoteOnclick} />
+                }
+                </Container>
+            </ThemeProvider>
         )
 }
 
@@ -84,4 +93,5 @@ margin-bottom: auto;
 font-weight: bold;
 font-size: 12px;
 font-family: "Verdana";
+color: ${props => props.theme.TextColor}; 
 `

@@ -11,3 +11,6 @@ export const RenderAllCommentsContext = createContext();
 
 //Context item for passing data from App.js
 export const AppContext = createContext(); 
+
+//Context item for CartItem 
+export const CardContext = createContext(); 

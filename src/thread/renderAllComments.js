@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import Comment from '../components/comment.js';
 import styled from "styled-components"; 
-import { ThreadContext, RenderAllCommentsContext } from '../components/contextItem.js'; 
+import { ThreadContext, RenderAllCommentsContext, AppContext } from '../components/contextItem.js'; 
 import { SortArray } from '../sort/sortMethods.js'; 
 import uuid from 'react-uuid'; 
 //Overall Goal: 
@@ -195,7 +195,8 @@ function removeDuplicates(arr, property) {
 
 const Container = styled.div`
     width: 100%; 
-    background-color: #fff;
+    background-color: ${props => props.theme.ContentBodyBackgroundColor || "#fff" };
+    color: ${props => props.theme.TextColor || "#000000"};
     padding-bottom: 20px;
     border-radius: 0 0 5px 5px;
 `

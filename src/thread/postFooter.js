@@ -11,7 +11,8 @@ const RenderPostFooter = props => {
             <Button><IoIosShareAlt style={IconStyle} /><p>Share</p></Button>
             <Button><IoBookmarkOutline style={IconStyle} /><p>Save</p></Button>
             <Dots />
-        </Container>
+            </Container>
+
         )
 }
 

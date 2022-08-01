@@ -2,14 +2,20 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import styled from 'styled-components'; 
 import { CgArrowsExpandLeft } from 'react-icons/cg';
 import CrossedArms from '../asset/images/crossed-arms.jpg'; 
-import { downArrow, upArrow, upvote, downvote } from '../asset/icons'; 
+import {
+    downArrow,
+    upArrow,
+    upvote,
+    downvote,
+    UpArrowDarkMode,
+    DownArrowDarkMode
+} from '../asset/icons'; 
 import { FaRegCommentAlt } from 'react-icons/fa';
-import { CommentContext } from './contextItem.js';
+import { CommentContext, AppContext } from './contextItem.js';
 import RenderReplyTextArea from './richTextEditor.js'; 
 import uuid from 'react-uuid'; 
 import { RenderAllCommentsContext } from './contextItem.js'; 
 import RenderAllComments from '../thread/renderAllComments';
-
 
 // Import the Slate components and React plugin.
 import { Slate, Editable, withReact } from 'slate-react'
@@ -33,6 +39,12 @@ const Comment = props => {
         sortedComments,
         getSortedComments, 
     } = useContext(RenderAllCommentsContext); 
+
+    const {
+        normalMode,
+        DefaultTheme,
+        DarkTheme,
+    } = useContext(AppContext);
 
     //Edit option is displayed if the current comment belongs to the current user
     const [displayEdit, setDisplayEdit] = useState(false); 
@@ -183,13 +195,13 @@ const Comment = props => {
                                 {upvoted ?
                                     <VoteIcon src={upvote} onClick={upvoteOnclick} />
                                     :
-                                    <VoteIcon src={upArrow} onClick={upvoteOnclick} />
+                                    <VoteIcon src={normalMode ? upArrow : UpArrowDarkMode} onClick={upvoteOnclick} />
                                 }
                                 <VoteNumber>{upvoteNum - downvoteNum}</VoteNumber>
                                 {downvoted ?
                                     <VoteIcon src={downvote} onClick={downvoteOnclick} />
                                     :
-                                    <VoteIcon src={downArrow} onClick={downvoteOnclick} />
+                                    <VoteIcon src={normalMode ? downArrow : DownArrowDarkMode} onClick={downvoteOnclick} />
                                 }
                                 <ReplyDiv onClick={toggleDisplayReply}><FaRegCommentAlt id="CommentIcon" style={commentIconStyle} /> <FooterText>Reply</FooterText></ReplyDiv>
                                 <Wrapper>Share</Wrapper>
@@ -532,7 +544,7 @@ const Wrapper = styled.div`
     padding: 6px 4px;
     font-weight: bold;
     &:hover{
-       background-color: #cdcdcd; 
+       background-color: ${props => props.theme.HoverColor || "#cdcdcd"}; 
     }
 `
 
@@ -550,7 +562,7 @@ const ReplyDiv = styled.div`
     cursor: pointer; 
     padding: 6px 4px;
     &:hover{
-     background-color: #cdcdcd; 
+     background-color: ${props => props.theme.HoverColor || "#cdcdcd"}; 
     }
 `
 

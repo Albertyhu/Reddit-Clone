@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\src",
+    "\\src\\asset",
     "\\src\\components",
-    "\\src\\feed",
+    "\\src\\components\\slateJSComponents",
     "\\src\\helperTools",
-    "\\src\\navBar",
-    "\\src\\screens",
-    "\\src\\searchBar",
-    "\\src\\sidebar",
-    "\\src\\thread"
+    "\\src\\helperTools\\assets",
+    "\\src\\old",
+    "\\src\\sort",
+    "\\src\\test"
   ],
-  "SelectedNode": "\\src\\helperTools\\assets",
+  "SelectedNode": "\\notes.txt",
   "PreviewInSolutionExplorer": false
 }

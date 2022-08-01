@@ -6,7 +6,7 @@ display: grid;
 grid-template-columns: 64% 36%; 
 grid-column-gap: 24px;
 width: 100%; 
-background-color: #e6e6e6;
+background-color: ${props => props.theme.MainBackgroundColor || "#e6e6e6"};
 @media screen and (max-width: 540px){
 display: block; 
 
