@@ -28,6 +28,7 @@ function App() {
         InvertedButtonTextC: "#0079d3", 
         InvertedButtonBorder: "1px solid #0079d3",
         BorderColor: "#e8e8e8",
+        CardTextLinearGradColor: "linear-gradient(to bottom, rgba(255,255,255, 0) 20%, rgba(255,255,255, 1) 80%)", 
     }
     const DarkTheme = {
         PanelBackgroundColor: "#1a1a1b",
@@ -48,6 +49,7 @@ function App() {
         InvertedButtonTextC: "#d7dadc",
         InvertedButtonBorder: "1px solid #d7dadc",
         BorderColor: "#343536",
+        CardTextLinearGradColor: "linear-gradient(to bottom, rgba(26,26,27, 0) 20%, rgba(26,26,27, 1) 80%)", 
     }
 
     const context = {
@@ -62,8 +64,8 @@ function App() {
         <AppContext.Provider value={context}>
             <RenderNavBar />
             <div id="EmptyDiv" style={{ height: "50px", width: "100%", resize: "none", }}></div>
-            <RenderThread threadID='SGASEFxgs423' /> 
-            {/*   <RenderFeed data={threads} />*/}
+            {/*    <RenderThread threadID='SGASEFxgs423' /> */}
+            <RenderFeed data={threads} />
         </AppContext.Provider>
   );
 }

@@ -1,13 +1,14 @@
 //returns a string that indicates how long alot a thread or comment as been posted 
 export function RenderTimePosted(timePosted) {
     var currentTime = new Date(Date.now()); 
-    var totalSeconds = (currentTime.getTime() - timePosted.getTime()) / 1000; 
-    var totalMinutes = totalSeconds / 60; 
-    var totalHours = totalMinutes / 60;
-    var totalDays = totalHours / 24; 
-    var totalWeeks = totalDays / 7; 
-    var totalMonths = totalWeeks / 4; 
-    var totalYears = totalMonths / 12; 
+    var difference = (currentTime.getTime() - timePosted.getTime())
+    var totalSeconds = Math.round(difference / 1000);
+    var totalMinutes = Math.round(totalSeconds / 60);
+    var totalHours = Math.round(totalMinutes / 60);
+    var totalDays = Math.round(totalHours / 24);
+    var totalWeeks = Math.round(totalDays / 7);
+    var totalMonths = Math.round(totalWeeks / 4);
+    var totalYears = Math.round(totalMonths / 12); 
 
     if (totalYears !== 0) {
         if (totalYears > 1)
@@ -30,7 +31,7 @@ export function RenderTimePosted(timePosted) {
     }
     if (totalDays !== 0) {
         if (totalDays > 1) {
-            return `${totalDAys} days ago`;
+            return `${totalDays} days ago`;
         }
         else
             return `1 day ago`; 
@@ -53,6 +54,4 @@ export function RenderTimePosted(timePosted) {
         else 
             return "1 second ago"
     }
-
-
 }

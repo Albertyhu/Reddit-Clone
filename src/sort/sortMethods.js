@@ -15,14 +15,17 @@ export const SortByTop = data => {
             var jVote = arr[j].votes.upvote - arr[j].votes.downvote; 
             if (jVote > iVote) {
                 var obj = arr[j];
+                /*
                 arr = arr.filter(ele => ele.commentID !== obj.commentID)
-                arr.splice(i, 0, obj);
-                j--;
+                arr.splice(i, 0, obj);*/
+
+                arr[j] = arr[i];
+                arr[i] = obj; 
+              //  j--;
             }
         }
     }
 
- 
     return arr; 
 } 
 
@@ -57,9 +60,13 @@ export const SortByControversial = data => {
                 console.log("jControversy: " + jControversy);
                 */
                 var obj = arr[j];
-                arr = arr.filter(ele => ele.commentID !== obj.commentID)
-                arr.splice(i, 0, obj);
-                j--;
+                /*
+                    arr = arr.filter(ele => ele.commentID !== obj.commentID)
+                    arr.splice(i, 0, obj);
+                    j--;
+                 */
+                arr[j] = arr[i];
+                arr[i] = obj
             }
         }
     }

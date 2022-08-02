@@ -1,7 +1,6 @@
 import { comments } from '../helperTools/dummyData.js'; 
 import { SortByTop, SortByControversial, SortByNew, SortByOld  } from '../sort/sortMethods.js'; 
 import { formatTotalNumber } from '../thread/sidebar.js'; 
-import { RenderTimePosted} from '../components/renderTimePosted'
 
 //this will be outdated once Firebase is applied 
 describe('Test SortByTop funciton', () => {
@@ -196,5 +195,87 @@ describe("Test SortByOld Method", () => {
     it("Test with Arr3", () => {
         var arr = SortByOld(Arr3)
         expect(arr).toEqual(SortedByOld_Arr3)
+    })
+})
+
+
+export function RenderTimePosted(timePosted, laterTime) {
+    //var currentTime = new Date(Date.now());
+    var difference = (laterTime.getTime() - timePosted.getTime())
+    var totalSeconds = Math.round(difference / 1000);
+    var totalMinutes = Math.round(totalSeconds / 60);
+    var totalHours = Math.round(totalMinutes / 60);
+    var totalDays = Math.round(totalHours / 24);
+    var totalWeeks = Math.round(totalDays / 7);
+    var totalMonths = Math.round(totalWeeks / 4);
+    var totalYears = Math.round(totalMonths / 12); 
+    if (totalYears !== 0) {
+        if (totalYears > 1)
+            return `${totalYears} years ago`;
+        else
+            return `1 year ago`;
+    }
+
+    if (totalMonths !== 0) {
+        if (totalMonths > 1)
+            return `${totalMonths} months ago`;
+        else
+            return `1 month ago`;
+    }
+    if (totalWeeks !== 0) {
+        if (totalWeeks > 1)
+            return `${totalWeeks} weeks ago`;
+        else
+            return `1 week ago`;
+    }
+    if (totalDays !== 0) {
+        if (totalDays > 1) {
+            return `${totalDays} days ago`;
+        }
+        else
+            return `1 day ago`;
+    }
+    if (totalHours !== 0) {
+        if (totalHours > 1)
+            return `${totalHours} hours ago`;
+        else
+            return `1 hour ago`
+    }
+    if (totalMinutes !== 0) {
+        if (totalMinutes > 1)
+            return `${totalMinutes} minutes ago`;
+        else
+            return "1 minute ago"
+    }
+    if (totalSeconds !== 0) {
+        if (totalSeconds > 1)
+            return `${totalSeconds} seconds ago`;
+        else
+            return "1 second ago"
+    }
+}
+
+const DateA = new Date(2022, 8, 1, 17, 45, 20); 
+const LaterDateA = new Date(2022, 8, 1, 17, 46, 20)
+const DateOneMonthLater = new Date(2022, 9, 1, 17, 46, 20)
+
+const DateB = new Date(2022, 7, 1, 16, 21, 20); 
+
+describe("Test the modified function RenderTimePosted", () => {
+    it("Test with DateA and LaterDateA", () => {
+        const message = RenderTimePosted(DateA, LaterDateA); 
+        expect(message).toEqual("1 minute ago")
+    })
+
+    it("Test with DateA and DateOneMonthLater", () => {
+        const message = RenderTimePosted(DateA, DateOneMonthLater);
+        expect(message).toEqual("1 month ago")
+    })
+    it.skip("Test with DateA and DateOneMonthLater", () => {
+        var currentTime = new Date(Date.now());
+        console.log("currentTime: " + currentTime); 
+        console.log("DateB: " + DateB); 
+        const message = RenderTimePosted(DateB, currentTime);
+        expect(message).toEqual("2 hours ago")
     })
 })

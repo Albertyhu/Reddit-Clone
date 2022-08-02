@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\asset",
-    "\\src\\components",
-    "\\src\\components\\slateJSComponents",
-    "\\src\\helperTools",
-    "\\src\\helperTools\\assets",
-    "\\src\\old",
-    "\\src\\sort",
-    "\\src\\test"
+    "\\src\\asset\\icons",
+    "\\src\\feed",
+    "\\src\\global",
+    "\\src\\navBar",
+    "\\src\\screens",
+    "\\src\\searchBar",
+    "\\src\\thread"
   ],
-  "SelectedNode": "\\notes.txt",
+  "SelectedNode": "\\src\\navBar\\displayMenu.js",
   "PreviewInSolutionExplorer": false
 }

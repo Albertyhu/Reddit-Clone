@@ -91,6 +91,7 @@ const MainContainer = styled.div`
     display: flex; 
     justify-content: space-between; 
     font-family: "Verdana"; 
+    z-index: 99;
 `
 const Logo = styled.img`
     height: 60%; 
