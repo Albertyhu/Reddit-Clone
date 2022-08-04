@@ -267,6 +267,7 @@ export const threads = [
         dateCreated: '',
         timePosted: new Date(2022, 6, 28, 14, 39, 7), 
         textBody: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 
+        commentNumber: 23, 
     },
     {
         threadID: 'SEsegseE',
@@ -286,6 +287,7 @@ export const threads = [
         dateCreated: '', 
         timePosted: new Date(2022, 6, 30, 7, 25, 10), 
         textBody: 'Sed augue lacus viverra vitae congue eu consequat. Lacus viverra vitae congue eu consequat ac felis donec et. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. Aliquam faucibus purus in massa. Pulvinar elementum integer enim neque volutpat ac tincidunt vitae semper. Quis eleifend quam adipiscing vitae proin. Neque viverra justo nec ultrices dui sapien eget mi proin. Cursus risus at ultrices mi tempus. Vitae proin sagittis nisl rhoncus mattis. Tristique senectus et netus et malesuada fames ac. Elementum sagittis vitae et leo duis ut diam. Porttitor rhoncus dolor purus non enim. Purus in massa tempor nec feugiat nisl pretium fusce id. Habitasse platea dictumst quisque sagittis purus sit amet volutpat. Eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Proin sagittis nisl rhoncus mattis. Urna porttitor rhoncus dolor purus non enim praesent. Aliquet eget sit amet tellus cras.',
+        commentNumber: 56,
     },
     {
         threadID: 'PJlksf',
@@ -305,6 +307,7 @@ export const threads = [
         dateCreated: '',
         timePosted: new Date(2022, 6, 30, 15, 12, 10), 
         textBody: 'Sed augue lacus viverra vitae congue eu consequat. Lacus viverra vitae congue eu consequat ac felis donec et. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. Aliquam faucibus purus in massa. Pulvinar elementum integer enim neque volutpat ac tincidunt vitae semper. Quis eleifend quam adipiscing vitae proin. Neque viverra justo nec ultrices dui sapien eget mi proin. Cursus risus at ultrices mi tempus. Vitae proin sagittis nisl rhoncus mattis. Tristique senectus et netus et malesuada fames ac. Elementum sagittis vitae et leo duis ut diam. Porttitor rhoncus dolor purus non enim. Purus in massa tempor nec feugiat nisl pretium fusce id. Habitasse platea dictumst quisque sagittis purus sit amet volutpat. Eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Proin sagittis nisl rhoncus mattis. Urna porttitor rhoncus dolor purus non enim praesent. Aliquet eget sit amet tellus cras.',
+        commentNumber: 12,
     },
     {
         threadID: 'oisgseg',
@@ -324,6 +327,7 @@ export const threads = [
         dateCreated: '',
         timePosted: new Date(2022, 6, 29, 23, 11, 7), 
         textBody: 'Sed augue lacus viverra vitae congue eu consequat. Lacus viverra vitae congue eu consequat ac felis donec et. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. Aliquam faucibus purus in massa. Pulvinar elementum integer enim neque volutpat ac tincidunt vitae semper. Quis eleifend quam adipiscing vitae proin. Neque viverra justo nec ultrices dui sapien eget mi proin. Cursus risus at ultrices mi tempus. Vitae proin sagittis nisl rhoncus mattis. Tristique senectus et netus et malesuada fames ac. Elementum sagittis vitae et leo duis ut diam. Porttitor rhoncus dolor purus non enim. Purus in massa tempor nec feugiat nisl pretium fusce id. Habitasse platea dictumst quisque sagittis purus sit amet volutpat. Eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Proin sagittis nisl rhoncus mattis. Urna porttitor rhoncus dolor purus non enim praesent. Aliquet eget sit amet tellus cras.',
+        commentNumber: 34,
     },
     {
         threadID: 'aefaseflk',
@@ -343,6 +347,7 @@ export const threads = [
         dateCreated: '',
         timePosted: new Date(2022, 6, 28, 12, 30, 7), 
         textBody: 'Sed augue lacus viverra vitae congue eu consequat. Lacus viverra vitae congue eu consequat ac felis donec et. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. Aliquam faucibus purus in massa. Pulvinar elementum integer enim neque volutpat ac tincidunt vitae semper. Quis eleifend quam adipiscing vitae proin. Neque viverra justo nec ultrices dui sapien eget mi proin. Cursus risus at ultrices mi tempus. Vitae proin sagittis nisl rhoncus mattis. Tristique senectus et netus et malesuada fames ac. Elementum sagittis vitae et leo duis ut diam. Porttitor rhoncus dolor purus non enim. Purus in massa tempor nec feugiat nisl pretium fusce id. Habitasse platea dictumst quisque sagittis purus sit amet volutpat. Eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Proin sagittis nisl rhoncus mattis. Urna porttitor rhoncus dolor purus non enim praesent. Aliquet eget sit amet tellus cras.',
+        commentNumber: 67,
     },
     {
         threadID: 'gsfsesefse',
@@ -362,6 +367,7 @@ export const threads = [
         dateCreated: '',
         timePosted: new Date(2022, 6, 28, 12, 25, 7), 
         textBody: 'Sed augue lacus viverra vitae congue eu consequat. Lacus viverra vitae congue eu consequat ac felis donec et. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. Aliquam faucibus purus in massa. Pulvinar elementum integer enim neque volutpat ac tincidunt vitae semper. Quis eleifend quam adipiscing vitae proin. Neque viverra justo nec ultrices dui sapien eget mi proin. Cursus risus at ultrices mi tempus. Vitae proin sagittis nisl rhoncus mattis. Tristique senectus et netus et malesuada fames ac. Elementum sagittis vitae et leo duis ut diam. Porttitor rhoncus dolor purus non enim. Purus in massa tempor nec feugiat nisl pretium fusce id. Habitasse platea dictumst quisque sagittis purus sit amet volutpat. Eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Proin sagittis nisl rhoncus mattis. Urna porttitor rhoncus dolor purus non enim praesent. Aliquet eget sit amet tellus cras.',
+        commentNumber: 14,
     },
     {
         threadID: 'werbcbcvb',
@@ -381,6 +387,7 @@ export const threads = [
         dateCreated: '',
         timePosted: new Date(2022, 6, 27, 14, 39, 7), 
         textBody: 'Sed augue lacus viverra vitae congue eu consequat. Lacus viverra vitae congue eu consequat ac felis donec et. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. Aliquam faucibus purus in massa. Pulvinar elementum integer enim neque volutpat ac tincidunt vitae semper. Quis eleifend quam adipiscing vitae proin. Neque viverra justo nec ultrices dui sapien eget mi proin. Cursus risus at ultrices mi tempus. Vitae proin sagittis nisl rhoncus mattis. Tristique senectus et netus et malesuada fames ac. Elementum sagittis vitae et leo duis ut diam. Porttitor rhoncus dolor purus non enim. Purus in massa tempor nec feugiat nisl pretium fusce id. Habitasse platea dictumst quisque sagittis purus sit amet volutpat. Eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Proin sagittis nisl rhoncus mattis. Urna porttitor rhoncus dolor purus non enim praesent. Aliquet eget sit amet tellus cras.',
+        commentNumber: 41,
     },
     {
         threadID: 'myvbrtec',
@@ -400,6 +407,7 @@ export const threads = [
         dateCreated: '',
         timePosted: new Date(2022, 6, 26, 14, 39, 7), 
         textBody: 'Sed augue lacus viverra vitae congue eu consequat. Lacus viverra vitae congue eu consequat ac felis donec et. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. Aliquam faucibus purus in massa. Pulvinar elementum integer enim neque volutpat ac tincidunt vitae semper. Quis eleifend quam adipiscing vitae proin. Neque viverra justo nec ultrices dui sapien eget mi proin. Cursus risus at ultrices mi tempus. Vitae proin sagittis nisl rhoncus mattis. Tristique senectus et netus et malesuada fames ac. Elementum sagittis vitae et leo duis ut diam. Porttitor rhoncus dolor purus non enim. Purus in massa tempor nec feugiat nisl pretium fusce id. Habitasse platea dictumst quisque sagittis purus sit amet volutpat. Eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Proin sagittis nisl rhoncus mattis. Urna porttitor rhoncus dolor purus non enim praesent. Aliquet eget sit amet tellus cras.',
+        commentNumber: 43,
     },
     {
         threadID: 'rnvnvbfdgrdg',
@@ -419,6 +427,7 @@ export const threads = [
         dateCreated: '',
         timePosted: new Date(2022, 6, 30, 10, 45, 7), 
         textBody: 'Sed augue lacus viverra vitae congue eu consequat. Lacus viverra vitae congue eu consequat ac felis donec et. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. Aliquam faucibus purus in massa. Pulvinar elementum integer enim neque volutpat ac tincidunt vitae semper. Quis eleifend quam adipiscing vitae proin. Neque viverra justo nec ultrices dui sapien eget mi proin. Cursus risus at ultrices mi tempus. Vitae proin sagittis nisl rhoncus mattis. Tristique senectus et netus et malesuada fames ac. Elementum sagittis vitae et leo duis ut diam. Porttitor rhoncus dolor purus non enim. Purus in massa tempor nec feugiat nisl pretium fusce id. Habitasse platea dictumst quisque sagittis purus sit amet volutpat. Eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Proin sagittis nisl rhoncus mattis. Urna porttitor rhoncus dolor purus non enim praesent. Aliquet eget sit amet tellus cras.',
+        commentNumber: 71,
     },
 ]
 
@@ -511,9 +520,9 @@ export const SampleCommunity = [
         communityTitle: 'funny',
         communityID: 'NHKGjwewr',
         communityImage: FunnyLogo, 
-        members: 42000000,
+        members: 5000,
         customNamedMembers: 'jokers', 
-        onlineMembers: 42900,
+        onlineMembers: 429,
         dateCreated: "2008-01-25",
         description: "Welcome to r/Funny, Reddit's largest humour depository.",
         communityTheme: {
@@ -576,9 +585,9 @@ export const SampleCommunity = [
         communityTitle: 'jokes',
         communityID: 'Pkndhksdhf',
         communityImage: FunnyLogo,
-        members: 42000000,
+        members: 200,
         customNamedMembers: 'jokers',
-        onlineMembers: 42900,
+        onlineMembers: 120,
         dateCreated: "2008-01-25",
         description: "Welcome to r/Jokes, Reddit's largest humor depository.",
         communityTheme: {
@@ -641,9 +650,9 @@ export const SampleCommunity = [
         communityTitle: 'ContagiousLaughter',
         communityID: 'OPyucjde',
         communityImage: FunnyLogo,
-        members: 42000000,
+        members: 303,
         customNamedMembers: 'jokers',
-        onlineMembers: 42900,
+        onlineMembers: 4,
         dateCreated: "2008-01-25",
         description: "Welcome to r/ContagiousLaughter, Reddit's largest humour depository.",
         communityTheme: {
@@ -706,9 +715,9 @@ export const SampleCommunity = [
         communityTitle: 'Amusing',
         communityID: 'pganselrk',
         communityImage: FunnyLogo,
-        members: 42000000,
+        members: 4200,
         customNamedMembers: 'amusers',
-        onlineMembers: 42900,
+        onlineMembers: 429,
         dateCreated: "2008-01-25",
         description: "Welcome to r/Amusing, Reddit's largest humour depository.",
         communityTheme: {
@@ -771,9 +780,9 @@ export const SampleCommunity = [
         communityTitle: 'hilarious',
         communityID: 'bwkerwkje',
         communityImage: FunnyLogo,
-        members: 42000000,
+        members: 3200,
         customNamedMembers: 'jokers',
-        onlineMembers: 42900,
+        onlineMembers: 429,
         dateCreated: "2008-01-25",
         description: "Welcome to r/Hilaious, Reddit's largest humour depository.",
         communityTheme: {
@@ -836,7 +845,7 @@ export const SampleCommunity = [
         communityTitle: 'LosAngles',
         communityID: 'LOSAngeleserwtwer',
         communityImage: LosAnglesCommunityLogo,
-        members: 605451,
+        members: 6451,
         customNamedMembers: 'LA natives',
         onlineMembers: 1800,
         dateCreated: "2008-04-14",

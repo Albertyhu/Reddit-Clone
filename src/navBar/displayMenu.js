@@ -61,6 +61,7 @@ const MainContainer = styled.div`
     position: fixed; 
     min-width: 255px;
     font-family: "Verdana";
+    z-index: 99;
     background-color: ${props => props.theme.PanelBackgroundColor};    
     & > * {
         font-size: 15px;

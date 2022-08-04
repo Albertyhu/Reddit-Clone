@@ -7,7 +7,7 @@ const RenderPostFooter = props => {
     const { commentNumber } = props; 
     return (
         <Container>
-            <Button><FaRegCommentAlt style={IconStyle} /><p>{commentNumber ? commentNumber : null}Comments</p></Button>
+            <Button><FaRegCommentAlt style={IconStyle} /><p>{commentNumber ? commentNumber : null} Comments</p></Button>
             <Button><IoIosShareAlt style={IconStyle} /><p>Share</p></Button>
             <Button><IoBookmarkOutline style={IconStyle} /><p>Save</p></Button>
             <Dots />

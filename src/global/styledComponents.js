@@ -9,7 +9,6 @@ width: 100%;
 background-color: ${props => props.theme.MainBackgroundColor || "#e6e6e6"};
 @media screen and (max-width: 540px){
 display: block; 
-
 }
 `
 //justify-self with the value flex-end placed the element to the right against the wall of the grid area  
@@ -32,6 +31,9 @@ width: 312px;
 margin-top: 20px;
 @media screen and (max-width: 540px){
     display: none; 
+}
+&#FeedSideBar{
+    position: relative;
 }
 `
 export const Title = styled.h1`

@@ -2,11 +2,16 @@ import React, { useState, useContext } from 'react';
 import RenderThread from './thread/renderThread.js'; 
 import RenderNavBar from './navBar/navBar.js'; 
 import { AppContext } from './components/contextItem.js'; 
-import { sampleUser, threads } from './helperTools/dummyData.js'; 
-import RenderFeed from './feed/renderFeed.js'; 
+//to be changed 
+import { sampleUser, threads, SampleCommunity } from './helperTools/dummyData.js'; 
+import RenderFeed from './feed/renderFeed.js';
+import { gatherTopCommunity } from './components/communityMethods.js'; 
 
 function App() {
     const [normalMode, setNormal] = useState(true)
+
+    //To be adjusted once Firebase is implemented 
+    const [topCommunities, setTopCommunities] = useState(gatherTopCommunity(SampleCommunity, 5))
 
     const DefaultTheme = {
         //PanelBackgroundColor applies to the navbar 
@@ -59,7 +64,10 @@ function App() {
         setNormal,
         toggleDisplayThemes: () => { setNormal(prev => !prev) },
         userData: sampleUser[0], 
+        //returns array of the top 5 communities 
+        topCommunities, 
     }
+
     return (
         <AppContext.Provider value={context}>
             <RenderNavBar />

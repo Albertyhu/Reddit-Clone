@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\asset",
-    "\\src\\asset\\icons",
+    "\\src\\asset\\images",
     "\\src\\feed",
-    "\\src\\global",
     "\\src\\navBar",
-    "\\src\\screens",
     "\\src\\searchBar",
+    "\\src\\sort",
+    "\\src\\test",
     "\\src\\thread"
   ],
-  "SelectedNode": "\\src\\navBar\\displayMenu.js",
+  "SelectedNode": "\\src\\App.js",
   "PreviewInSolutionExplorer": false
 }

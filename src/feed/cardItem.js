@@ -25,6 +25,7 @@ const RenderCardItem = props => {
         awards, 
         timePosted, 
         votes, 
+        commentNumber, 
     } = props; 
 
 
@@ -91,7 +92,7 @@ const RenderCardItem = props => {
                         </CommunityTitleWrapper>
                         <ThreadTitle>{title}</ThreadTitle>
                         <RenderBodyText />
-                        <RenderPostFooter />
+                        <RenderPostFooter commentNumber={commentNumber} />
                     </MainColumn>
                 </MainContainer>
             </ThemeProvider>
@@ -107,8 +108,7 @@ const MainContainer = styled.div`
     background-color: ${props => props.theme.PanelBackgroundColor}; 
     color: ${props => props.theme.TextColor}; 
     margin: 10px auto;
-
-    font-family: "Sans-Serif";
+    font-family: "Verdana";
     border-radius: 5px;
 ` 
 
@@ -153,13 +153,13 @@ grid-template-columns: 90% 10%;
 const ComunityTitleSecondaryWrapper = styled.div`
         display: flex;
     & > * {
-
+        font-size: 12px;
         margin: auto 5px; 
     }
 `
 
 const CommunityTitle = styled.div`
-    font-size: 15px;
+    font-size: 12px;
     font-weight: bold; 
     color: ${props => props.theme.TextColor || "#000000"}; 
 `
@@ -173,7 +173,8 @@ const TimePosted = styled.div`
 `
 
 const ThreadTitle = styled.div`
-    font-size: 25px; 
+    font-size: 18px;
+    font-weight: 500;
     color: ${props => props.theme.TextColor || "#000000"};
 `
 

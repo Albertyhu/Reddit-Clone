@@ -1,6 +1,7 @@
 import { comments } from '../helperTools/dummyData.js'; 
 import { SortByTop, SortByControversial, SortByNew, SortByOld  } from '../sort/sortMethods.js'; 
 import { formatTotalNumber } from '../thread/sidebar.js'; 
+import { SampleCommunity } from '../helperTools/dummyData.js'; 
 
 //this will be outdated once Firebase is applied 
 describe('Test SortByTop funciton', () => {
@@ -278,4 +279,42 @@ describe("Test the modified function RenderTimePosted", () => {
         const message = RenderTimePosted(DateB, currentTime);
         expect(message).toEqual("2 hours ago")
     })
+})
+
+
+const gatherTopCommunity = (community, numOfTopCom) => {
+    var Copy = community; 
+    const Arr = [];
+
+    const FindLargest = () => {
+        var Largest = Copy[0];
+        var largestInd = 0
+        Copy.forEach((item, ind) => {
+            if (Largest.members < item.members) {
+                Largest = item; 
+                largestInd = ind; 
+            }
+        })
+           Copy.splice(largestInd, 1)
+          return Largest
+        } 
+
+        while (Arr.length < numOfTopCom) {
+            var Largest = FindLargest(Copy)
+            var obj = {
+                title: Largest.communityTitle,
+                members: Largest.members,
+            }
+            Arr.push(obj) 
+        }
+    
+    return Arr;
+}
+
+describe("Text the functionality of gatherTopCommunity ", () => {
+    it("Test it with current dummy data", () => {
+        var topCom = gatherTopCommunity(SampleCommunity, 5)
+        console.log(topCom)
+    })
+
 })
