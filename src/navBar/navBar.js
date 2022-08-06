@@ -59,7 +59,7 @@ const RenderNavBar = props => {
                     onClick={ToHome}
                 />
                 {defaultMenu ?
-                    <>{userData ?
+                    <>{!userData ?
                         <MenuComponent onClick={toggleMenu}>
                             <MenuShell>
                                 <Logo src={Silhouette} id="silhouette" />

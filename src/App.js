@@ -1,4 +1,4 @@
-import React, { useState} from 'react'; 
+import React, { useState, useRef} from 'react'; 
 import RenderThread from './thread/renderThread.js'; 
 import RenderNavBar from './navBar/navBar.js'; 
 import { AppContext } from './components/contextItem.js'; 
@@ -9,8 +9,42 @@ import { gatherTopCommunity } from './components/communityMethods.js';
 import { BrowserRouter, Routes, Route} from "react-router-dom";
 import Home from './screens/home.js'; 
 import RenderCommunity from './screens/community.js';
+import RenderGuestPanel from './guest/GuestPanel.js'; 
+/*
+import { onAuthStateChanged, getAuth } from 'firebase/auth'; 
+const auth = getAuth(); 
 
+function getUserName() {
+    return auth.currentUser.displayName;
+}*/
 function App() {
+    /*
+    function initFirebaseAuth() {
+        // Listen to auth state changes.
+        onAuthStateChanged(auth, authStateObserver);
+    }*/
+
+
+    const [currrentUser, setCurrentUser] = useState(null); 
+
+    //code for guest panel 
+    const [displayGuestPanel, setGuestPanel] = useState(false);
+
+    //if true, the guest panel prompts the user to sign in
+    //if false, the guest panel prompts the user to sign up 
+    const [displaySignIn, setDisplaySignIn] = useState(false)
+
+    const GuestPanelRef = useRef(); 
+
+    /*
+    function authStateObserver(user) {
+        if (user) { // User is signed in!
+            setCurrentUser(getUserName())
+        } else { // User is signed out!
+            setCurrentUser('')
+        }
+    }*/
+
     const [normalMode, setNormal] = useState(true)
 
     //To be adjusted once Firebase is implemented 
@@ -41,6 +75,8 @@ function App() {
         LinkColor: "blue",
         CardBorderHover: "1px solid #898989",
         CommunityHeaderBannerBackgroundC: "#33a8ff",
+        ThirdPartyButtonTextC: "#5a5e60", 
+        ThirdPartyButtonBorderC: "#dadce0", 
     }
     const DarkTheme = {
         PanelBackgroundColor: "#1a1a1b",
@@ -66,6 +102,8 @@ function App() {
         LinkColor: "#ffffff",
         CardBorderHover: "1px solid #ffffff",
         CommunityHeaderBannerBackgroundC: "#272729",
+        ThirdPartyButtonTextC: "#A8AEB1", 
+        ThirdPartyButtonBorderC: "#dadce0", 
     }
 
     const context = {
@@ -77,14 +115,25 @@ function App() {
         userData: sampleUser[0], 
         //returns array of the top 5 communities 
         topCommunities, 
+        openLogIn: () => {
+            setGuestPanel(true)
+            setDisplaySignIn(true); 
+        },
+        openSignUp: () => {
+            setGuestPanel(true)
+            setDisplaySignIn(false);
+        },
+        closeGuestPanel: () => setGuestPanel(false),
+        GuestPanelRef, 
+        displaySignIn, 
     }
 
     return (
         <AppContext.Provider value={context}>
             <BrowserRouter>
             <RenderNavBar />
+                {displayGuestPanel && <RenderGuestPanel />}
             <div id="EmptyDiv" style={{ height: "50px", width: "100%", resize: "none", }}></div>
-            
                 <Routes>
                     <Route
                         path="/"

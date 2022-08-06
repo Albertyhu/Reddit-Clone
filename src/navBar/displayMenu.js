@@ -7,6 +7,7 @@ import RenderSwitchButton from '../components/switchButton.js';
 import { GrView } from 'react-icons/gr';
 import { FiEye } from 'react-icons/fi';
 import { IconContext } from 'react-icons'; 
+import { IoMdExit } from 'react-icons/io';
 
 const RenderMenu = props => {
     const { normalMode, toggleDisplayThemes, DefaultTheme, DarkTheme } = useContext(AppContext)
@@ -45,6 +46,15 @@ const RenderMenu = props => {
                             onChangeHandler={toggleDisplayThemes}
                         />
                     </MenuItem>
+                    <MenuItem className = "topBorder">
+                        <LeftColumn>
+                            <IoMdExit
+                                style={{ color: normalMode ? "#848787" : "#D6D6D6" }}
+                                />
+                        </LeftColumn>
+                        <>Log Out</>
+                        <EmptyDiv />
+                    </MenuItem>
                 </MainContainer>
              </IconContext.Provider>
         </ThemeProvider>
@@ -82,4 +92,8 @@ const LeftColumn = styled.div`
 
 const MenuItem = styled.div`
     color: ${props => props.theme.TextColor}; 
+&.topBorder{
+    border-top: 1px solid ${props => props.theme.BorderColor}; 
+    padding: 5px 0px;
+}
 `
