@@ -1,6 +1,10 @@
 import NewsLogo from './assets/newsCommunity.png'; 
 import FunnyLogo from './assets/funnyCommunity.png';
 import LosAnglesCommunityLogo from './assets/LosAnglesCommunityLogo.png';
+import PeekingOver from './assets/PeekingOver.jpg'; 
+import LosAngelesBanner from './assets/LosAngeles.jpeg'
+import GamingBanner from './assets/GamingBanner.png'; 
+import GamingLogo from './assets/GamingLogo.png'; 
 
 const sampleVote = [{
     upvote: true, 
@@ -439,18 +443,11 @@ export const SampleCommunity = [
         members: 12000, 
         customNamedMembers: '', 
         onlineMembers: 150, 
-        dateCreated: "2008-01-25", 
-        CommunityTheme: {
-            headerBackgroundColor: "#1c1c38",
-            headerTextColor: "#ffffff",
-            ButtonBackgroundColor: "#ffffff",
-            ButtonBackgroundHoverColor: "#ececec",
-            ButtonTextColor: "#1c1c38", 
-            ButtonBorder: "1px solid #1c1c38", 
-            InvertedButtonBackgroundColor: "#1c1c38",
-            InvertedButtonBackgroundHoverColor: "#34346d", 
-            InvertedButtonTextColor: "#ffffff",
-            panelBackgroudColor: "#DAE0E6", 
+        dateCreated: "2008-01-25",
+        communityHeaderTitle: "News on Reddit", 
+        communityTheme: {
+            banner: '',
+            background: '', 
         },
         description: "The place for news articles about current events in the United States and the rest of the world. Discuss it all here.",
         rules: [
@@ -525,8 +522,21 @@ export const SampleCommunity = [
         onlineMembers: 429,
         dateCreated: "2008-01-25",
         description: "Welcome to r/Funny, Reddit's largest humour depository.",
+        communityHeaderTitle: "Funny", 
         communityTheme: {
-
+            PanelBackgroundColor: "#1c1c38",
+            TextColor: "#ffffff",
+            ButtonBackgroundC: "#ffffff",
+            ButtonBackgroundCHover: "#ececec",
+            ButtonTextC: "#1c1c38",
+            ButtonBorder: "1px solid #1c1c38",
+            InvertedButtonBackgroundC: "#1c1c38",
+            InvertedButtonBackgroundCHover: "#34346d",
+            InvertedButtonTextC: "#ffffff",
+            MessageButtonBorder: "1px solid #ffffff", 
+            LinkColor: "#ffffff",
+            banner: PeekingOver,
+            HeaderBackground: '', 
         }, 
         rules: [
             {
@@ -579,7 +589,8 @@ export const SampleCommunity = [
                 userName: "CrowdSource",
                 userID: "fawsgsegsfsef",
             },
-        ]
+        ],
+
     },
     {
         communityTitle: 'jokes',
@@ -590,8 +601,21 @@ export const SampleCommunity = [
         onlineMembers: 120,
         dateCreated: "2008-01-25",
         description: "Welcome to r/Jokes, Reddit's largest humor depository.",
+        communityHeaderTitle: "Jokes: A place of wit", 
         communityTheme: {
-
+            PanelBackgroundColor: "#1c1c38",
+            TextColor: "#ffffff",
+            ButtonBackgroundC: "#ffffff",
+            ButtonBackgroundCHover: "#ececec",
+            ButtonTextC: "#1c1c38",
+            ButtonBorder: "1px solid #1c1c38",
+            InvertedButtonBackgroundC: "#1c1c38",
+            InvertedButtonBackgroundCHover: "#34346d",
+            InvertedButtonTextC: "#ffffff",
+            MessageButtonBorder: "1px solid #ffffff",
+            LinkColor: "#ffffff",
+            banner: PeekingOver,
+            HeaderBackground: '', 
         },
         rules: [
             {
@@ -647,16 +671,29 @@ export const SampleCommunity = [
         ]
     },
     {
-        communityTitle: 'ContagiousLaughter',
+        communityTitle: 'Worldnews',
         communityID: 'OPyucjde',
-        communityImage: FunnyLogo,
-        members: 303,
-        customNamedMembers: 'jokers',
-        onlineMembers: 4,
+        communityImage: null,
+        members: 1000,
+        customNamedMembers: null,
+        onlineMembers: 167,
         dateCreated: "2008-01-25",
-        description: "Welcome to r/ContagiousLaughter, Reddit's largest humour depository.",
+        description: "Welcome to r/WorldNews. Stay up to date with what is going on in the world.",
+        communityHeaderTitle: "World News",
         communityTheme: {
-
+            PanelBackgroundColor: "#1c1c38",
+            TextColor: "#ffffff",
+            ButtonBackgroundC: "#ffffff",
+            ButtonBackgroundCHover: "#ececec",
+            ButtonTextC: "#1c1c38",
+            ButtonBorder: "1px solid #1c1c38",
+            InvertedButtonBackgroundC: "#1c1c38",
+            InvertedButtonBackgroundCHover: "#34346d",
+            InvertedButtonTextC: "#ffffff",
+            MessageButtonBorder: "1px solid #ffffff",
+            LinkColor: "#ffffff",
+            banner: "https://styles.redditmedia.com/t5_2qh13/styles/bannerBackgroundImage_5q0f5lsk6pu01.png?width=4000&s=e458bb009e1685c46f945a93af462cc2e252a6d6",
+            HeaderBackground: '', 
         },
         rules: [
             {
@@ -712,16 +749,30 @@ export const SampleCommunity = [
         ]
     },
     {
-        communityTitle: 'Amusing',
+        communityTitle: 'Gaming',
         communityID: 'pganselrk',
-        communityImage: FunnyLogo,
-        members: 4200,
-        customNamedMembers: 'amusers',
+        communityImage: GamingLogo,
+        members: 9230,
+        customNamedMembers: 'Gamers',
         onlineMembers: 429,
         dateCreated: "2008-01-25",
-        description: "Welcome to r/Amusing, Reddit's largest humour depository.",
+        description: "Welcome to r/Gaming, Reddit's largest gaming community.",
+        communityHeaderTitle: "Gaming",
         communityTheme: {
-
+            PanelBackgroundColor: "#1c1c38",
+            TextColor: "#ffffff",
+            ButtonBackgroundC: "#ffffff",
+            ButtonBackgroundCHover: "#ececec",
+            ButtonTextC: "#1c1c38",
+            ButtonBorder: "1px solid #1c1c38",
+            InvertedButtonBackgroundC: "#1c1c38",
+            InvertedButtonBackgroundCHover: "#34346d",
+            InvertedButtonTextC: "#ffffff",
+            MessageButtonBorder: "1px solid #ffffff",
+            LinkColor: "#ffffff",
+            HeaderBackground: '',
+            banner: GamingBanner,
+            bannerHeight: null, 
         },
         rules: [
             {
@@ -780,13 +831,26 @@ export const SampleCommunity = [
         communityTitle: 'hilarious',
         communityID: 'bwkerwkje',
         communityImage: FunnyLogo,
-        members: 3200,
+        members: 320,
         customNamedMembers: 'jokers',
-        onlineMembers: 429,
+        onlineMembers: 29,
         dateCreated: "2008-01-25",
         description: "Welcome to r/Hilaious, Reddit's largest humour depository.",
         communityTheme: {
-
+            PanelBackgroundColor: "#1c1c38",
+            TextColor: "#ffffff",
+            ButtonBackgroundC: "#ffffff",
+            ButtonBackgroundCHover: "#ececec",
+            ButtonTextC: "#1c1c38",
+            ButtonBorder: "1px solid #1c1c38",
+            InvertedButtonBackgroundC: "#1c1c38",
+            InvertedButtonBackgroundCHover: "#34346d",
+            InvertedButtonTextC: "#ffffff",
+            MessageButtonBorder: "1px solid #ffffff",
+            LinkColor: "#ffffff",
+            HeaderBackground: '',
+            banner: LosAngelesBanner,
+            bannerHeight: null, 
         },
         rules: [
             {
@@ -851,7 +915,20 @@ export const SampleCommunity = [
         dateCreated: "2008-04-14",
         description: "The official subreddit of Los Angeles, California! The international epicenter of entertainment and home of the Dodgers, Lakers, Kings, Rams, Giltinis, Sparks, LAFC, Clippers, Galaxy, Angel City FC, and Chargers! We also have wildfires, earthquakes, movie stars, television studios, music, world-class food, beaches, mountains, traffic jams, museums, theme parks, and the most beautiful Redditors of all time. This is LA!",
         communityTheme: {
-
+            PanelBackgroundColor: "#1c1c38",
+            TextColor: "#ffffff",
+            ButtonBackgroundC: "#ffffff",
+            ButtonBackgroundCHover: "#ececec",
+            ButtonTextC: "#1c1c38",
+            ButtonBorder: "1px solid #1c1c38",
+            InvertedButtonBackgroundC: "#1c1c38",
+            InvertedButtonBackgroundCHover: "#34346d",
+            InvertedButtonTextC: "#ffffff",
+            MessageButtonBorder: "1px solid #ffffff",
+            LinkColor: "#ffffff",
+            HeaderBackground: '', 
+            banner: LosAngelesBanner, 
+            bannerHeight: null, 
         },
         rules: [
             {

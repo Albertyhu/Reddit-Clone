@@ -7,8 +7,10 @@ grid-template-columns: 64% 36%;
 grid-column-gap: 24px;
 width: 100%; 
 background-color: ${props => props.theme.MainBackgroundColor || "#e6e6e6"};
+padding-bottom: 10px;
 @media screen and (max-width: 540px){
-display: block; 
+    display: inline-table; 
+    grid-template-columns: 100%; 
 }
 `
 //justify-self with the value flex-end placed the element to the right against the wall of the grid area  
@@ -23,6 +25,7 @@ export const PanelContainer = styled.div`
 }
 @media screen and (max-width: 540px){
     width: 100%; 
+    
 }
 `
 

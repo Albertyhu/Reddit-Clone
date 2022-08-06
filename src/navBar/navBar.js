@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react'
+import React, {useContext, useState, useEffect, useCallback} from 'react'
 import styled, { ThemeProvider } from 'styled-components'; 
 import { RedditLogo, DarkRedditLogo, Silhouette } from '../asset/images';
 import { AppContext } from '../components/contextItem.js'; 
@@ -7,6 +7,8 @@ import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import RenderSignInComponent from './signInComponent.js'; 
 import RenderMenu from './displayMenu.js'; 
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { useNavigate } from 'react-router-dom'; 
+import '../global/myStyle.css'; 
 
 const RenderNavBar = props => {
     const {
@@ -45,10 +47,17 @@ const RenderNavBar = props => {
     useEffect(() => {
         return () => { window.removeEventListener('resize', handleResize)}
     }, [])
+
+    //Needs to be updated when home address in package.json is updated 
+    const navigate = useNavigate();
+    const ToHome = useCallback(() => navigate('./', {}), [navigate])
     return (
         <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
             <MainContainer defaultMenu={defaultMenu}>
-                <Logo src={normalMode && defaultMenu ? RedditLogo : DarkRedditLogo} /> 
+                <Logo
+                    src={normalMode && defaultMenu ? RedditLogo : DarkRedditLogo}
+                    onClick={ToHome}
+                />
                 {defaultMenu ?
                     <>{userData ?
                         <MenuComponent onClick={toggleMenu}>
@@ -84,7 +93,6 @@ export default RenderNavBar;
 const MainContainer = styled.div`
     width: 100%; 
     height: 50px; 
-    resize: none; 
     position: fixed;    
     background-color: ${props => { return props.defaultMenu ? props.theme.PanelBackgroundColor : "#1d2535" }}; 
     color: ${props => { return props.defaultMenu ? props.theme.TextColor : "#ffffff" }};
@@ -103,6 +111,10 @@ const Logo = styled.img`
         width: 25px;
         color: ${props => props.theme.SoftTextColor}
     }
+`
+
+const LogoWrapper = styled.span`
+
 `
 
 const MenuComponent = styled.div`
@@ -145,3 +157,7 @@ const BurgerMenuWrapper = styled.div`
     cursor: pointer;
 }
 `
+
+const LinkStyle = {
+    margin: "auto 0px",
+}

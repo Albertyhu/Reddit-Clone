@@ -53,3 +53,8 @@ as RenderCardItem.
 file(s): 
     renderThread.js 
  Need to incorporate firebase into the voting system.
+
+ 4.) /screens/community.js; 
+
+ 5.) /navBar/navBar.js; 
+ Need to update ToHome function 

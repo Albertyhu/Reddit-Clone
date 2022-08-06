@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'; 
+import React, { useState} from 'react'; 
 import RenderThread from './thread/renderThread.js'; 
 import RenderNavBar from './navBar/navBar.js'; 
 import { AppContext } from './components/contextItem.js'; 
@@ -6,6 +6,9 @@ import { AppContext } from './components/contextItem.js';
 import { sampleUser, threads, SampleCommunity } from './helperTools/dummyData.js'; 
 import RenderFeed from './feed/renderFeed.js';
 import { gatherTopCommunity } from './components/communityMethods.js'; 
+import { BrowserRouter, Routes, Route} from "react-router-dom";
+import Home from './screens/home.js'; 
+import RenderCommunity from './screens/community.js';
 
 function App() {
     const [normalMode, setNormal] = useState(true)
@@ -34,6 +37,10 @@ function App() {
         InvertedButtonBorder: "1px solid #0079d3",
         BorderColor: "#e8e8e8",
         CardTextLinearGradColor: "linear-gradient(to bottom, rgba(255,255,255, 0) 20%, rgba(255,255,255, 1) 80%)", 
+        MessageButtonBorder: "1px solid blue",
+        LinkColor: "blue",
+        CardBorderHover: "1px solid #898989",
+        CommunityHeaderBannerBackgroundC: "#33a8ff",
     }
     const DarkTheme = {
         PanelBackgroundColor: "#1a1a1b",
@@ -55,6 +62,10 @@ function App() {
         InvertedButtonBorder: "1px solid #d7dadc",
         BorderColor: "#343536",
         CardTextLinearGradColor: "linear-gradient(to bottom, rgba(26,26,27, 0) 20%, rgba(26,26,27, 1) 80%)", 
+        MessageButtonBorder: "1px solid #ffffff",
+        LinkColor: "#ffffff",
+        CardBorderHover: "1px solid #ffffff",
+        CommunityHeaderBannerBackgroundC: "#272729",
     }
 
     const context = {
@@ -70,10 +81,25 @@ function App() {
 
     return (
         <AppContext.Provider value={context}>
+            <BrowserRouter>
             <RenderNavBar />
             <div id="EmptyDiv" style={{ height: "50px", width: "100%", resize: "none", }}></div>
-            {/*    <RenderThread threadID='SGASEFxgs423' /> */}
-            <RenderFeed data={threads} />
+            
+                <Routes>
+                    <Route
+                        path="/"
+                        element={<Home /> }
+                    />
+                    <Route
+                        path='/community'
+                        element={<RenderCommunity />}
+                    />
+                    <Route
+                        path='/thread'
+                        element={<RenderThread />}
+                    />
+                </Routes>
+            </BrowserRouter>
         </AppContext.Provider>
   );
 }

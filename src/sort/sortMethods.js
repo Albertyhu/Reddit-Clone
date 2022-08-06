@@ -120,11 +120,11 @@ export function SortArray(arr, sortMethod) {
             sortedArr = SortByControversial(arr);
             return sortedArr;
         }
-        case "Newest": {
+        case "New": {
             sortedArr = SortByNew(arr);
             return sortedArr;
         }
-        case "Oldest": {
+        case "Old": {
             sortedArr = SortByOld(arr); 
             return sortedArr;
         }

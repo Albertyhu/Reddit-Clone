@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'; 
+import React, { useContext, useCallback, useState } from 'react'; 
 import { ThreadContext, AppContext } from '../components/contextItem.js'
 import { RenderVerticalVoting } from '../components/votingComponent.js'; 
 import styled, { ThemeProvider } from 'styled-components'; 
@@ -7,15 +7,25 @@ import {
 } from '../global/styledComponents.js'; 
 import RenderRIcon from '../asset/icons/r_icon.js'; 
 import RenderPostFooter from './postFooter.js'; 
+import { useNavigate } from 'react-router-dom'; 
 
 //This functional component renders the main body of the post. 
 const RenderMainPost = props => {
-    const { ...threadData } = useContext(ThreadContext); 
+    const { ...threadData } = useContext(ThreadContext);
+    const [comID, setComID] = useState(threadData.communityID)
     const {
         normalMode, 
         DefaultTheme,
         DarkTheme, 
     } = useContext(AppContext);
+
+    const navigate = useNavigate(); 
+    console.log("threadData.communityID: " + threadData.communityID)
+    const ToCommunity = useCallback(() => navigate('../community', {
+        state: {
+            communityID: threadData.communityID, 
+        },
+    }), [navigate, threadData.communityID])
     return (
         <ThemeProvider theme={normalMode? DefaultTheme : DarkTheme}>
         <Container>
@@ -23,7 +33,7 @@ const RenderMainPost = props => {
             <InnerCont>
                 <Header>
                     <RenderRIcon /> 
-                    <Community>r/{threadData.community}</Community>
+                        <Community onClick={ToCommunity}>r/{threadData.community}</Community>
                     <AuthorInfo> &#x2022; Posted by <span>u/{threadData.authorName}</span></AuthorInfo>
                     <TimePosted>4 hours ago</TimePosted>
                 </Header>
@@ -69,6 +79,7 @@ const Header = styled.div`
 
 const Community = styled.div`
     font-weight: bold; 
+    cursor: pointer;
     color: ${props => props.theme.TextColor};       
 `
 const AuthorInfo = styled.div`

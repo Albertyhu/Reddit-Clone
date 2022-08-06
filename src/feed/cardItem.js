@@ -7,6 +7,7 @@ import { Divider } from '../global/styledComponents.js';
 import RenderRIcon from '../asset/icons/r_icon.js'; 
 import { SampleCommunity } from '../helperTools/dummyData.js';
 import { RenderTimePosted } from '../components/renderTimePosted.js'; 
+import { useNavigate } from "react-router-dom";
 
 const RenderCardItem = props => {
     const { normalMode,
@@ -17,6 +18,7 @@ const RenderCardItem = props => {
     const {
         community, 
         communityID, 
+        threadID,
         title,
         flair, 
         authorName, 
@@ -66,9 +68,21 @@ const RenderCardItem = props => {
 
     const RenderBodyText = useCallback(() => {
         return (
-            <BodyText><p>{textBody}</p></BodyText>
+            <BodyText onClick={ToThread}><p>{textBody}</p></BodyText>
         )
     }, []); 
+
+    const navigate = useNavigate(); 
+    const ToCommunity = useCallback(() => navigate('./community', {
+        state: {
+            communityID: communityID,
+        }}), [navigate])
+
+    const ToThread = useCallback(() => navigate('../thread', {
+        state: {
+            threadID: threadID, 
+        }
+    }), [navigate])
 
     return (
         <CardContext.Provider value={context}>
@@ -81,18 +95,18 @@ const RenderCardItem = props => {
                     </VotingColumn>
                     <MainColumn>
                         <CommunityTitleWrapper>
-                            <ComunityTitleSecondaryWrapper>
+                            <ComunityTitleSecondaryWrapper onClick={ToThread}>
                                     <RenderRIcon image={communityData ? communityData.communityImage : null} />
                                     <CommunityTitle>r/{community} </CommunityTitle>
                                     <span> &#x2022;</span>
                                     <Author>Posted by u/{authorName} </Author>
                                     <TimePosted> {RenderTimePosted(timePosted)}</TimePosted>
-                                </ComunityTitleSecondaryWrapper>
+                             </ComunityTitleSecondaryWrapper>
                             <Button>Join</Button>
                         </CommunityTitleWrapper>
-                        <ThreadTitle>{title}</ThreadTitle>
+                        <ThreadTitle onClick={ToThread} >{title}</ThreadTitle>
                         <RenderBodyText />
-                        <RenderPostFooter commentNumber={commentNumber} />
+                        <RenderPostFooter commentNumber={commentNumber} navigateFunction={ToThread} />
                     </MainColumn>
                 </MainContainer>
             </ThemeProvider>
@@ -110,6 +124,9 @@ const MainContainer = styled.div`
     margin: 10px auto;
     font-family: "Verdana";
     border-radius: 5px;
+    &:hover{
+        border: ${props => props.theme.CardBorderHover};
+}
 ` 
 
 const VotingColumn = styled.div`
@@ -119,6 +136,7 @@ const VotingColumn = styled.div`
 
 const MainColumn = styled.div`
     margin: 0 20px;
+    cursor: pointer;
 `
 
 const Button = styled.div`

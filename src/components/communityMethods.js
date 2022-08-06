@@ -19,6 +19,7 @@ export const gatherTopCommunity = (community, numOfTopCom) => {
         var obj = {
             communityTitle: Largest.communityTitle,
             communityImage: Largest.communityImage, 
+            communityID: Largest.communityID,
             members: Largest.members,
         }
         Arr.push(obj)
@@ -26,3 +27,4 @@ export const gatherTopCommunity = (community, numOfTopCom) => {
 
     return Arr;
 }
+

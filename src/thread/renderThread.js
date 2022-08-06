@@ -7,7 +7,6 @@ import {
     Title, 
 } from '../global/styledComponents.js'; 
 import { threads, comments, SampleCommunity } from '../helperTools/dummyData.js'; 
-import { RenderVerticalVoting } from '../components/votingComponent.js'; 
 import { ThreadContext, AppContext } from '../components/contextItem.js'; 
 import RenderMainPost from './renderMainPost.js'; 
 import RenderReplyTextArea from '../components/richTextEditor.js'; 
@@ -15,16 +14,18 @@ import styled, { ThemeProvider } from 'styled-components';
 import { RenderCommentSort } from '../sort/sortComponent.js'; 
 import RenderAllComments from './renderAllComments.js'; 
 import RenderSideBar from './sidebar.js'; 
+import { useLocation } from 'react-router-dom'; 
 
 const RenderThread = props => {
-    const { threadID } = props 
+    const location = useLocation();
+    const { threadID } = location.state; 
 
     //threadData stores the information about the individual thread
     //...such as the body of the text, the author's name, etc. 
     const [threadData, setThreadData] = useState(null)
 
-    //communityData stores information of the community that the thread belongs to
-    const [communityData, setCommunityData] = useState(null)
+    //community stores information of the community that the thread belongs to
+    const [community, setCommunityData] = useState(null)
 
     //commentArr stores all the comments that have the threadID
     const [commentArr, setCommentArr] = useState(comments.filter(elem => elem.threadID === threadID))
@@ -33,14 +34,19 @@ const RenderThread = props => {
     const [filterOption, setFilter] = useState("Top")
 
     //sortOptions is the available options for methods for sorting
-    //const sortOptions = ["Hot", "Top", "New", "Oldest"]
-    const sortOptions = ["Top", "Controversial", "Newest", "Oldest"]
+    const sortOptions = ["Top", "Controversial", "New", "Old"]
 
     //This part needs to change based on the user's voting history on the current thread
     const [upvoted, setUpvoted] = useState(false);
     const [downvoted, setDownvoted] = useState(false);
     const [upvoteNum, setUpvoteNum] = useState(0);
     const [downvoteNum, setDownvoteNum] = useState(0)
+
+    //For allowing the user to control whether or not they want the 
+    //...page to be displayed with the community theme. 
+    //This information will be passed to sidebar.js 
+    const [useCommunityTheme, setCommunityTheme] = useState(false);
+
 
     const context = {
         ...threadData, 
@@ -63,6 +69,10 @@ const RenderThread = props => {
         changeDownvoteNum: num => {
             setDownvoteNum(num)
         },
+        //passes all data of desired community 
+        ...community, 
+        useCommunityTheme,
+        toggleCommunityTheme: () => { setCommunityTheme(prev => !prev) }, 
     }
 
     useEffect(() => {
@@ -116,21 +126,8 @@ const RenderThread = props => {
                             }
                     </PanelContainer>
                     <SideBar id="ThreadSideBar">
-                        {communityData !== undefined && communityData !== null ?
-
-                            <RenderSideBar
-                                members={communityData.members}
-                                customNamedMembers={communityData.customNamedMembers}
-                                onlineMembers={communityData.onlineMembers}
-                                dateCreated={communityData.dateCreated}
-                                description={communityData.description}
-                                communityTitle={communityData.communityTitle}
-                                CommunityTheme={communityData.CommunityTheme}
-                                rules={communityData.rules}
-                                moderators={communityData.moderators}
-                                onThread={true}
-                                communityImage={communityData.communityImage}
-                            />
+                        {community !== undefined && community !== null ?
+                            <RenderSideBar contextItem={ThreadContext} />
                             : 
                             null
                             }

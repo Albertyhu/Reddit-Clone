@@ -14,3 +14,6 @@ export const AppContext = createContext();
 
 //Context item for CartItem 
 export const CardContext = createContext(); 
+
+//Context item for Community
+export const CommunityContext = createContext(); 

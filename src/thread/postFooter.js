@@ -4,14 +4,17 @@ import { IoIosShareAlt  } from 'react-icons/io';
 import { IoBookmarkOutline, IoEllipsisHorizontal } from "react-icons/io5";
 
 const RenderPostFooter = props => {
-    const { commentNumber } = props; 
+    const {
+        commentNumber,
+        navigateFunction
+    } = props; 
     return (
         <Container>
-            <Button><FaRegCommentAlt style={IconStyle} /><p>{commentNumber ? commentNumber : null} Comments</p></Button>
+            <Button onClick={navigateFunction}><FaRegCommentAlt style={IconStyle} /><p>{commentNumber ? commentNumber : null} Comments</p></Button>
             <Button><IoIosShareAlt style={IconStyle} /><p>Share</p></Button>
             <Button><IoBookmarkOutline style={IconStyle} /><p>Save</p></Button>
             <Dots />
-            </Container>
+        </Container>
 
         )
 }

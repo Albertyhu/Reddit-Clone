@@ -1,103 +1,49 @@
-import React, {  useContext, useCallback} from 'react'; 
-import styled, { ThemeProvider } from 'styled-components'; 
-import { AppContext } from '../components/contextItem.js'; 
+import React, { useContext } from 'react';
+import styled, { ThemeProvider } from 'styled-components';
+import { AppContext, CommunityContext  } from '../components/contextItem.js';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import uuid from 'react-uuid';
-import BackgroundBanner from '../asset/images/banner-background.png'; 
-import { useNavigate } from 'react-router-dom';
-import RenderRIcon from '../asset/icons/r_icon.js'; 
+import BackgroundBanner from '../asset/images/banner-background.png';
 
 const RenderSideBar = props => {
-    const navigate = useNavigate(); 
+
     const {
-        topCommunities,
         normalMode,
         DefaultTheme,
         DarkTheme,
     } = useContext(AppContext);
-    const ToCommunity = useCallback((ID) =>navigate('../community', {
-        state: {
-            communityID: ID,
-        },
-    
-    }), [navigate])
-    const RenderCommunityItem = ({
-        index,
-        communityImage,
-        communityTitle,
-        communityID}, props) => {
+
+    const { community } = useContext(CommunityContext); 
+
+    const RenderCommunityItem = ({ index, communityImage, communityTitle }, props) => {
         return (
             <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
-                <CommunityItem >
-                    <Text onClick={() => ToCommunity(communityID)}>{index}</Text>
-                    <Text onClick={() => ToCommunity(communityID)}><IoIosArrowUp /></Text>
-                    {communityImage ?
-                        <CommunityLogo
-                            src={communityImage}
-                            onClick={() => ToCommunity(communityID)}
-                         />
-                        : 
-                        <RenderRIcon
-                            isCommunitySmallLogo={true}
-                            clickEvent={() => ToCommunity(communityID)}
-
-                        />
-                        }
-                    <Text
-                        onClick={() => ToCommunity(communityID)}
-                    >r/{communityTitle}</Text>
-                <Button>Join</Button>
-               </CommunityItem>
+                <CommunityItem>
+                    <Text>{index}</Text>
+                    <Text><IoIosArrowUp /></Text>
+                    <CommunityLogo src={communityImage} />
+                    <Text>r/{communityTitle}</Text>
+                    <Button>Join</Button>
+                </CommunityItem>
             </ThemeProvider>
-            )
+        )
     }
     return (
         <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
-            <MainContainer id = "SideBarMainContainer">
-                <Panel id = "TopPanel">
-                    <PanelHeader><span>Today's Top Growing Communities</span></PanelHeader>
+            <MainContainer id="SideBarMainContainer">
+                <Panel id="TopPanel">
+                    <PanelHeader><span>About Community</span></PanelHeader>
                     <Shell>
-                        {topCommunities ? 
-                            topCommunities.map((item, ind) => <RenderCommunityItem
-                                communityTitle={item.communityTitle}
-                                communityImage={item.communityImage}
-                                communityID={item.communityID}
-                                key={uuid()}
-                                index={ind + 1}
-                            />)
-                            :
-                            null
-                            }
+                        
                     </Shell>
                 </Panel>
             </MainContainer>
 
         </ThemeProvider>
-        ) 
+    )
 }
 
 export default RenderSideBar;
-
-export const formatTotalNumber = (number) => {
-    if (number === undefined || number === null)
-        return 0;
-    var stringNum = number.toString();
-    if (stringNum.length < 4) {
-        return number;
-    }
-    //If the number is in the thousands
-    else if (stringNum.length >= 4 && stringNum.length < 7) {
-        return `${(Math.round(number / 100) / 10).toFixed(1)}k`
-    }
-    else if (stringNum.length >= 7 && stringNum.length < 10) {
-        return `${(Math.round(number / 100000) / 10).toFixed(1)}m`
-    }
-    else if (stringNum.length >= 10) {
-        const exponent = stringNum.length - 1;
-        return `${(number / (Math.pow(10, exponent))).toFixed(1)}x10^${exponent}`
-
-    }
-}
 
 const MainContainer = styled.div`
     font-family: "Verdana";
@@ -125,11 +71,6 @@ const PanelHeader = styled.div`
     line-height: 12px;
     padding: 12px 12px 12px;
     border-radius: 5px 5px 0px 0px;
-    background-image:  linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1.0)), url(${ BackgroundBanner }); 
-    background-repeat: no-repeat;
-    background-size: cover; 
-    background-position: center;
-    min-height: 60px;
     position: relative;
     background-color: ${props => props.theme.PanelBackgroundColor || "#ffffff"};
     color: #ffffff; 
@@ -161,9 +102,8 @@ const Button = styled.div`
     border-radius: 99999px; 
     text-align: center; 
     cursor: pointer;
-    user-select: none;
     background-color: ${props => props.theme.ButtonBackgroundC || "#ffffff"}; 
-    color: ${props => props.theme.ButtonTextC|| "#000000"}; 
+    color: ${props => props.theme.ButtonTextC || "#000000"}; 
     &:hover{
         background-color: ${props => props.theme.ButtonBackgroundHoverColor || "#d5d5d5"}; 
     }
@@ -218,12 +158,10 @@ width: 30px;
 height: 30px; 
 border-radius: 50px; 
 margin:auto;
-cursor:pointer;
 `
 
 const Text = styled.div`
     margin: auto 0 auto 5px;
-    cursor:pointer;
 `
 
 const Wrapper = styled.div`

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext, useRef } from 'react'; 
+import React, { useState, useContext, useCallback } from 'react'; 
 import styled, { ThemeProvider } from 'styled-components'; 
 import { GiCakeSlice } from 'react-icons/gi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
@@ -6,44 +6,46 @@ import { BsEye } from 'react-icons/bs';
 import { GrMailOption } from 'react-icons/gr'; 
 import RenderSwitchButton from '../components/switchButton.js'; 
 import uuid from 'react-uuid';
+import { AppContext } from '../components/contextItem.js'; 
+import { AiOutlineMail } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom'; 
 
 const MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
+//Side bar component can be used for the thread and community screens 
 const RenderSideBar = props => {
+    const { contextItem } = props; 
     const {
-        members,
+        useCommunityTheme,
+        toggleCommunityTheme, 
+        ...community
+    } = useContext(contextItem); 
+
+    const { members,
         customNamedMembers,
         onlineMembers,
         dateCreated,
         description,
         communityTitle,
-        CommunityTheme,
+        communityTheme,
         rules,
         moderators,
-        onThread,
-        communityImage,
-    } = props; 
+        communityImage, 
+        communityID
 
-    const defaultTheme = {
-        headerBackgorundColor: "#ffffff",
-        headerTextColor: "#000000",
-        InvertedButtonBackgroundColor: "#0079D3", 
-        InvertedButtonTextColor: "#fffff", 
-        panelBackgroudColor: "#ffffff", 
-    } 
-    const darkTheme = {
-        headerBackgroundColor: "#1c1c38",
-        headerTextColor: "#ffffff",
-        InvertedButtonBackgroundColor: "#1c1c38",
-        InvertedButtonTextColor: "#ffffff",
-        panelBackgroudColor: "#DAE0E6", 
-    } 
+    } = community;
 
+    const {
+        normalMode,
+        DefaultTheme,
+        DarkTheme,
+    } = useContext(AppContext);
+    /*
     const [useTheme, setUseTheme] = useState(true);
 
     const toggleTheme = () => {
         setUseTheme(prev => !prev)
-    }
+    }*/
 
     const dateObj = new Date(dateCreated)
     const formatedDate = `${MONTH[dateObj.getMonth()]} ${dateObj.getDate() + 1} ${dateObj.getFullYear()}`
@@ -85,22 +87,28 @@ const RenderSideBar = props => {
     }*/
 
     const scrollToTop = () => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    
+    const navigate = useNavigate();
+    const ToCommunity = useCallback(() => navigate('../community', {
+        state: {
+            communityID: communityID, 
+        }
+    }), [navigate])
+
     return (
-        <ThemeProvider theme={useTheme ? (!!CommunityTheme ? CommunityTheme : defaultTheme ): defaultTheme}>
-            <MainContainer id = "SideBarMainContainer">
-                <Panel id = "TopPanel">
+        <ThemeProvider theme={normalMode ? (useCommunityTheme ? (!!communityTheme ? communityTheme : DefaultTheme) : DefaultTheme) : DarkTheme}>
+            <MainContainer id="SideBarMainContainer">
+                <Panel id="TopPanel">
                     <PanelHeader>About this community</PanelHeader>
                     <Shell>
-                    <LogoContainer>
-                         {!!communityImage && <CommunityLogo src={communityImage} />}
-                        <CommunityTitle>r/{communityTitle}</CommunityTitle>
-                    </LogoContainer>
-                    <div>{description}</div>
-                    <MembersInfoContainer>
+                        <LogoContainer onClick={ToCommunity}>
+                            {!!communityImage && <CommunityLogo src={communityImage} />}
+                            <CommunityTitle>r/{communityTitle}</CommunityTitle>
+                        </LogoContainer>
+                        <div>{description}</div>
+                        <MembersInfoContainer>
                             <MembersInfo>
-                                <MembersNumberDiv>{formatTotalNumber(members)}</MembersNumberDiv> 
-                                <div>{customNamedMembers !== undefined && 
+                                <MembersNumberDiv>{formatTotalNumber(members)}</MembersNumberDiv>
+                                <div>{customNamedMembers !== undefined &&
                                     customNamedMembers !== null &&
                                     customNamedMembers.length !== 0
                                     ? customNamedMembers : "Members"}</div>
@@ -115,17 +123,17 @@ const RenderSideBar = props => {
                             <GiCakeSlice />
                             <DateCreated>Created {formatedDate}</DateCreated>
                         </DateContainer>
-                        <Button className="invertedButton">Join Community</Button>
+                        <Button>Join Community</Button>
                         <Divider />
                         <Button
                             className="communityOptionsButton"
                             onClick={toggleCommunityOpt}
                         >Community options
-                            {openCommunityOptions ? 
+                            {openCommunityOptions ?
                                 <IoIosArrowUp />
                                 :
                                 <IoIosArrowDown />
-                                }
+                            }
                         </Button>
                         {openCommunityOptions &&
                             <CommunityOptionsPanel>
@@ -134,8 +142,8 @@ const RenderSideBar = props => {
                                 Community Theme
                                 </ComOptionsPanelTitle>
 
-                            <RenderSwitchButton boolVal={useTheme} onChangeHandler={toggleTheme} />
-                        </CommunityOptionsPanel>
+                            <RenderSwitchButton boolVal={useCommunityTheme} onChangeHandler={toggleCommunityTheme} />
+                            </CommunityOptionsPanel>
                         }
                     </Shell>
                 </Panel>
@@ -155,22 +163,20 @@ const RenderSideBar = props => {
                 <Panel id="ModeratorPanel">
                     <PanelHeader>Moderators</PanelHeader>
                     <Shell>
-                        <Button id="MessageModButton"><GrMailOption style={{ marginRight: "10px" }} /> Message the mods</Button>
+                        <Button id="MessageModButton"><span id ="MailWrapper"><AiOutlineMail style={mailIcon} /></span><span>Message the mods</span></Button>
                         {moderators ?
                             moderators.map(mod => <ModeratorItem key={uuid()} {...mod} />)
                             :
                             null
-                            }
+                        }
                     </Shell>
                     <span id="endOfSidebar"></span>
                 </Panel>
-         
-                    <BackToTopButton
+                <BackToTopButton
                     Position={'sticky'}
                     onClick={scrollToTop}
                     id="BackToTopButton"
-                    >Back To Top</BackToTopButton>
-               
+                >Back To Top</BackToTopButton>
             </MainContainer>
         </ThemeProvider>
         ) 
@@ -235,13 +241,15 @@ const ModLink = styled.div`
     margin-top: 10px;
     margin-bottom: 10px;
     margin-left: 10px;
-    color: blue;
+    color: ${props => props.theme.LinkColor};
 `
 
 const MainContainer = styled.div`
     font-family: Noto Sans,Arial,sans-serif;
     display: block; 
     border-radius: 5px 5px 0 0;
+    height: 100%; 
+    position: relative;
 `
 
 const Panel = styled.div`
@@ -251,7 +259,8 @@ border-radius: 5px;
 & + & {
     margin-top: 20px;
 }
-background-color: ${props => props.theme.panelBackgroudColor || "#ffffff"}; 
+background-color: ${props => props.theme.PanelBackgroundColor || "#ffffff"};
+color: ${props => props.theme.TextColor  || "#000000"}; 
 `
 
 const PanelHeader = styled.div`
@@ -261,8 +270,8 @@ const PanelHeader = styled.div`
     line-height: 12px;
     padding: 12px 12px 12px;
     border-radius: 5px 5px 0px 0px;
-    background-color: ${props => props.theme.headerBackgroundColor|| "#ffffff"};
-    color: ${props => props.theme.headerTextColor || "#000000"}; 
+    background-color: ${props => props.theme.PanelBackgroundColor|| "#ffffff"};
+    color: ${props => props.theme.TextColor || "#000000"}; 
 `
 
 const Shell = styled.div`
@@ -279,8 +288,6 @@ const Button = styled.div`
     font-family: Noto Sans,Arial,sans-serif;
     font-size: 14px;
     font-weight: 700;
-    letter-spacing: unset;
-    line-height: 17px;
     text-transform: unset;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -289,49 +296,67 @@ const Button = styled.div`
     border-radius: 99999px; 
     text-align: center; 
     cursor: pointer;
-    background-color: ${props => props.theme.ButtonBackgroundColor || "#ffffff"}; 
-    color: ${props => props.theme.ButtonTextColor|| "#000000"}; 
+    background-color: ${props => props.theme.ButtonBackgroundC || "#ffffff"}; 
+    color: ${props => props.theme.ButtonTextC|| "#000000"}; 
     &:hover{
-        background-color: ${props => props.theme.ButtonBackgroundHoverColor || "#d5d5d5"}; 
+        background-color: ${props => props.theme.ButtonBackgroundCHover || "#d5d5d5"}; 
     }
     &.invertedButton{
-        background-color: ${props => props.theme.InvertedButtonBackgroundColor || "#ffffff"}; 
-        color: ${props => props.theme.InvertedButtonTextColor || "#000000"}; 
+        background-color: ${props => props.theme.InvertedButtonBackgroundC || "#ffffff"}; 
+        color: ${props => props.theme.InvertedButtonTextC || "#000000"}; 
     }
     &.invertedButton:hover{
-        background-color: ${props => props.theme.InvertedButtonBackgroundHoverColor || "#d5d5d5"}; 
+        background-color: ${props => props.theme.InvertedButtonBackgroundCHover || "#d5d5d5"}; 
     }
     &.communityOptionsButton{
         border: none; 
         background-color: rgba(0,0,0,0); 
         display: flex; 
         justify-content: space-around;
-        color: #000000;
+        color: ${props => props.theme.TextColor};
     }
     &.communityOptionsButton:hover{
         background-color: rgba(0,0,0,0.1);
     }
     &#MessageModButton{
         background-color: rgba(0,0,0,0);
-        border: 1px solid blue;
+        border: ${props => props.theme.MessageButtonBorder};
         justify-content: center;
-        color: blue;
+        color: ${props => props.theme.LinkColor};
         padding-top: 5px;
         padding-bottom: 5px;
+        display: grid; 
+        grid-template-columns: 30% 70%;
     }
     &#MessageModButton:hover{
         background-color: rgba(0,0,0,0.1);
      }
-    &#MessageModButton > *{
+    &#MessageModButton > span{
+        margin: auto 5px;
+        color: ${props => props.theme.MessageButtonColor};
+        text-align: left;
+    }  
+    &#MessageModButton > #MailWrapper{
+        text-align: right;
+    }
+        &#MessageModButton > *{
         margin-top: auto;
         margin-bottom: auto;
-    }
+    }  
 `
+
+const mailIcon = {
+    height: "20px",
+    width: "20px",
+    textAlign: "right",
+}
+
 
 const LogoContainer = styled.div`
 display: flex; 
 margin-top: 10px;
 margin-bottom: 10px;
+cursor: pointer;
 `
 
 const CommunityTitle = styled.div`
@@ -414,9 +439,10 @@ const AccordionText = styled.div`
 `
 
 const Wrapper = styled.div`
-    position: absolute;
-    
-    height: 100%; 
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; 
     background-color: yellow;  
 `
 const BackToTopButton = styled.div`
@@ -435,13 +461,14 @@ const BackToTopButton = styled.div`
     border-radius: 99999px; 
     text-align: center; 
     cursor: pointer;
-    position: ${props => props.Position || "static"}; 
+    //position: ${props => props.Position || "static"}; 
+    position: fixed;
     bottom: 20px; 
     right: 100px;
-    background-color: ${props => props.theme.InvertedButtonBackgroundColor};
-    color: ${props => props.theme.InvertedButtonTextColor};
+    background-color: ${props => props.theme.ButtonBackgroundC};
+    color: ${props => props.theme.ButtonTextC};
     &:hover{
-        background-color: ${props => props.theme.InvertedButtonBackgroundHoverColor};
+        background-color: ${props => props.theme.ButtonBackgroundCHover};
     }
 
 
