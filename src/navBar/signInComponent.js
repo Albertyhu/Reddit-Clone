@@ -12,12 +12,14 @@ const RenderSignInComponent = props => {
         openSignUp, 
     } = useContext(AppContext)
 
+    const { toggleMenu } = props; 
+
     return (
         <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
             <MainContainer>
                 <Button id="inverted" onClick={openLogIn}>Log In</Button>
                 <Button onClick={openSignUp}>Sign Up</Button>
-                <GuestMenu>
+                <GuestMenu onClick={toggleMenu}>
                     <IoPersonOutline />
                     <IoIosArrowDown />
                 </GuestMenu>

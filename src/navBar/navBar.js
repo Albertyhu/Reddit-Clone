@@ -16,6 +16,7 @@ const RenderNavBar = props => {
         DarkTheme,
         normalMode, 
         userData, 
+        currentUser, 
     } = useContext(AppContext); 
 
     const [openMenu, setOpenMenu] = useState(false)
@@ -59,7 +60,7 @@ const RenderNavBar = props => {
                     onClick={ToHome}
                 />
                 {defaultMenu ?
-                    <>{!userData ?
+                    <>{currentUser !== null && currentUser!== undefined ?
                         <MenuComponent onClick={toggleMenu}>
                             <MenuShell>
                                 <Logo src={Silhouette} id="silhouette" />
@@ -71,7 +72,7 @@ const RenderNavBar = props => {
                             <IoIosArrowDown />
                         </MenuComponent>
                         :
-                        <RenderSignInComponent />
+                        <RenderSignInComponent toggleMenu={toggleMenu} />
                     }</>
                     :
                     <BurgerMenuWrapper onClick={toggleMenu}>

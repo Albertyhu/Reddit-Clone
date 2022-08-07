@@ -147,6 +147,7 @@ display: flex;
     font-family: 'Verdana'; 
     font-weight: bold;
     margin: auto 0;
+    color: ${props => props.theme.TextColor};
 }
 `
 

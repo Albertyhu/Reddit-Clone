@@ -17,3 +17,6 @@ export const CardContext = createContext();
 
 //Context item for Community
 export const CommunityContext = createContext(); 
+
+//Context item for Guest panel
+export const GuestContext = createContext(); 

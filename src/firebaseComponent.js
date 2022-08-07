@@ -21,6 +21,14 @@ const firebaseConfig = {
   measurementId: "G-96ZH6PK410"
 };
 
+export const getFirebaseConfig = () => {
+    if (!firebaseConfig || !firebaseConfig.apiKey) {
+        console.log("Firebase has not been loaded yet")
+    }
+    else
+        return firebaseConfig
+}
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
