@@ -8,9 +8,15 @@ import { GrView } from 'react-icons/gr';
 import { FiEye } from 'react-icons/fi';
 import { IconContext } from 'react-icons'; 
 import { IoMdExit } from 'react-icons/io';
+import { SignOut } from '../firebaseMethod/GoogleAuth.js'; 
 
 const RenderMenu = props => {
-    const { normalMode, toggleDisplayThemes, DefaultTheme, DarkTheme } = useContext(AppContext)
+    const { normalMode,
+        toggleDisplayThemes,
+        DefaultTheme,
+        DarkTheme,
+        currentUser, 
+    } = useContext(AppContext)
     const { closeMenu } = props; 
     const MenuRef = useRef() 
 
@@ -46,15 +52,19 @@ const RenderMenu = props => {
                             onChangeHandler={toggleDisplayThemes}
                         />
                     </MenuItem>
-                    <MenuItem className = "topBorder">
-                        <LeftColumn>
-                            <IoMdExit
-                                style={{ color: normalMode ? "#848787" : "#D6D6D6" }}
+                    {currentUser ?
+                        <MenuItem className="topBorder" onClick={SignOut}>
+                            <LeftColumn>
+                                <IoMdExit
+                                    style={{ color: normalMode ? "#848787" : "#D6D6D6" }}
                                 />
-                        </LeftColumn>
-                        <>Log Out</>
-                        <EmptyDiv />
-                    </MenuItem>
+                            </LeftColumn>
+                            <>Log Out</>
+                            <EmptyDiv />
+                        </MenuItem>
+                        : 
+                        null
+                        }
                 </MainContainer>
              </IconContext.Provider>
         </ThemeProvider>
@@ -92,6 +102,7 @@ const LeftColumn = styled.div`
 
 const MenuItem = styled.div`
     color: ${props => props.theme.TextColor}; 
+    cursor: pointer;
 &.topBorder{
     border-top: 1px solid ${props => props.theme.BorderColor}; 
     padding: 5px 0px;

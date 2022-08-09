@@ -426,6 +426,7 @@ const AccordionItem = styled.div`
     border-top: 1px solid rgba(0,0,0,0.1);
     font-weight: bold;
     min-height: 40px;
+    cursor: pointer; 
 `
 
 const AccordionText = styled.div`

@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\feed",
+    "\\src\\components",
+    "\\src\\firebaseMethod",
     "\\src\\global",
-    "\\src\\global\\header",
+    "\\src\\guest",
     "\\src\\helperTools",
-    "\\src\\helperTools\\assets",
+    "\\src\\navBar",
     "\\src\\screens",
-    "\\src\\test",
     "\\src\\thread"
   ],
-  "SelectedNode": "\\src\\thread\\renderThread.js",
+  "SelectedNode": "\\src\\firebaseMethod\\GoogleAuth.js",
   "PreviewInSolutionExplorer": false
 }

@@ -4,13 +4,18 @@ import SignUpArt from '../asset/images/SignUpArt.png';
 import { AiOutlineClose } from 'react-icons/ai';
 import { AppContext, GuestContext } from '../components/contextItem.js'; 
 import { FcGoogle } from 'react-icons/fc';
-import { SignInWGoogle } from '../authentication/GoogleAuth.js';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { SignInWGoogle, SignUpWGoogle  } from '../firebaseMethod/GoogleAuth.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, createUser  } from 'firebase/auth';
 import firebase from 'firebase/compat/app';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseComponent.js';
 import { checkEmail } from '../components/checkEmail.js'; 
 import { BsCheck } from 'react-icons/bs';
+import { MdArrowBackIosNew } from 'react-icons/md';
+import { Bounce } from "react-activity";
+import "react-activity/dist/library.css";
+
+const auth = getAuth(); 
 
 const RenderGuestPanel = props => {
     const { normalMode,
@@ -21,11 +26,18 @@ const RenderGuestPanel = props => {
         closeGuestPanel,
         GuestPanelRef, 
         displaySignIn, 
+        getUserName, 
+        setCurrentUserData,
+        setCurrentUser, 
     } = useContext(AppContext);
 
     //sign in objects 
-    const [username, setUsername] = useState('');
+    const [userName, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false); 
+    const [userList, setUserList] = useState(null);  
+
+    const [GoogleID, setGoogleID] = useState(null); 
 
     const handleUsername = event => {
         setUsername(event.target.value)
@@ -37,8 +49,9 @@ const RenderGuestPanel = props => {
 
     //Sign up objects
     const [currentEmail, setCurrentEmail] = useState('');
+
     const handleCurrentEmailChange = event => {
-        setCurrentEmail(event.target.value)
+        setCurrentEmail(event.target.value);
     }
 
     const clickEvent = event => {
@@ -55,24 +68,156 @@ const RenderGuestPanel = props => {
 
     document.addEventListener('mousedown', clickEvent);
 
+    const uploadUserList = async () => {
+        var Arr = []; 
+        const q = query(collection(db, 'users')); 
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            Arr.push(doc.data())
+        })
+        setUserList(Arr)
+    }
+
+    const CheckIfEmailExists = email => {
+        if (userList !== null && userList !== undefined) {
+            return userList.some(user => user.email.toLowerCase() === email.toLowerCase().split(' ').join(''))
+        }
+        return false; 
+    }
+
+    const CheckIfUserNameExists = userN => {
+        if (userList !== null && userList !== undefined) {
+            return userList.some(user => user.username === userN.split(' ').join(''))
+        }
+        return false; 
+    }
+
+    //This is created just for insurance 
+    // After an account is created, it adds the new username and email to the useState userList
+    const addUserToList = (userN, emailAddress, ID) => {
+        setUserList(prev => [...prev, {username: userN, email: emailAddress, userID: ID}])
+    }
+   
     useEffect(() => {
-        return () => document.removeEventListener('mousedown', clickEvent);
+        if (userList === null || userList === undefined ) {
+            uploadUserList();
+        }
+
+        return () => { document.removeEventListener('mousedown', clickEvent); };
     }, [])
 
+    const createNewAccount = async () => {
+        setLoading(true); 
+        //If the account is created with Google Sign In
+        if (GoogleID !== null && GoogleID !== undefined) {
+            await setDoc(doc(db, 'users', GoogleID), {
+                email: currentEmail.toLowerCase(),
+                username: userName,
+                userID: GoogleID,
+            }).then(() => {
+                setCurrentUserData({
+                    email: currentEmail.toLowerCase(),
+                    username: userName,
+                    userID: GoogleID,
+                })
+                addUserToList(userName, currentEmail.toLowerCase(), GoogleID);
+                resetInput();
+                closeGuestPanel();
+            })
+                .catch(error => {
+                    if (error.code === 'auth/email-already-in-use') {
+                        alert("The email you typed is already in use.")
+                    }
+                    else
+                        alert(error.code + ": " + error.message)
+                })
+        }
+        else {
+            createUserWithEmailAndPassword(auth, currentEmail, password)
+                .then(async (userCredentials) => {
+                    await setDoc(doc(db, 'users', auth.currentUser.uid), {
+                        email: currentEmail.toLowerCase(),
+                        username: userName.split(' ').join(''),
+                        userID: auth.currentUser.uid,
+                    })
+                    setCurrentUserData({
+                        email: currentEmail.toLowerCase(),
+                        username: userName,
+                        userID: auth.currentUser.uid,
+                    })
+                    console.log("success!")
+                    addUserToList(userName, currentEmail.toLowerCase(), auth.currentUser.uid);
+                    resetInput();
+                    closeGuestPanel();
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/email-already-in-use') {
+                        alert("The email you typed is already in use.")
+                    }
+                    else
+                        alert(error.code + ": " + error.message)
+                })
+        }
+        setLoading(false)
+    } 
+
+    const handleSignIn = async () => {
+        var userData = userList.find(item => item.username === userName); 
+        setLoading(true)
+        await signInWithEmailAndPassword(auth, userData.email, password).
+            then(setCurrentUserData(userData))
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert(errorCode + ': ' + errorMessage);
+
+            });
+        setCurrentUser(getUserName())
+        setLoading(false);
+        resetInput();
+        closeGuestPanel();
+    }
+
+
+    const DisplayOnConsole = () => {
+        console.log("userName: " + userName);
+        console.log("currentEmail: " + currentEmail);
+        console.log("GoogleID: " + GoogleID)
+    } 
+
     const context = {
-        username, 
+        userName, 
         password, 
         handleUsername, 
         handlePassword, 
         currentEmail,
         handleCurrentEmailChange,
         resetInput, 
+        createNewAccount, 
+        loading, 
+        CheckIfEmailExists,
+        CheckIfUserNameExists,
+
+        //For RenderGoogleSignUpButton 
+        setCurrentEmail,
+        setUsername,
+        setGoogleID, 
+        DisplayOnConsole, 
+        GoogleID,
     }
+
+    /*
+    useEffect(() => {
+        if (userList !== null)
+            console.log(userList)
+    }, [userList])
+    */
 
     return (
         <GuestContext.Provider value={context}>
             <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
-                <MainContainer ref={GuestPanelRef}>
+                {loading ? <LoadingContainer><Bounce /></LoadingContainer> : null}
+                <MainContainer ref={GuestPanelRef} Opacity={loading ? "0.3" : "1.0"}>
                     <ArtImage src={SignUpArt} /> 
                     <InnerShell id = "InnerShell">
                         <DeleteWrapper><AiOutlineClose onClick={closeGuestPanel}/></DeleteWrapper>
@@ -90,6 +235,8 @@ const RenderGuestPanel = props => {
 
 export default RenderGuestPanel; 
 
+//The sign up panel has two pages
+// useState firstPage object controls which page is being displayed 
 const RenderSignUp = props => {
     const {
     } = useContext(AppContext)
@@ -119,6 +266,8 @@ const RenderFirstSUPage = props => {
     const { currentEmail,
         handleCurrentEmailChange,
         resetInput,
+        CheckIfEmailExists, 
+        GoogleID,
     } = useContext(GuestContext);
 
     const [validEmail, setValidEmail] = useState(false); 
@@ -139,6 +288,10 @@ const RenderFirstSUPage = props => {
             message += "Invalid email"
             isValid = false; 
         }
+        if (CheckIfEmailExists(currentEmail)) {
+            message = "Email is already in use."
+            isValid = false; 
+        }
 
         if (isValid) {
             moveForward(); 
@@ -156,13 +309,13 @@ const RenderFirstSUPage = props => {
                 <p>By continuing, you are setting up a Reddit account and agree to our User Agreement and Privacy Policy.</p>
             </TextBlock>
             <Form>
-                <RenderGoogleButton />
+                <RenderGoogleSignUpButton moveForward={moveForward} />
                 <BorderDiv>
                     <Divider />
                     <BorderText> OR </BorderText>
                     <Divider />
                 </BorderDiv>
-                <InputWrapper><Input placeholder="EMAIL" value={currentEmail} onChange={handleCurrentEmailChange} /> {validEmail && <BsCheck />}</InputWrapper>
+                <InputWrapper id = "EmailInput"><Input placeholder="EMAIL" value={currentEmail} onChange={handleCurrentEmailChange} /> {validEmail && <BsCheck />}</InputWrapper>
                 <ErrorMessage
                     display={error ? DisplayError : RemoveError}
                 >{errorMessage}</ErrorMessage>
@@ -185,11 +338,14 @@ const RenderSecondSUPage = props => {
     } = useContext(AppContext); 
 
     const {
-        username,
+        userName,
         password,
         handleUsername,
         handlePassword,
         resetInput, 
+        createNewAccount, 
+        loading, 
+        CheckIfUserNameExists, 
     } = useContext(GuestContext)
 
     //used for later
@@ -198,8 +354,8 @@ const RenderSecondSUPage = props => {
 
     const [displayNameError, setNameError] = useState(false);
     const [displayPassError, setPassError] = useState(false); 
-    const [usernameErrorMessage, setUsernameErrorMess] = useState('');
-    const [passwordErrorMessage, setPassErrorMess] = useState('')
+    const [usernameErrorMessage, setUserErrMess] = useState('');
+    const [passwordErrorMessage, setPassErrMess] = useState('')
 
     const ResetError = () => {
         setNameError(false);
@@ -207,36 +363,39 @@ const RenderSecondSUPage = props => {
     }
 
     const handleSubmit = () => {
-        setUsernameErrorMess('');
-        setPassErrorMess('')
+        setUserErrMess('');
+        setPassErrMess('')
         var userValid = true; 
         var passwordValid = true;
         var usernameMessage = '';
         var passwordMessage = ''; 
-        if (username === '') {
+        if (userName === '') {
             userValid = false; 
             usernameMessage = "Please, provide your username.";
+        }
+        if (CheckIfUserNameExists(userName)) {
+            userValid = false; 
+            usernameMessage = "This username is already in use."; 
         }
         if (password.length < 6) {
             passwordValid = false; 
             passwordMessage = "Your password must be 6 characters or more."; 
         }
         if (userValid && passwordValid) {
-            closeGuestPanel();
-            resetInput(); 
+            createNewAccount(); 
         }
         else {
             setNameError(!userValid);
             setPassError(!passwordValid);
-            setUsernameErrorMess(usernameMessage);
-            setPassErrorMess(passwordMessage); 
+            setUserErrMess(usernameMessage);
+            setPassErrMess(passwordMessage); 
         }
     }
 
     useEffect(() => {
         if (displayNameError)
             setNameError(false)
-    }, [username])
+    }, [userName])
 
     useEffect(() => {
         if (displayPassError)
@@ -250,28 +409,78 @@ const RenderSecondSUPage = props => {
                 <p>Your username is how other community members will see you. This name will be used to credit you for things you share on Reddit. What should we call you?</p>
             </TextBlock>
             <Form id ="SecondForm">
-                <InputWrapper><Input placeholder="USERNAME" value={username} onChange={handleUsername} /></InputWrapper>
+                <InputWrapper className="SecondSUPageInput" ><Input placeholder="USERNAME" value={userName} onChange={handleUsername} /></InputWrapper>
                 <ErrorMessage display={displayNameError ? DisplayError : RemoveError}>{usernameErrorMessage}</ErrorMessage>
-                <InputWrapper><Input placeholder="PASSWORD" value={password} onChange={handlePassword} /></InputWrapper>
+                <InputWrapper className="SecondSUPageInput" id="SecondInputField"><Input placeholder="PASSWORD" value={password} onChange={handlePassword} /></InputWrapper>
                 <ErrorMessage display={displayPassError ? DisplayError : RemoveError}>{passwordErrorMessage}</ErrorMessage>
             </Form>
-            <Button onClick={handleSubmit}>SignUp</Button>
+            <Button onClick={handleSubmit}>Sign Up</Button>
             <SwitchMethodWrapper>
-                <SwitchMethod onClick={moveBack}>Back</SwitchMethod>
+                <SwitchMethod onClick={moveBack} id="BackLink"><MdArrowBackIosNew />Back</SwitchMethod>
             </SwitchMethodWrapper>
-        </MainContent>
+            </MainContent>
         )
 }
 
 const RenderSignIn = props => {
-    const { openSignUp,
+    const {
+        openSignUp,
+        closeGuestPanel, 
     } = useContext(AppContext)
-    const { username,
+    const { userName,
         password,
         handleUsername,
         handlePassword,
         resetInput,
+        CheckIfUserNameExists,
+        handleSignIn, 
     } = useContext(GuestContext); 
+
+    const [displayNameError, setNameError] = useState(false);
+    const [displayPassError, setPassError] = useState(false);
+
+    const [usernameErrorMessage, setUserErrMess] = useState('');
+    const [passwordErrorMessage, setPassErrMess] = useState(''); 
+
+    const handleSubmit = () => {
+        setUserErrMess('');
+        setPassErrMess('')
+        var userValid = true;
+        var passwordValid = true;
+        var usernameMessage = '';
+        var passwordMessage = '';
+        if (userName === '') {
+            userValid = false;
+            usernameMessage = "Please, provide your username.";
+        }
+        if (!CheckIfUserNameExists(userName)) {
+            userValid = false; 
+            usernameMessage = "This username doesn't exists."; 
+        }
+        if (password.length < 6) {
+            passwordValid = false;
+            passwordMessage = "Your password must be 6 characters or more.";
+        }
+        if (userValid && passwordValid) {
+            handleSignIn();
+        }
+        else {
+            setNameError(!userValid);
+            setPassError(!passwordValid);
+            setUserErrMess(usernameMessage);
+            setPassErrMess(passwordMessage);
+        }
+    }
+
+    useEffect(() => {
+        if (displayNameError)
+            setNameError(false)
+    }, [userName])
+
+    useEffect(() => {
+        if (displayPassError)
+            setPassError(false)
+    }, [password])
 
     return (
         <MainContent>
@@ -280,15 +489,17 @@ const RenderSignIn = props => {
                 <p>By continuing, you agree to our User Agreement and Privacy Policy.</p>
             </TextBlock>
             <Form>
-                <RenderGoogleButton />
+                <RenderGoogleButton closeGuestPanel={closeGuestPanel}/>
                 <BorderDiv>
                     <Divider />
                     <BorderText> OR </BorderText>
                     <Divider />
                 </BorderDiv>
-                <InputWrapper><Input placeholder="USERNAME" value={username} onChange={handleUsername} /></InputWrapper>
-                <InputWrapper><Input placeholder="PASSWORD" value={password} onChange={handlePassword} /></InputWrapper>
-                <Button>Continue</Button>
+                <InputWrapper id="FirstInputField"><Input placeholder="USERNAME" value={userName} onChange={handleUsername} /></InputWrapper>
+                <ErrorMessage display={displayNameError ? DisplayError : RemoveError}>{usernameErrorMessage}</ErrorMessage>
+                <InputWrapper id="SecondInputField"><Input placeholder="PASSWORD" value={password} onChange={handlePassword} /></InputWrapper>
+                <ErrorMessage display={displayPassError ? DisplayError : RemoveError}>{passwordErrorMessage}</ErrorMessage>
+                <Button onClick={handleSubmit}>Sign In</Button>
                 <SwitchMethodWrapper>
                     New to Reddit?<SwitchMethod onClick={() => {
                         openSignUp();
@@ -300,8 +511,28 @@ const RenderSignIn = props => {
     )
 }
 
-const RenderGoogleButton = () => <Button id="ThirdParty" onClick={SignInWGoogle}><FcGoogle /><span>Continue with Google</span></Button>
+const RenderGoogleButton = ({ closeGuestPanel }) => <Button id="ThirdParty" onClick={() => {
+    try { SignInWGoogle(); }
+    catch (e) { console.log("error with Google Sign In: " + e.message)}
+    closeGuestPanel();
+}}><FcGoogle /><span>Continue with Google</span></Button>
 
+
+const RenderGoogleSignUpButton = props => {
+    const { moveForward } = props; 
+    const {
+        setCurrentEmail,
+        setUsername,
+        setGoogleID,
+        DisplayOnConsole, 
+    } = useContext(GuestContext);
+
+    return (
+        <Button id="ThirdParty" onClick={() => {
+            SignUpWGoogle(setCurrentEmail, setUsername, setGoogleID, moveForward);
+        }}><FcGoogle /><span>Continue with Google</span></Button>
+    )
+}
 
 const MainContainer = styled.div`
     height: 650px;
@@ -318,7 +549,7 @@ const MainContainer = styled.div`
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-
+    opacity: ${props => props.Opacity}
 `
 const InnerShell = styled.div`
 width: 90%; 
@@ -329,6 +560,7 @@ display: grid;
 
 const MainContent = styled.div`
 width: 280px;  
+
 `
 
 const Form = styled.div`
@@ -436,7 +668,7 @@ const InputWrapper = styled.div`
 border: ${props => props.theme.GuestInputBorder};
 padding: 12px 10px; 
 border-radius: 10px;
-margin-top: 40px;
+
 width: 91%;
 display: flex; 
 justify-content: space-between; 
@@ -444,6 +676,13 @@ background-color: ${props => props.theme.PanelBackgroundColor};
 &:focus{
     border: 1px solid #0079d3; 
 }
+&.SecondSUPageInput{
+margin-top: 40px;
+}
+&#SecondInputField{
+margin-top: 40px;
+}
+
 `
 
 const SwitchMethodWrapper = styled.div`
@@ -453,10 +692,17 @@ const SwitchMethodWrapper = styled.div`
 
 const SwitchMethod = styled.span`
     user-select: none; 
-    color: blue, 
+    color: #288BD4; 
     text-transform: uppercase; 
     margin-left: 5px; 
-    cursor: pointer;    
+    cursor: pointer;  
+    &#BackLink{
+        font-weight: bold;
+   
+    }
+    &>*{
+        margin: auto 10px;
+    }
 `
 
 const ErrorMessage = styled.div`
@@ -470,4 +716,10 @@ const ErrorMessage = styled.div`
     z-index: 0;
     user-select: none;
     position: absolute;
+`
+
+const LoadingContainer = styled.div`
+    position: fixed;
+    top: 50%;
+    left: 50%;
 `

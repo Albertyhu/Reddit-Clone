@@ -16,7 +16,8 @@ const RenderNavBar = props => {
         DarkTheme,
         normalMode, 
         userData, 
-        currentUser, 
+        currentUser,
+        currentUserData, 
     } = useContext(AppContext); 
 
     const [openMenu, setOpenMenu] = useState(false)
@@ -60,13 +61,13 @@ const RenderNavBar = props => {
                     onClick={ToHome}
                 />
                 {defaultMenu ?
-                    <>{currentUser !== null && currentUser!== undefined ?
+                    <>{currentUserData ?
                         <MenuComponent onClick={toggleMenu}>
                             <MenuShell>
                                 <Logo src={Silhouette} id="silhouette" />
                                 <MenuDiv>
-                                    <UserName>{userData.userName || "username"}</UserName>
-                                    <Karma><GiBrightExplosion style={{ color: "orange" }} />{userData.Karma || 3000} karma</Karma>
+                                    <UserName>{currentUserData.username ? currentUserData.username : null}</UserName>
+                                    <Karma><GiBrightExplosion style={{ color: "orange" }} />{currentUserData.Karma || 0} karma</Karma>
                                 </MenuDiv>
                             </MenuShell>
                             <IoIosArrowDown />

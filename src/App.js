@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'; 
+import React, { useState, useRef, useEffect, } from 'react'; 
 import styled from "styled-components"; 
 import RenderThread from './thread/renderThread.js'; 
 import RenderNavBar from './navBar/navBar.js'; 
@@ -11,34 +11,47 @@ import Home from './screens/home.js';
 import RenderCommunity from './screens/community.js';
 import RenderGuestPanel from './guest/GuestPanel.js'; 
 import { onAuthStateChanged, getAuth } from 'firebase/auth'; 
+import { doc, getDoc } from 'firebase/firestore'; 
+import { retrieveUserData } from './firebaseMethod/firestoreMethods.js'; 
+
 const auth = getAuth(); 
 
-function getUserName() {
-    return auth.currentUser.displayName;
-}
+
 function App() {
-    
+    window.onload = function () {
+        initFirebaseAuth();
+    }
     function initFirebaseAuth() {
         // Listen to auth state changes.
         onAuthStateChanged(auth, authStateObserver);
     }
 
+    function getUserName() {
+        return auth.currentUser;
+    }
 
     function authStateObserver(user) {
         if (user) { // User is signed in!
-            setCurrentUser(getUserName())
+            setCurrentUser(getUserName()); 
+            retrieveUserData(auth.currentUser.uid, setCurrentUserData); 
+
         } else { // User is signed out!
             setCurrentUser('')
+            setCurrentUserData(null); 
         }
     }
 
 
-    const [currrentUser, setCurrentUser] = useState(''); 
-    const [currentEmail, setCurrentEmail] = useState('')
+    const [currentUser, setCurrentUser] = useState(''); 
+    //currentUserData will contain username, email and UID of current logged in user
+    const [currentUserData, setCurrentUserData] = useState(null)
 
-    const handleCurrentEmailChange = event => {
-        setCurrentEmail(event.target.value)
-    }
+    useEffect(() => {
+        if (currentUserData !== null && currentUserData !== undefined) {
+            console.log("currentUserData: ")
+            console.log(currentUserData);
+        }
+    }, [currentUserData])
 
     //code for guest panel 
     const [displayGuestPanel, setGuestPanel] = useState(false);
@@ -146,7 +159,11 @@ function App() {
         //Reference for the guest panel 
         GuestPanelRef, 
         displaySignIn, 
-        currrentUser,
+        currentUser,
+        setCurrentUser, 
+        currentUserData, 
+        setCurrentUserData,
+        getUserName, 
     }
 
     return (
