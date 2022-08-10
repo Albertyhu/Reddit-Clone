@@ -16,12 +16,12 @@ const MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", 
 const RenderSideBar = props => {
     const { contextItem } = props; 
     const {
-        useCommunityTheme,
-        toggleCommunityTheme, 
+        threadData, 
         ...community
     } = useContext(contextItem); 
 
-    const { members,
+    const {
+        members,
         customNamedMembers,
         onlineMembers,
         dateCreated,
@@ -32,20 +32,15 @@ const RenderSideBar = props => {
         moderators,
         communityImage, 
         communityID
-
     } = community;
 
     const {
         normalMode,
         DefaultTheme,
         DarkTheme,
+        useCommunityTheme, 
+        toggleCommunityTheme,
     } = useContext(AppContext);
-    /*
-    const [useTheme, setUseTheme] = useState(true);
-
-    const toggleTheme = () => {
-        setUseTheme(prev => !prev)
-    }*/
 
     const dateObj = new Date(dateCreated)
     const formatedDate = `${MONTH[dateObj.getMonth()]} ${dateObj.getDate() + 1} ${dateObj.getFullYear()}`
@@ -94,6 +89,14 @@ const RenderSideBar = props => {
         }
     }), [navigate])
 
+    const GoCreatePostPage = useCallback(() => navigate('../submit', {
+        state: {
+            communityID: communityID, 
+            community: community, 
+        },
+    }), [navigate])
+
+
     return (
         <ThemeProvider theme={normalMode ? (useCommunityTheme ? (!!communityTheme ? communityTheme : DefaultTheme) : DefaultTheme) : DarkTheme}>
             <MainContainer id="SideBarMainContainer">
@@ -123,7 +126,11 @@ const RenderSideBar = props => {
                             <GiCakeSlice />
                             <DateCreated>Created {formatedDate}</DateCreated>
                         </DateContainer>
-                        <Button>Join Community</Button>
+                        <Button>Join Community</Button> 
+                        {//Only the side bars on comment.js and renderThread.js will have threadData
+                         //createPost.js will not. Thus, this button won't show up on createPost.js 
+                            threadData && <Button onClick={GoCreatePostPage}>Create Post</Button>
+                        }
                         <Divider />
                         <Button
                             className="communityOptionsButton"

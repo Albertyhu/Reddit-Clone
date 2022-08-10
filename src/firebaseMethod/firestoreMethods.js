@@ -10,7 +10,8 @@ export const retrieveUserData = async (ID, storeData) => {
     const docRef = doc(db, "users", ID); 
     const docSnap = await getDoc(docRef); 
     if (docSnap.exists()) {
-        console.log(docSnap.data())
+        var obj = {...docSnap.data()}
+        return obj;
     }
     else {
         console.log('User doesn\'t exsits'); 

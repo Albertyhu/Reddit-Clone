@@ -17,6 +17,7 @@ import uuid from 'react-uuid';
 import { RenderAllCommentsContext } from './contextItem.js'; 
 import RenderAllComments from '../thread/renderAllComments';
 
+
 // Import the Slate components and React plugin.
 import { Slate, Editable, withReact } from 'slate-react'
 

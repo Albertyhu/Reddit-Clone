@@ -1,7 +1,14 @@
-import React, { useEffect, useRef, useState, useContext, useMemo, useCallback } from 'react'; 
-import styled from 'styled-components'; 
-import { AppContext } from './contextItem.js';
-// Import the Slate editor factory.
+import React, { useEffect, useState, useContext, useCallback, useMemo, useRef } from 'react';
+import styled, { ThemeProvider } from 'styled-components';
+import { AppContext, CommunityContext, CreatePostContext } from '../components/contextItem.js';
+import RenderSideBar from '../thread/sidebar.js'; 
+import {
+    MainContainer,
+    PanelContainer,
+    SideBar,
+    Title,
+} from '../global/styledComponents.js'; 
+import { useLocation } from 'react-router-dom'; 
 import {
     createEditor,
     Editor,
@@ -10,15 +17,14 @@ import {
     Node,
     Element as SlateElement
 } from 'slate'
-// Import the Slate components and React plugin.
 import { Slate, Editable, withReact, useSlate } from 'slate-react'
-import '../global/myStyle.css'; 
-import { useSelection } from './slateJSComponents/useSelection.js'; 
+import '../global/myStyle.css';
+import { useSelection } from '../components/slateJSComponents/useSelection.js'; 
 import {
     AiOutlineAlignRight,
-    AiOutlineAlignCenter, 
-    AiOutlineAlignLeft, 
- } from 'react-icons/ai';
+    AiOutlineAlignCenter,
+    AiOutlineAlignLeft,
+} from 'react-icons/ai';
 import { FaQuoteRight } from 'react-icons/fa';
 import { BsExclamationTriangle, BsListUl, BsListOl } from 'react-icons/bs';
 import { ImListNumbered } from 'react-icons/im';
@@ -29,14 +35,49 @@ const ALIGN_OBJECT = {
     "alignCenter": "center",
 } 
 
-const RenderReplyTextArea = props => {
+
+//Has to be structured like RenderFeed.js architecture 
+const CreatePostScreen = props => {
+    const location = useLocation(); 
     const {
-        marginLeft,
-        marginRight,
-        ReplyWidth,
-        marginTop,
-        author,
-    } = props;
+
+        communityID,
+        community
+    } = location.state; 
+
+    
+    const {
+        normalMode,
+        DefaultTheme,
+        DarkTheme,
+    } = useContext(AppContext);
+
+    const context = {
+        ...community, 
+    }
+    const CHAR_LIMIT = 300;
+    const [threadTitle, setThreadTitle] = useState(''); 
+    const [titleCharCont, setTitleCharCont] = useState(0); 
+    const TitleRef = useRef(); 
+
+    const [TitleBorderStyle, setTitleBorder] = useState("2px solid #d6d6d6")
+
+    const onChangeTitle = event => {
+        var userInput = event.target.value; 
+        if (userInput.length <= CHAR_LIMIT) {
+            setTitleCharCont(userInput.length); 
+            setThreadTitle(userInput); 
+        }
+    }
+
+
+    const RenderCharacterCont = () => {
+        return (
+            <CharacterCounterWrapper>
+                {titleCharCont}/{CHAR_LIMIT}
+            </CharacterCounterWrapper>
+            )
+    }
 
     const initialValue = [
         {
@@ -47,7 +88,6 @@ const RenderReplyTextArea = props => {
 
     const [editor] = useState(useMemo(() => withReact(createEditor()), []))
     const [response, setResponse] = useState(initialValue)
-
     const [selection, setSelectedOptimized] = useSelection(editor)
 
     //this works because the following code directly changes editor.selection
@@ -68,6 +108,12 @@ const RenderReplyTextArea = props => {
         else {
             setBorder("2px solid #d6d6d6")
         }
+        if (TitleRef.current && TitleRef.current.contains(e.target)) {
+            setTitleBorder("2px solid #474747")
+        }
+        else {
+            setTitleBorder("2px solid #d6d6d6")
+        }
     }
 
     useEffect(() => {
@@ -81,22 +127,23 @@ const RenderReplyTextArea = props => {
             case 'code':
                 return <CodeElement {...props} id="RenderedElement" />
             case 'bulleted':
-                return <BulletedListElement  {...props} id="RenderedElement"/>
-            case 'orderedList': 
+                return <BulletedListElement  {...props} id="RenderedElement" />
+            case 'orderedList':
                 return <OrderedListElement  {...props} node={editor.children} id="RenderedElement" />
             case 'list-item':
-                return <ListElement {...props} />; 
+                return <ListElement {...props} />;
             default:
                 return <DivElement  {...props} id="RenderedElement" />
         }
     }, [])
 
-    const LIST_TYPES = ['bulleted', 'orderedList']; 
+    const LIST_TYPES = ['bulleted', 'orderedList'];
     const TEXT_ALIGN_TYPES = ['alignLeft', 'alignCenter', 'alignRight']
 
     const renderLeaf = useCallback(props => {
         return <Leaf {...props} />
     }, [])
+
 
     //This code is copied from the doc 
     //it's purpose is to find if the format is currently active 
@@ -134,7 +181,7 @@ const RenderReplyTextArea = props => {
 
         //return true if the the content is of the list type 
         const [match] = Editor.nodes(editor, {
-            match: n=> n.type === listType,
+            match: n => n.type === listType,
         })
 
         //Unwrap the parent nodes 
@@ -150,11 +197,11 @@ const RenderReplyTextArea = props => {
         //If type of the current content is not the same as the listType, 
         //...change the type of the children to be a list-item
         //The method renderElements will render the children accordingly
-            Transforms.setNodes(editor,
-                { type: isActive ? 'paragraph' : match ? 'paragraph' : 'list-item' },
-                {
-                    match: n => Editor.isBlock(editor, n)
-                }
+        Transforms.setNodes(editor,
+            { type: isActive ? 'paragraph' : match ? 'paragraph' : 'list-item' },
+            {
+                match: n => Editor.isBlock(editor, n)
+            }
         )
         //rewrap the nodes only if the we're changing the content from a paragraph to a list 
         //Make the the type of parent nodes the same as the listType
@@ -181,9 +228,9 @@ const RenderReplyTextArea = props => {
     //returns align property that is active
     const getActiveAlignment = (editor) => {
         const [match] = Editor.nodes(editor, {
-           match: n => n.align !== 'alignLeft'
+            match: n => n.align !== 'alignLeft'
         })
-        return !!match; 
+        return !!match;
     }
 
 
@@ -198,28 +245,26 @@ const RenderReplyTextArea = props => {
 
     //functional component that is responsible for the alignment functionality 
     const alignContent = (editor, alignment) => {
-        const defaultAlignment =  "alignLeft"; 
+        const defaultAlignment = "alignLeft";
         const [match] = Editor.nodes(editor, {
             match: n => n.align === alignment
         })
         //if the current content's alignment is already  the same as the 
         //...'alignment' parameter, make the alignment of the content default 
         let newProperties = {
-            align: match ? defaultAlignment : alignment, 
-        }; 
-        Transforms.setNodes(editor, newProperties); 
+            align: match ? defaultAlignment : alignment,
+        };
+        Transforms.setNodes(editor, newProperties);
     }
 
-    const {normalMode} = useContext(AppContext);
-
     const RenderButton = props => {
-        const { style } = props; 
+        const { style } = props;
         var isActive = getActiveStyles(editor).has(style);
         if (TEXT_ALIGN_TYPES.includes(style)) {
             isActive = getActiveAlignment(editor)
         }
 
-        var display = null; 
+        var display = null;
         switch (style) {
             case 'bold':
                 display = <b>B</b>;
@@ -232,39 +277,39 @@ const RenderReplyTextArea = props => {
                 break;
             case 'lineThrough':
                 display = <del>S</del>;
-                break; 
+                break;
             case 'code':
                 display = <span>&#60;c&#5171;</span>;
-                break; 
+                break;
             case 'super':
                 display = <span>A^</span>;
-                break; 
+                break;
             case 'heading':
-                display= <><span>T</span><span style={{ fontWeight: 'bold', fontSize: '20px'}}>T</span></>;
-                break; 
+                display = <><span>T</span><span style={{ fontWeight: 'bold', fontSize: '20px' }}>T</span></>;
+                break;
             case 'quote':
-                display = <FaQuoteRight alt = "quote block" />;
+                display = <FaQuoteRight alt="quote block" />;
                 break;
             case 'spoiler':
                 display = <BsExclamationTriangle alt="spoiler" />;
-                break; 
+                break;
             case 'bulleted':
                 display = <BsListUl alt="bulleted list" />;
-                break; 
+                break;
             case 'orderedList':
                 display = <ImListNumbered alt="numbered list" />;
-                break; 
+                break;
             case 'alignLeft':
                 display = <AiOutlineAlignLeft alt="align left" />;
-                break; 
+                break;
             case 'alignCenter':
                 display = <AiOutlineAlignCenter alt="center content" />;
-                break; 
+                break;
             case 'alignRight':
                 display = <AiOutlineAlignRight alt="align right" />;
-                break; 
+                break;
             default:
-                break; 
+                break;
         }
         return (
             <StylingButton
@@ -275,7 +320,7 @@ const RenderReplyTextArea = props => {
                     if (style === 'orderedList' || style === 'bulleted') {
                         toggleList(editor, style)
                     }
-                    else if(TEXT_ALIGN_TYPES.includes(style)){
+                    else if (TEXT_ALIGN_TYPES.includes(style)) {
                         alignContent(editor, style)
                     }
                     else
@@ -286,7 +331,7 @@ const RenderReplyTextArea = props => {
 
     const SubmitEvent = () => {
         //check if the reply is empty 
-        var isValid = false; 
+        var isValid = false;
         if (response.length !== 0) {
             response.forEach(child => {
                 child.children.forEach(val => {
@@ -299,10 +344,10 @@ const RenderReplyTextArea = props => {
         }
         //if it is not empty, execute the following block of code
         if (isValid) {
-                // Save the value to Local Storage.
-                const content = JSON.stringify(response)
-                console.log(content)
-                localStorage.setItem('content', content)
+            // Save the value to Local Storage.
+            const content = JSON.stringify(response)
+            console.log(content)
+            localStorage.setItem('content', content)
 
             //The following block of code resets the editor 
             Transforms.delete(editor, {
@@ -315,124 +360,125 @@ const RenderReplyTextArea = props => {
         }
     }
 
+
     return (
-        <Container
-            borderFocus={borderStyle}
-            MarginLeft={marginLeft}
-            MarginRight={marginRight}
-            MarginTop={marginTop}
-            ReplyWidth={ReplyWidth}
-        >
-                {author ?
-                    <Gap><span>Comment as </span><UserName>{author}</UserName></Gap>
-                    :
-                    null
-                }
-                <ReplyCont
-                ref={replyRef}
-                id="ReplyContainer"
-                borderFocus={borderStyle}
-                >
-                <Slate
-                    editor={editor}
-                    value={response}
-                   // value={initialValue}
-                    id="Editable"
-                    onChange={onChangeHandler}
-                >
-                    <Editable
-                        style={SlateStyle}
-                        renderElement={renderElement}
-                        renderLeaf={renderLeaf}
-                        placeholder="What are your thoughts?"
-                        autoFocus
-                        spellCheck={false}
-                        onKeyDown={event => {
-                            if (!event.ctrlKey) {
-                                return;
-                            }
-                            switch (event.key) {
-                                case '`': {
-                                    event.preventDefault();
+        <CreatePostContext.Provider value={context}>
+            <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
+                    <MainContainer id = "CreatePost_MainContainer">
+                    <PanelContainer id="CreatePost_PanelContainer">
+                        <Container>
+                            <TitleInputWrapper borderFocus={TitleBorderStyle} ref={TitleRef}>
+                                <TitleInput value={threadTitle} onChange={onChangeTitle} placeholder = "Title" />
+                                <RenderCharacterCont />
+                            </TitleInputWrapper>
+                            <ReplyCont
+                                ref={replyRef}
+                                id="ReplyContainer"
+                                borderFocus={borderStyle}
+                            >
+                                <Slate
+                                    editor={editor}
+                                    value={response}
+                                    // value={initialValue}
+                                    id="Editable"
+                                    onChange={onChangeHandler}
+                                >
+                                    <CommentButtonContainer>
+                                        <RenderButton style='bold' />
+                                        <RenderButton style='italic' />
+                                        <RenderButton style='underline' />
+                                        <RenderButton style='lineThrough' />
+                                        <RenderButton style='code' />
+                                        <RenderButton style='super' />
+                                        <RenderButton style='heading' />
+                                        <RenderButton style='quote' />
+                                        <RenderButton style='spoiler' />
+                                        <RenderButton style='bulleted' />
+                                        <RenderButton style='orderedList' />
+                                        <RenderButton style='alignLeft' />
+                                        <RenderButton style='alignCenter' />
+                                        <RenderButton style='alignRight' />
+                                    </CommentButtonContainer>
+                                    <Editable
+                                        style={SlateStyle}
+                                        renderElement={renderElement}
+                                        renderLeaf={renderLeaf}
+                                        placeholder="What are your thoughts?"
+                                        autoFocus
+                                        spellCheck={false}
+                                        onKeyDown={event => {
+                                            if (!event.ctrlKey) {
+                                                return;
+                                            }
+                                            switch (event.key) {
+                                                case '`': {
+                                                    event.preventDefault();
 
-                                    const [match] = Editor.nodes(editor, {
-                                        match: n => n.type === "code",
-                                    })
-                                    Transforms.setNodes(editor,
-                                        { type: match ? "default" : "code" },
-                                        { match: n => Editor.isBlock(editor, n) }
-                                    )
-                                    break;
-                                }
-                                case 'b': {
-                                    event.preventDefault();
-                                    toggleStyle(editor, 'bold');
-                                    break;
-                                }
-                                case 'i': {
-                                    event.preventDefault();
-                                    toggleStyle(editor, 'italic')
-                                    break;
-                                }
-                                case 'u': {
-                                    event.preventDefault();
-                                    toggleStyle(editor, 'underline')
-                                    break;
-                                }
-
-                            }
-                        }}
-                    />
-                        
-                    <CommentButtonContainer>
-                        <RenderButton style='bold' />
-                        <RenderButton style='italic' />
-                        <RenderButton style='underline' />
-                        <RenderButton style='lineThrough' />
-                        <RenderButton style='code' />
-                        <RenderButton style='super' />
-                        <RenderButton style='heading' />
-                        <RenderButton style='quote' />
-                        <RenderButton style='spoiler' />
-                        <RenderButton style='bulleted' />
-                        <RenderButton style='orderedList' />
-                        <RenderButton style='alignLeft' />
-                        <RenderButton style='alignCenter' />
-                        <RenderButton style='alignRight' />
-                        <SubmitButton
-                            onMouseDown={SubmitEvent}
-                        >Comment</SubmitButton>
-                    </CommentButtonContainer>
-                </Slate>
-                </ReplyCont>
-        </Container> 
+                                                    const [match] = Editor.nodes(editor, {
+                                                        match: n => n.type === "code",
+                                                    })
+                                                    Transforms.setNodes(editor,
+                                                        { type: match ? "default" : "code" },
+                                                        { match: n => Editor.isBlock(editor, n) }
+                                                    )
+                                                    break;
+                                                }
+                                                case 'b': {
+                                                    event.preventDefault();
+                                                    toggleStyle(editor, 'bold');
+                                                    break;
+                                                }
+                                                case 'i': {
+                                                    event.preventDefault();
+                                                    toggleStyle(editor, 'italic')
+                                                    break;
+                                                }
+                                                case 'u': {
+                                                    event.preventDefault();
+                                                    toggleStyle(editor, 'underline')
+                                                    break;
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </Slate>
+                            </ReplyCont>
+                        </Container> 
+                        </PanelContainer>
+                    <SideBar>
+                            {communityID ? <RenderSideBar contextItem={CreatePostContext} /> : null}
+                    </SideBar>
+                </MainContainer>
+            </ThemeProvider> 
+        </CreatePostContext.Provider>
         )
 }
 
-export default RenderReplyTextArea; 
+export default CreatePostScreen; 
+
 
 const CodeElement = props => {
     var alignment = { textAlign: ALIGN_OBJECT[props.element.align] }
     return (
-        <pre {...props.attributes} style={alignment} id ="CodeBlock">
+        <pre {...props.attributes} style={alignment} id="CodeBlock">
             <code>{props.children}</code>
         </pre>
     )
 }
 
 const DivElement = props => {
-    var alignment = { textAlign: ALIGN_OBJECT[props.element.align]}
+    var alignment = { textAlign: ALIGN_OBJECT[props.element.align] }
     return (
         <div
             {...props.attributes}
             style={alignment}
             id="DefaultBlock"
         >{props.children}</div>
-        )
+    )
 }
 
 const Leaf = props => {
-    var element = <>{props.children}</>; 
+    var element = <>{props.children}</>;
     if (props.leaf.bold) {
         element = <b>{element}</b>
     }
@@ -461,7 +507,7 @@ const Leaf = props => {
         element = <SpoilerBlock>{element}</SpoilerBlock>
     }
 
-    return <span {...props.attributes} >{element}</span>; 
+    return <span {...props.attributes} >{element}</span>;
 }
 
 const DefaultElement = props => {
@@ -485,26 +531,32 @@ const Container = styled.div`
     margin-left: ${props => props.MarginLeft || "10px"};
     margin-right: ${props => props.MarginRight || "10px"};
     margin-top: ${props => props.MarginTop || 0};
-    width: ${props => props.ReplyWidth || "100%"};    
+    width: ${props => props.ReplyWidth || "100%"};  
+    background-color: ${props => props.theme.PanelBackgroundColor}; 
+    border-radius: 5px; 
+    display: block;
+    padding: 20px 0;
 `
+
+
 
 const ReplyCont = styled.div`
     border: ${props => props.borderFocus || "2px solid #d6d6d6"}; 
     background-color: ${props => props.theme.PanelBackgroundColor};
     border-radius: 4px;
-    width: 100%;
+    width: 95%;
     outline: none;
-    margin-bottom: 20px;
+    margin: 20px auto;
     &:focus{
       border: 2px solid #474747; 
     }
 `
 
 export const makeList = (children) => {
-    var Arr = []; 
+    var Arr = [];
     var newline = 0;
     const regEx = /\r|\n/;
-   // console.log(children.length)
+    // console.log(children.length)
     /*
     for (var i = 0; i < children.length; i++) {
         if (regEx.exec(children.charAt(i))) {
@@ -545,13 +597,16 @@ const UserName = styled.div`
 
 const SlateStyle = {
     /*resize: "none", */
-    width: "-webkit-fill-available",
+    /*width: "-webkit-fill-available",*/
+    width: "96%",
     height: "170px",
     outline: "none",
     borderWidth: "0",
     margin: "5px",
     fontFamily: "Verdana",
     overflowY: 'auto',
+    padding: "8px",
+    overflowX: "hidden",
 }
 
 const StylingButton = styled.div`
@@ -564,7 +619,7 @@ padding-bottom: 5px;
 border-radius: 5px; 
 background-color: ${props => props.theme.ContentBodyBackgroundColor || "#e5e5e5"};
 color: ${props => props.colorVal || "#828282"};
-font-weight: ${props => props.fWeight || "normal" };
+font-weight: ${props => props.fWeight || "normal"};
 margin-left: 5px;
 margin-right: 5px;
 &:hover{
@@ -610,3 +665,31 @@ const SpoilerBlock = styled.span`
 background-color: #000000;
 color: #000000; 
 ` 
+
+
+const TitleInputWrapper = styled.div`
+margin: 20px auto; 
+border-radius: 5px; 
+display: grid;
+grid-template-columns: 90% 10%; 
+color: #A0A0A0;
+padding: 10px;
+width: 92%;
+border: ${props => props.borderFocus || "2px solid #d6d6d6"}; 
+background-color: ${props => props.theme.PanelBackgroundColor}; 
+`
+
+const TitleInput = styled.input`
+    text-align: left: 
+    margin: 10px; 
+    background-color: ${props => props.theme.PanelBackgroundColor}; 
+    border: none; 
+    outline: none;
+    color: #A0A0A0;
+`
+
+const CharacterCounterWrapper = styled.span`
+    font-weight: bold; 
+    text-align: right; 
+    margin: auto 10px; 
+`

@@ -20,3 +20,6 @@ export const CommunityContext = createContext();
 
 //Context item for Guest panel
 export const GuestContext = createContext(); 
+
+//Context item for Create Post 
+export const CreatePostContext = createContext(); 

@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react'; 
-import RenderFeed from '../feed/renderFeed.js';
-import { sampleUser, threads, SampleCommunity } from '../helperTools/dummyData.js'; 
+import RenderFeed from '../../feed/renderFeed.js';
+import { sampleUser, threads, SampleCommunity } from '../../helperTools/dummyData.js'; 
 import { useLocation } from 'react-router-dom'; 
-import { CommunityContext } from '../components/contextItem.js'; 
+import { CommunityContext } from '../../components/contextItem.js'; 
 import styled, { ThemeProvider } from 'styled-components'; 
-import { AppContext } from '../components/contextItem.js'; 
-import RenderRIcon from '../asset/icons/r_icon.js';
+import { AppContext } from '../../components/contextItem.js'; 
+import RenderRIcon from '../../asset/icons/r_icon.js';
+
+const RENDER_THREADS = 'RENDER_ THREADS';
 
 //What this to do is to gather all the threads
 const RenderCommunity = () => {
@@ -13,14 +15,21 @@ const RenderCommunity = () => {
     const { communityID } = location.state;
     const [community, setCommunity] = useState(null)
     const [threadData, setThreadData] = useState(null)
-    const [useCommunityTheme, setCommunityTheme] = useState(true);
+
+    //community.js serves two purpose 
+    //Either it diplays the feed of the community or displays the screen for users to create a post 
+    //With the help of the component RenderMainBody, the useState object functionaliy helps to determine what should be rendered
+    const [functionality, setFunctionality] = useState(RENDER_THREADS); 
     
     const {
         normalMode,
         DefaultTheme,
         DarkTheme,
+        useCommunityTheme
     } = useContext(AppContext);
 
+    //This gathers all the threads of a selected community 
+    //To be changed 
     const gatherCommunityThreads = () => {
         var Arr = threads.filter(val => val.communityID === communityID)
         return Arr;
@@ -28,10 +37,19 @@ const RenderCommunity = () => {
 
     const context = {
         ...community, 
-        useCommunityTheme,
-        toggleCommunityTheme: () => { setCommunityTheme(prev => !prev)}, 
+        communityID, 
+        threadData, 
     }
-    
+
+
+    //to be changed 
+    useEffect(() => {
+        if (communityID !== undefined && communityID !== null) {
+            setThreadData(gatherCommunityThreads())
+            setCommunity(SampleCommunity.find(val => val.communityID === communityID))
+        }
+    }, [communityID])
+
     const RenderHeader = props => {
         return (
             <ThemeProvider theme={normalMode? DefaultTheme : DarkTheme}>
@@ -61,25 +79,45 @@ const RenderCommunity = () => {
     }
 
 
-    //to be changed 
-    useEffect(() => {
-        if (communityID !== undefined && communityID !== null) {
-            setThreadData(gatherCommunityThreads())
-            setCommunity(SampleCommunity.find(val => val.communityID === communityID))
+    const RenderMainBody = ({ functionality }) => {
+        const { threadData } = useContext(CommunityContext);
+        switch (functionality) {
+            case RENDER_THREADS:
+                return threadData !== undefined && threadData !== null ?
+                    <>
+                        <RenderHeader />
+                        <RenderFeed
+                            data={threadData}
+                            isCommunity={true} />
+                    </>
+                    :
+                    null;
+            default:
+                return null;
         }
-    }, [communityID])
+    }
+
+
+    /*
     return threadData !== undefined && threadData !== null ?
         <CommunityContext.Provider value={context}>
             <RenderHeader />
             <RenderFeed
                 data={threadData}
                 isCommunity={true} />
-        </CommunityContext.Provider> 
-        : null;
+        </CommunityContext.Provider>
+        :
+        null;
+        */
+    return (
+        <CommunityContext.Provider value={context}>
+            <RenderMainBody functionality={functionality} />
+        </CommunityContext.Provider>
+       )
 }
 
-
 export default RenderCommunity;
+
 
 const HeaderContainer = styled.div`
 display: grid; 

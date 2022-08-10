@@ -61,7 +61,7 @@ const RenderNavBar = props => {
                     onClick={ToHome}
                 />
                 {defaultMenu ?
-                    <>{currentUserData ?
+                    <>{currentUserData !== null && currentUserData !== undefined ?
                         <MenuComponent onClick={toggleMenu}>
                             <MenuShell>
                                 <Logo src={Silhouette} id="silhouette" />
@@ -83,7 +83,8 @@ const RenderNavBar = props => {
             </MainContainer>
             {openMenu &&
                 <RenderMenu
-                    closeMenu={CloseMenu}
+                CloseMenu={CloseMenu}
+                openMenu={openMenu}
                 />
             }
         </ThemeProvider>

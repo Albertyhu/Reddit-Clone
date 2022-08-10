@@ -164,26 +164,22 @@ const RenderGuestPanel = props => {
     const handleSignIn = async () => {
         var userData = userList.find(item => item.username === userName); 
         setLoading(true)
-        await signInWithEmailAndPassword(auth, userData.email, password).
-            then(setCurrentUserData(userData))
+        await signInWithEmailAndPassword(auth, userData.email, password)
+            .then(() => {
+                setCurrentUserData(userData); 
+                setCurrentUser(getUserName()); 
+                setLoading(false);
+                resetInput();
+                closeGuestPanel();
+            })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                alert(errorCode + ': ' + errorMessage);
-
+                AlertError(errorCode);
+                setLoading(false);
             });
-        setCurrentUser(getUserName())
-        setLoading(false);
-        resetInput();
-        closeGuestPanel();
+
     }
-
-
-    const DisplayOnConsole = () => {
-        console.log("userName: " + userName);
-        console.log("currentEmail: " + currentEmail);
-        console.log("GoogleID: " + GoogleID)
-    } 
 
     const context = {
         userName, 
@@ -197,12 +193,11 @@ const RenderGuestPanel = props => {
         loading, 
         CheckIfEmailExists,
         CheckIfUserNameExists,
-
+        handleSignIn, 
         //For RenderGoogleSignUpButton 
         setCurrentEmail,
         setUsername,
         setGoogleID, 
-        DisplayOnConsole, 
         GoogleID,
     }
 
@@ -462,7 +457,7 @@ const RenderSignIn = props => {
             passwordMessage = "Your password must be 6 characters or more.";
         }
         if (userValid && passwordValid) {
-            handleSignIn();
+            handleSignIn(); 
         }
         else {
             setNameError(!userValid);
@@ -524,7 +519,6 @@ const RenderGoogleSignUpButton = props => {
         setCurrentEmail,
         setUsername,
         setGoogleID,
-        DisplayOnConsole, 
     } = useContext(GuestContext);
 
     return (
@@ -532,6 +526,19 @@ const RenderGoogleSignUpButton = props => {
             SignUpWGoogle(setCurrentEmail, setUsername, setGoogleID, moveForward);
         }}><FcGoogle /><span>Continue with Google</span></Button>
     )
+}
+
+const AlertError = errorCode => {
+    switch (errorCode) {
+        case 'auth/wrong-password':
+            alert('Either your username or the password you\'ve entered is wrong.');
+            return;
+        case "auth / too - many - requests":
+            alert("Too many log in attempts. Please, reset your password, or try again later.");
+            return; 
+        default:
+            return; 
+    }
 }
 
 const MainContainer = styled.div`

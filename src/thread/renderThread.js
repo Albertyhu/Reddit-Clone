@@ -42,9 +42,7 @@ const RenderThread = props => {
     const [upvoteNum, setUpvoteNum] = useState(0);
     const [downvoteNum, setDownvoteNum] = useState(0)
 
-    //For allowing the user to control whether or not they want the 
-    //...page to be displayed with the community theme. 
-    //This information will be passed to sidebar.js 
+
     const [useCommunityTheme, setCommunityTheme] = useState(false);
 
 
@@ -70,9 +68,8 @@ const RenderThread = props => {
             setDownvoteNum(num)
         },
         //passes all data of desired community 
-        ...community, 
-        useCommunityTheme,
-        toggleCommunityTheme: () => { setCommunityTheme(prev => !prev) }, 
+        ...community,
+
     }
 
     useEffect(() => {

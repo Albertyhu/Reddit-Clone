@@ -20,7 +20,6 @@ const RenderMainPost = props => {
     } = useContext(AppContext);
 
     const navigate = useNavigate(); 
-    console.log("threadData.communityID: " + threadData.communityID)
     const ToCommunity = useCallback(() => navigate('../community', {
         state: {
             communityID: threadData.communityID, 

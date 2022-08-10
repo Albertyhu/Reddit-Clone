@@ -16,17 +16,23 @@ const RenderMenu = props => {
         DefaultTheme,
         DarkTheme,
         currentUser, 
+        currentUserData, 
     } = useContext(AppContext)
-    const { closeMenu } = props; 
+    const {
+        CloseMenu,
+        openMenu,
+    } = props; 
     const MenuRef = useRef() 
 
     const ClickEvent = event => {
-        if (MenuRef.current && !MenuRef.current.contains(event.target)) {
-            closeMenu(); 
+        if (openMenu && MenuRef.current && !MenuRef.current.contains(event.target)) {
+            CloseMenu(); 
         }
     }
-    document.addEventListener('mousedown', ClickEvent);
+    
+
     useEffect(() => {
+        document.addEventListener('mousedown', ClickEvent);
         return () => document.removeEventListener('mousedown', ClickEvent);
     }, [])
 
@@ -52,7 +58,7 @@ const RenderMenu = props => {
                             onChangeHandler={toggleDisplayThemes}
                         />
                     </MenuItem>
-                    {currentUser ?
+                    {currentUserData ?
                         <MenuItem className="topBorder" onClick={SignOut}>
                             <LeftColumn>
                                 <IoMdExit

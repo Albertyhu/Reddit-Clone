@@ -8,14 +8,14 @@ import { sampleUser, threads, SampleCommunity } from './helperTools/dummyData.js
 import { gatherTopCommunity } from './components/communityMethods.js'; 
 import { BrowserRouter, Routes, Route} from "react-router-dom";
 import Home from './screens/home.js'; 
-import RenderCommunity from './screens/community.js';
+import RenderCommunity from './screens/community/community.js';
 import RenderGuestPanel from './guest/GuestPanel.js'; 
 import { onAuthStateChanged, getAuth } from 'firebase/auth'; 
 import { doc, getDoc } from 'firebase/firestore'; 
 import { retrieveUserData } from './firebaseMethod/firestoreMethods.js'; 
+import CreatePostScreen from './createPost/createPost.js'; 
 
 const auth = getAuth(); 
-
 
 function App() {
     window.onload = function () {
@@ -30,10 +30,10 @@ function App() {
         return auth.currentUser;
     }
 
-    function authStateObserver(user) {
+    async function authStateObserver(user) {
         if (user) { // User is signed in!
             setCurrentUser(getUserName()); 
-            retrieveUserData(auth.currentUser.uid, setCurrentUserData); 
+            setCurrentUserData(await retrieveUserData(auth.currentUser.uid, setCurrentUserData)); 
 
         } else { // User is signed out!
             setCurrentUser('')
@@ -69,6 +69,12 @@ function App() {
 
     //To be adjusted once Firebase is implemented 
     const [topCommunities, setTopCommunities] = useState(gatherTopCommunity(SampleCommunity, 5))
+
+    //For allowing the user to control whether or not they want the 
+    //...page to be displayed with the community theme. 
+    //This information will be passed to sidebar.js 
+    //The screens displayed comment.js and renderThread.js will have to gather the Community Data which will passed to the side bar
+    const [useCommunityTheme, setCommunityTheme] = useState(true);
 
     const DefaultTheme = {
         //PanelBackgroundColor applies to the navbar 
@@ -164,6 +170,10 @@ function App() {
         currentUserData, 
         setCurrentUserData,
         getUserName, 
+
+        //Allows users to decide whether threads and community screens should be rendered with their corresponding community theme
+        useCommunityTheme, 
+        toggleCommunityTheme: () => { setCommunityTheme(prev => !prev) }, 
     }
 
     return (
@@ -185,6 +195,10 @@ function App() {
                     <Route
                         path='/thread'
                         element={<RenderThread />}
+                        />
+                    <Route
+                        path='/submit'
+                        element={<CreatePostScreen  />}
                     />
                     </Routes>
                 </MainContainer>

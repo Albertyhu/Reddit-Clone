@@ -24,8 +24,7 @@ export const PanelContainer = styled.div`
     width: 740px; 
 }
 @media screen and (max-width: 540px){
-    width: 100%; 
-    
+    width: 100%;  
 }
 `
 
