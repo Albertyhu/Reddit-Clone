@@ -22,7 +22,6 @@ const RenderCardItem = props => {
         title,
         flair, 
         authorName, 
-        authorID, 
         textBody, 
         awards, 
         timePosted, 

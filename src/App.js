@@ -14,6 +14,7 @@ import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore'; 
 import { retrieveUserData } from './firebaseMethod/firestoreMethods.js'; 
 import CreatePostScreen from './createPost/createPost.js'; 
+import RenderPayloadDeliverer from './helperTools/deliverPayload.js'; 
 
 const auth = getAuth(); 
 
@@ -176,6 +177,13 @@ function App() {
         toggleCommunityTheme: () => { setCommunityTheme(prev => !prev) }, 
     }
 
+    /*
+     * Data that currentUserData stores: 
+        email,
+        username,
+        userID,
+     */
+
     return (
         <AppContext.Provider value={context}>
             <BrowserRouter>
@@ -199,6 +207,10 @@ function App() {
                     <Route
                         path='/submit'
                         element={<CreatePostScreen  />}
+                        />
+                    <Route
+                        path='/deliverpayload'
+                            element={<RenderPayloadDeliverer />}
                     />
                     </Routes>
                 </MainContainer>

@@ -15,16 +15,11 @@ import { RenderCommentSort } from '../sort/sortComponent.js';
 import RenderAllComments from './renderAllComments.js'; 
 import RenderSideBar from './sidebar.js'; 
 import { useLocation } from 'react-router-dom'; 
-import { doc, setDoc, collection, query, where, getDoc, getDocs, Timestamp } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth'; 
-import { db } from '../firebaseComponent.js';
-
-const auth = getAuth(); 
 
 const RenderThread = props => {
     const location = useLocation();
-   // const { threadID ='efb13f6-774b-ca56-be62-e5ad21be142' } = location.state; 
-    const threadID = '5a4357a-3f56-278a-26af-f8f3802cd4'; 
+    const { threadID } = location.state; 
+
     //threadData stores the information about the individual thread
     //...such as the body of the text, the author's name, etc. 
     const [threadData, setThreadData] = useState(null)
@@ -47,9 +42,6 @@ const RenderThread = props => {
     const [upvoteNum, setUpvoteNum] = useState(0);
     const [downvoteNum, setDownvoteNum] = useState(0)
 
-    //Array of all votes owned by the thread 
-    //This is used to update the 'votes' array in firestore
-    const [voteArray, setVoteArray] = useState([])
 
     const [useCommunityTheme, setCommunityTheme] = useState(false);
 
@@ -63,8 +55,6 @@ const RenderThread = props => {
         downvoted, 
         upvoteNum,
         downvoteNum, 
-        voteArray,
-        setVoteArray,
         changeUpvoted: num => {
             setUpvoted(num)
         },
@@ -82,53 +72,17 @@ const RenderThread = props => {
 
     }
 
-    const retrieveThread = async (ID) => {
-        const docRef = doc(db, "Threads", ID)
-        const docData = await getDoc(docRef)
-            .catch(e => { console.log(`${e.code}: ${e.message}`)})
-        if (docData.exists()) {
-            setThreadData(docData.data())
-        }
-        else {
-            console.log("This data doesn\'t exist")
-        }
-    }
-
-    //function for processing voting data retrieved from Firebase
-    const extractVoteData = () => {
-        var upvotes = 0;
-        var downvotes = 0; 
-        threadData.votes.forEach(vote => {
-            if (vote.upvote) {
-                upvotes++; 
-                //if the current vote is owned by the currently logged in user
-                if (vote.userID == currentUserData.userID) {setUpvoted(true) }
-            }
-            if (vote.downvote) {
-                downvotes++; 
-                //if the current vote is owned by the currently logged in user
-                if (vote.userID == currentUserData.userID) { setDownvoted(true)}
-            }
-           
-        })
-        //store the votes array into the voteArray useState object
-        setVoteArray(threadData.votes)
-        setUpvoteNum(upvotes);
-        setDownvoteNum(downvotes); 
-    }
-
     useEffect(() => {
         if (threadID !== null || threadID !== undefined || threadID !== '') {
-            retrieveThread(threadID)
-           // setThreadData(threads.find(elem => elem.threadID === threadID))
+            setThreadData(threads.find(elem => elem.threadID === threadID))
         }
     }, [threadID])
 
     //needs to be updated when the voting gets 
     useEffect(() => {
         if (threadData !== null) {
-            extractVoteData();
-            //get relevent community data that the thread belongs to 
+            setUpvoteNum(threadData.votes.upvote)
+            setDownvoteNum(threadData.votes.downvote)
             setCommunityData(SampleCommunity.find(elem => elem.communityID === threadData.communityID))
         }
     }, [threadData])
@@ -137,7 +91,6 @@ const RenderThread = props => {
         normalMode,
         DefaultTheme,
         DarkTheme,
-        currentUserData,
     } = useContext(AppContext);
 
     return (

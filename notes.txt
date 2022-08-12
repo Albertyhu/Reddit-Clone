@@ -38,8 +38,62 @@ To Do List once Firestore is implemented
 file(s): 
     feed/renderFeed.js
     helperTools/dummyDataj.s
-Change the way timePosted is extracted; 
-Currently, the 
+Change the way all threads are distracted 
+
+Code from renderThread.js
+    const retrieveThread = async (ID) => {
+        const docRef = doc(db, "Threads", ID)
+        const docData = await getDoc(docRef)
+            .catch(e => { console.log(`${e.code}: ${e.message}`)})
+        if (docData.exists()) {
+            setThreadData(docData.data())
+        }
+        else {
+            console.log("This data doesn\'t exist")
+        }
+    }
+    
+    //function for processing voting data retrieved from Firebase
+    const extractVoteData = () => {
+        var upvotes = 0;
+        var downvotes = 0; 
+        threadData.votes.forEach(vote => {
+            if (vote.upvote) {
+                upvotes++; 
+                //if the current vote is owned by the currently logged in user
+                if (vote.userID == currentUserData.userID) {setUpvoted(true) }
+            }
+            if (vote.downvote) {
+                downvotes++; 
+                //if the current vote is owned by the currently logged in user
+                if (vote.userID == currentUserData.userID) { setDownvoted(true)}
+            }
+           
+        })
+
+        setUpvoteNum(upvotes);
+        setDownvoteNum(downvotes); 
+    }
+
+    
+    useEffect(() => {
+        if (threadID !== null || threadID !== undefined || threadID !== '') {
+            retrieveThread(threadID)
+           // setThreadData(threads.find(elem => elem.threadID === threadID))
+        }
+    }, [threadID])
+
+        useEffect(() => {
+        if (threadData !== null) {
+            extractVoteData();
+            //get relevent community data that the thread belongs to 
+            setCommunityData(SampleCommunity.find(elem => elem.communityID === threadData.communityID))
+        }
+    }, [threadData])
+
+        const {
+        currentUserData,
+    } = useContext(AppContext);
 
 2.) 
 files(s): 
@@ -48,6 +102,8 @@ Need to decide how to retrieve the number of comments to be displayed on each ca
 The ideal situation is to make a query request from firebase once from the root
 component, then pass that information along to the lower components such 
 as RenderCardItem.
+
+
 
 3.) 
 file(s): 
@@ -58,3 +114,5 @@ file(s):
 
  5.) /navBar/navBar.js; 
  Need to update ToHome function 
+
+

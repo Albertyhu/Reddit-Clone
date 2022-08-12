@@ -55,3 +55,20 @@ border-top: 2px solid rgba(0,0,0,0.1);
 margin-top: 10px;
 margin-bottom: 10px;
 `
+
+export const ErrorMessage = styled.div`
+    text-align: left;
+    font-size: ${props => props.FontSize || "12px"}; 
+    color: red; 
+    ${props => props.display};
+    margin: ${props => props.Margin || "5px 0" };
+    transition: transform 0.5s ease-in, opacity 0.5s ease-in; 
+    transition-delay: 0.1s;
+    z-index: 0;
+    user-select: none;
+    position: absolute;
+`
+
+/*Used as a complement to ErrorMessage component */
+export const DisplayError = "transform: translateY(0px); opacity: 1.0;"
+export const RemoveError = "transform: translateY(-10px); opacity: 0;"

@@ -8,11 +8,6 @@ import {
 import RenderRIcon from '../asset/icons/r_icon.js'; 
 import RenderPostFooter from './postFooter.js'; 
 import { useNavigate } from 'react-router-dom'; 
-import Html from 'slate-html-serializer'
-import { rules } from '../components/slateJSComponents/slateRules.js';
-
-// Create a new serializer instance with our `rules` from above.
-const html = new Html({ rules })
 
 //This functional component renders the main body of the post. 
 const RenderMainPost = props => {

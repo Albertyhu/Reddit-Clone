@@ -1,16 +1,12 @@
-import { useContext, useEffect } from 'react'; 
+import { useContext } from 'react'; 
 import { downArrow, upArrow, upvote, downvote, UpArrowDarkMode, DownArrowDarkMode  } from '../asset/icons'; 
 import styled, { ThemeProvider } from 'styled-components'; 
-import { AppContext } from './contextItem.js'; 
-import { doc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
-import { db } from '../firebaseComponent.js';
+import { ThreadContext, AppContext } from './contextItem.js'; 
+
 
 //requires passing data through useContext 
 //The element that wraps this component needs to have a width of at least 30px in order for 
 //... the elements of this component to align 
-
-//Go to render thread for writing the appropriate code for drawing voting info from firebase 
-//This function can only be used for threads 
 export const RenderVerticalVoting = props => {
     const { contextType } = props; 
     const {
@@ -22,16 +18,12 @@ export const RenderVerticalVoting = props => {
         changeDownvoted,
         changeUpvoteNum,
         changeDownvoteNum,
-        voteArray,
-        setVoteArray,
-        threadID, 
     } = useContext(contextType); 
 
     const {
         normalMode, 
         DefaultTheme, 
         DarkTheme, 
-        currentUserData, 
     } = useContext(AppContext);
 
     const upvoteOnclick = () => {
@@ -63,30 +55,6 @@ export const RenderVerticalVoting = props => {
             }
         }
     }
-
-    const UpdateVoteInFirestore = async () => {
-        const currentTime = new Date(Date.now());
-        var timeObj = Timestamp.fromDate(currentTime); 
-        var docRef = doc(db, "Threads", threadID); 
-        var updatedVote = {
-            dateVoted: timeObj,
-            upvote: upvoted,
-            downvote: downvoted,
-            userID: currentUserData.userID,
-        } 
-        var arr = voteArray.filter(item => item.userID !== currentUserData.userID); 
-        arr.push(updatedVote)
-        try {
-            await updateDoc(docRef, {
-                votes: arr,
-            })
-        } catch (e){ console.log(`${e.code}: ${e.message}`)}
-    }
-
-    useEffect(() => {
-        UpdateVoteInFirestore();  
-    }, [upvoted, downvoted])
-
     return (
         <ThemeProvider theme = {normalMode ? DefaultTheme : DarkTheme}>
             <Container>

@@ -1,20 +1,20 @@
 import React, { useEffect, useState, useContext, useCallback, useMemo, useRef } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-import { AppContext, CommunityContext, CreatePostContext } from '../components/contextItem.js';
+import { AppContext, CreatePostContext } from '../components/contextItem.js';
 import RenderSideBar from '../thread/sidebar.js'; 
 import {
     MainContainer,
     PanelContainer,
     SideBar,
-    Title,
+    ErrorMessage, 
+    DisplayError, 
+    RemoveError, 
 } from '../global/styledComponents.js'; 
-import { useLocation } from 'react-router-dom'; 
+import { useLocation, useNavigate } from 'react-router-dom'; 
 import {
     createEditor,
     Editor,
     Transforms,
-    Text,
-    Node,
     Element as SlateElement
 } from 'slate'
 import { Slate, Editable, withReact, useSlate } from 'slate-react'
@@ -28,6 +28,15 @@ import {
 import { FaQuoteRight } from 'react-icons/fa';
 import { BsExclamationTriangle, BsListUl, BsListOl } from 'react-icons/bs';
 import { ImListNumbered } from 'react-icons/im';
+import uuid from 'react-uuid'; 
+import { getAuth } from 'firebase/auth'; 
+import { doc, setDoc, collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { db, storage } from '../firebaseComponent.js';
+import firebase from 'firebase/compat/app';
+import PeekingOver from '../helperTools/assets/PeekingOver.jpg'; 
+import { getStorage, ref as StorageRef, uploadBytes } from "firebase/storage";
+
+const auth = getAuth(); 
 
 const ALIGN_OBJECT = {
     "alignLeft": "left",
@@ -35,21 +44,23 @@ const ALIGN_OBJECT = {
     "alignCenter": "center",
 } 
 
-
 //Has to be structured like RenderFeed.js architecture 
 const CreatePostScreen = props => {
     const location = useLocation(); 
     const {
-
         communityID,
         community
     } = location.state; 
 
-    
+    const {
+        communityTitle,
+    } = community;
+
     const {
         normalMode,
         DefaultTheme,
         DarkTheme,
+        currentUserData, 
     } = useContext(AppContext);
 
     const context = {
@@ -214,11 +225,6 @@ const CreatePostScreen = props => {
         }
     }
 
-    const isMarkActive = (editor, format) => {
-        const marks = Editor.marks(editor)
-        return marks ? marks[format] === true : false;
-    }
-
     const getActiveStyles = (editor) => {
         //Return a set of all styles that exist
         //otherwise, return an empty object
@@ -329,35 +335,134 @@ const CreatePostScreen = props => {
         )
     }
 
-    const SubmitEvent = () => {
+    const navigate = useNavigate(); 
+    const ToThread = useCallback(threadID => navigate('./thread', {
+        state: {
+            threadID: threadID, 
+        },
+    }), [navigate])
+
+    const [DisplayTitleError, setDisplayTitleError] = useState(false); 
+    const [TitleErrMess, setTitleErrMess] = useState('') 
+
+    
+    const SubmitEvent = async () => {
+        setTitleErrMess('');
         //check if the reply is empty 
-        var isValid = false;
+        var titleErrorMessage = "";
+        var titleValid = true; 
+        var isValid = true;
+        if (threadTitle.length <= 0) {
+            isValid = false;
+            titleValid = false; 
+            titleErrorMessage = "You must include a title for your post."; 
+        }
+
+        //The following block of code checks if the user has written anything on the text editor
+        //However, I decided to leave this feature out because the on the real Reddit
+        //...users can make posts without writing anything on the body of the content
+        /*
         if (response.length !== 0) {
+            var isEmpty = true;
             response.forEach(child => {
                 child.children.forEach(val => {
                     if (val.text !== '') {
-                        isValid = true;
+                        isEmpty = false;
                     }
                 })
 
             })
+            if (isEmpty) {
+                isValid = false;
+                ContentError = "Your must write something." 
+            }
         }
-        //if it is not empty, execute the following block of code
+        else {
+            isValid = false; 
+        }*/
+    
         if (isValid) {
-            // Save the value to Local Storage.
-            const content = JSON.stringify(response)
-            console.log(content)
-            localStorage.setItem('content', content)
-
-            //The following block of code resets the editor 
-            Transforms.delete(editor, {
-                at: {
-                    anchor: Editor.start(editor, []),
-                    focus: Editor.end(editor, []),
-                },
-            })
-            setResponse(initialValue)
+            const threadID = uuid();
+              await setDoc(doc(db, "Threads", threadID), CreateThread(threadID))
+                  .then(() => {
+                      Reset(); 
+                      //Need to change renderThread.js in order for this to work 
+                     // ToThread(threadID); 
+                  })
+                  .catch(error => {
+                      alert(`${error.code}: ${error.message}`); 
+                  })
+            Reset();
         }
+        else {
+            setTitleErrMess(titleErrorMessage); 
+            setDisplayTitleError(!titleValid); 
+        }
+    }
+
+
+    useEffect(() => {
+        setDisplayTitleError(false); 
+    }, [threadTitle])
+
+    const Reset = () => {
+        setThreadTitle('');
+        //The following block of code resets the editor 
+        Transforms.delete(editor, {
+            at: {
+                anchor: Editor.start(editor, []),
+                focus: Editor.end(editor, []),
+            },
+        })
+        setResponse(initialValue)
+    }
+    
+    const CreateThread = (threadID) => {
+        const currentTime = new Date(Date.now());
+        var timeObj = Timestamp.fromDate(currentTime); 
+        //To convert Timestamp obj back to javascript Date(), do the following 
+        //dateObj = new Date(timeObj.seconds * 1000)
+        var userID = auth.currentUser.uid; 
+        const obj = {
+            threadID: threadID,
+            votes: [
+                {
+                    userID: userID, 
+                    upvote: true, 
+                    downvote: false,
+                    dateVoted: timeObj,
+                },
+                {
+                    userID: 'MmyETCNAfcgCjw9b2qPl0kOV19f2',
+                    upvote: true,
+                    downvote: false,
+                    dateVoted: timeObj,
+                },
+                {
+                    userID: 'U1X1e6fisuPaqSzCsGSoiaJZT7w2',
+                    upvote: true,
+                    downvote: false,
+                    dateVoted: timeObj,
+                },
+                {
+                    userID: 'smIEjcmmgJRdXZfXqUoI3zrgE1H2',
+                    upvote: true,
+                    downvote: false,
+                    dateVoted: timeObj,
+                },
+            ],
+            community: communityTitle,
+            communityID: communityID, 
+            title: threadTitle, 
+            restricted: false, 
+            authorID: userID, 
+            authorName: currentUserData.username,  
+            timePosted: timeObj, 
+            textBody: JSON.stringify(response), 
+            commentNumber: 0, 
+
+        }
+        return obj; 
     }
 
 
@@ -366,7 +471,13 @@ const CreatePostScreen = props => {
             <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
                     <MainContainer id = "CreatePost_MainContainer">
                     <PanelContainer id="CreatePost_PanelContainer">
+                        <ScreenTitle>Create a post</ScreenTitle>
                         <Container>
+                            <ErrorMessage
+                                FontSize={"18px"}
+                                display={DisplayTitleError ? DisplayError : RemoveError}
+                                Margin={"2px 0 2px 18px"}
+                            >{TitleErrMess}</ErrorMessage>
                             <TitleInputWrapper borderFocus={TitleBorderStyle} ref={TitleRef}>
                                 <TitleInput value={threadTitle} onChange={onChangeTitle} placeholder = "Title" />
                                 <RenderCharacterCont />
@@ -375,6 +486,7 @@ const CreatePostScreen = props => {
                                 ref={replyRef}
                                 id="ReplyContainer"
                                 borderFocus={borderStyle}
+                                id = "ReplyCont"
                             >
                                 <Slate
                                     editor={editor}
@@ -443,6 +555,11 @@ const CreatePostScreen = props => {
                                     />
                                 </Slate>
                             </ReplyCont>
+                            <PostButtonContainer id = "PostButtonContainer">
+                                <PostButtonWrapper id = "PostButtonWrapper">
+                                    <SubmitButton onClick={SubmitEvent} id = "PostButton">Post</SubmitButton>
+                                </PostButtonWrapper>
+                            </PostButtonContainer>
                         </Container> 
                         </PanelContainer>
                     <SideBar>
@@ -547,6 +664,7 @@ const ReplyCont = styled.div`
     width: 95%;
     outline: none;
     margin: 20px auto;
+    color: ${props => props.theme.TextColor};
     &:focus{
       border: 2px solid #474747; 
     }
@@ -617,7 +735,7 @@ vertical-align: middle;
 padding-top: 5px;
 padding-bottom: 5px;
 border-radius: 5px; 
-background-color: ${props => props.theme.ContentBodyBackgroundColor || "#e5e5e5"};
+background-color: ${props => props.theme.SearchBarBackgroundColor};
 color: ${props => props.colorVal || "#828282"};
 font-weight: ${props => props.fWeight || "normal"};
 margin-left: 5px;
@@ -629,15 +747,16 @@ margin-right: 5px;
 
 const SubmitButton = styled.div`
 border-radius: 15px;
-padding-left: 10px; 
-padding-right: 10px; 
+padding: 5px 15px;
 fontWeight: bold; 
-background-color: ${props => props.theme.ButtonBackgroundC || "#0a73dd"}; 
-color: ${props => props.theme.ButtonTextC || "#ffffff"};
-padding-top: 5px;
-padding-bottom: 5px;
+font-family: "Verdana"; 
+background-color: #6C6C6C;
+color: #B6B6B6;
+width: fit-content;
+cursor: pointer;
+font-size: 15px;
 &:hover{
-    background-color: ${props => props.theme.ButtonBackgroundCHover || "#1B90E7"};
+    background-color: #464646;
 }
 `
 
@@ -645,7 +764,7 @@ const CommentButtonContainer = styled.div`
 width: 100%; 
 height: 35px; 
 display: flex;
-background-color: ${props => props.theme.ContentBodyBackgroundColor || "#e5e5e5"};
+background-color: ${props => props.theme.SearchBarBackgroundColor};
 & > * {
     vertical-align: middle; 
     margin-top: auto;
@@ -692,4 +811,34 @@ const CharacterCounterWrapper = styled.span`
     font-weight: bold; 
     text-align: right; 
     margin: auto 10px; 
+`
+const PostButtonContainer = styled.div`
+    color: #585858; 
+    width: 100%; 
+
+
+`
+
+const PostButtonWrapper = styled.div`
+    width: 95%;
+    margin: auto;
+    text-align: right;
+    & > div#PostButton{
+        margin-right: 0;
+        margin-left: auto;
+    }
+`
+const ScreenTitle = styled.div`
+color: ${props => props.theme.TextColor}; 
+font-size: 20px; 
+font-weight: bold;
+font-family: "Arial";
+margin: 20px 0px; 
+padding: 0 12px;
+`
+
+const Divider = styled.div`
+border-bottom: 1px solid ${props => props.theme.SearchBarBackgroundColor}; 
+padding: 0 12px; 
+margin: 20px auto;
 `

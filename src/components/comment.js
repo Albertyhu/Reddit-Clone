@@ -24,7 +24,7 @@ import { Slate, Editable, withReact } from 'slate-react'
 const Comment = props => {
     //isLastDescendant determinse if the comment is the last reply in the chain. 
     //...It's important for the rendering of threadlines 
-    const { authorID,
+    const { authorName,
         commentID,
         bodyText,
         children, 
@@ -169,7 +169,7 @@ const Comment = props => {
                                 id={ExpandIconID}
                            />
                         <Avatar src={CrossedArms} />
-                        <UserName>{authorID}</UserName>
+                        <UserName>{authorName}</UserName>
                         <TimePosted> &#x2022; 1 hour ago</TimePosted>
                     </CommentHeader>
                     <InnerContainer

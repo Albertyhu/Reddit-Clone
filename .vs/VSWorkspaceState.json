@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\components",
-    "\\src\\firebaseMethod",
-    "\\src\\global",
+    "\\src\\components\\old_files",
+    "\\src\\createPost",
     "\\src\\guest",
-    "\\src\\helperTools",
     "\\src\\navBar",
     "\\src\\screens",
+    "\\src\\screens\\community",
     "\\src\\thread"
   ],
-  "SelectedNode": "\\src\\firebaseMethod\\GoogleAuth.js",
+  "SelectedNode": "\\src\\thread\\renderMainPost.js",
   "PreviewInSolutionExplorer": false
 }
