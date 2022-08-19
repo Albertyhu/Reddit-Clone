@@ -29,16 +29,19 @@ Converting firebase timestamp to javascript date
 https://thewebdev.info/2022/04/28/how-to-convert-a-firestore-date-or-timestamp-to-a-javascript-date/
 
 To Do List Before Firestore is implemented 
+
+//done 
 1.)
 components/RenderTimePosted
 write the function 
 
 To Do List once Firestore is implemented 
+//done 
 1.)
 file(s): 
     feed/renderFeed.js
     helperTools/dummyDataj.s
-Change the way all threads are distracted 
+Change the way all threads are retrieved 
 
 Code from renderThread.js
     const retrieveThread = async (ID) => {
@@ -95,6 +98,7 @@ Code from renderThread.js
         currentUserData,
     } = useContext(AppContext);
 
+//done 
 2.) 
 files(s): 
     cardItem.js 
@@ -104,7 +108,7 @@ component, then pass that information along to the lower components such
 as RenderCardItem.
 
 
-
+//done 
 3.) 
 file(s): 
     renderThread.js 
@@ -112,7 +116,56 @@ file(s):
 
  4.) /screens/community.js; 
 
+ //done 
  5.) /navBar/navBar.js; 
  Need to update ToHome function 
 
+ //done 
+ 6.) There is a problem with voting on the cardItems displayed by renderFeed for community and home 
+ solution: update the array that is responsible for rendering the sorted comments/threads
 
+ //done
+ 7.) comment.js
+ The comments need to be serialized 
+ solution: create a function that serialize and converts the JSON data into html 
+
+ //Done
+ 8.) Threads are duplicated in renderFeed 
+ solution: remove strict mode in index.js 
+
+ //done
+ 9.) The time posted feature for each comment reply to a thread needs to be fixed
+
+ 10.) Each thread needs  to show comment number. 
+
+ //done
+ 11.) Users should immediately see their comments posted on the thread after submitting them. 
+ soluton: update the array that renders the sorted comments after the user posts the comment
+
+ //done 
+12.)when community screen gets refreshed, the screen is blank. 
+explanation: The community.js file was getting the array of all communities that exist from App.js. For some reason,
+when community page gets reloaded, the array is empty. 
+solution: Direct the app to make another request to retrieve the target community from Firestore. 
+
+//solved 
+13.)There is a problem with the createPost.js screen. When the user clicks on the Create Post button on the side bar,
+community_ID does not get destructured for some reason. Thus, the page does not load. 
+Maybe it's a problem with asynchronous factors.
+
+The console produced this error: 
+"Uncaught TypeError: Cannot destructure property 'community_ID' of 'location.state' as it is null.""
+
+Getting this warning whenever "Create Post" button is pressed: 
+ Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have 
+ a side-effect in your render function that asynchronously later calls tries to update the component. 
+ Move this work to useEffect instead.
+ 
+solution: This is a problem with where the GoCreatePost function is defined. 
+The problem is that the function was created in sidebar.js, which is a lower level component. 
+The function needs to be defined at the top level component community.js. 
+
+14.) Karma for each users should reflect the real functionality 
+A way to calculate Karma is with the following: 
+Every time the users creates a post or comment.
+Every time someone else votes on the post or comment. 

@@ -23,3 +23,6 @@ export const GuestContext = createContext();
 
 //Context item for Create Post 
 export const CreatePostContext = createContext(); 
+
+//Context item for Home.js
+export const HomeContext = createContext(); 

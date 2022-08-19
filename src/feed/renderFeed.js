@@ -18,10 +18,16 @@ import RenderSideBar from '../thread/sidebar.js';
 //If feed is displayed on the Community Page, all data should be gathered at community.js
 const RenderFeed = props => {
     //data is array of threads to be displayed on the feed page
-    const { data, isCommunity } = props; 
+    const {
+        data,
+        isCommunity, 
+        GoCreatePostPage,
+    } = props; 
+
     const [sortMethod, setSort] = useState('Top'); 
 
     const [sortedData, setSortedData] = useState(SortArray(data, sortMethod)); 
+
     const { normalMode,
         DefaultTheme,
         DarkTheme,
@@ -30,6 +36,13 @@ const RenderFeed = props => {
     useEffect(() => {
         setSortedData(SortArray(data, sortMethod)); 
     }, [sortMethod])
+    /*
+    useEffect(() => {
+        if (data !== null && data !== undefined) {
+            console.log(`${isCommunity ? "Community" : "Home"}`)
+            console.log(data)
+        }
+    }, [data])*/
     return (
         <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
             <MainContainer id = "RenderFeed_MainContainer">
@@ -38,7 +51,12 @@ const RenderFeed = props => {
                         activeSort={sortMethod}
                         setActiveSort={setSort}
                     /> 
-                    {sortedData.map(thread => <RenderCardItem {...thread} key={uuid()} />)}
+                    {sortedData.map((thread, ind) => <RenderCardItem
+                        {...thread} key={uuid()}
+                        threadIndex={ind}
+                        sortedArray={sortedData}
+                        dispatchFunction={setSortedData}
+                    />)}
                 </PanelContainer> 
                 <SideBar id= "FeedSideBar">
                     {isCommunity ?

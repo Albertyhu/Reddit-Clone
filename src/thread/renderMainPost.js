@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useState } from 'react'; 
+import React, { useContext, useCallback, useState, useEffect } from 'react'; 
 import { ThreadContext, AppContext } from '../components/contextItem.js'
 import { RenderVerticalVoting } from '../components/votingComponent.js'; 
 import styled, { ThemeProvider } from 'styled-components'; 
@@ -8,16 +8,14 @@ import {
 import RenderRIcon from '../asset/icons/r_icon.js'; 
 import RenderPostFooter from './postFooter.js'; 
 import { useNavigate } from 'react-router-dom'; 
-import Html from 'slate-html-serializer'
 import { rules } from '../components/slateJSComponents/slateRules.js';
+import { Serialize } from '../components/slateJSComponents/serializer.js'; 
 
 // Create a new serializer instance with our `rules` from above.
-const html = new Html({ rules })
 
 //This functional component renders the main body of the post. 
 const RenderMainPost = props => {
     const { ...threadData } = useContext(ThreadContext);
-    const [comID, setComID] = useState(threadData.communityID)
     const {
         normalMode, 
         DefaultTheme,
@@ -30,6 +28,8 @@ const RenderMainPost = props => {
             communityID: threadData.communityID, 
         },
     }), [navigate, threadData.communityID])
+
+
     return (
         <ThemeProvider theme={normalMode? DefaultTheme : DarkTheme}>
         <Container>
@@ -42,7 +42,7 @@ const RenderMainPost = props => {
                     <TimePosted>4 hours ago</TimePosted>
                 </Header>
                 <Title>{threadData.title}</Title>
-                <MainPost>{threadData.textBody}</MainPost>
+                    <MainPost>{threadData.textBody && <Serialize data={JSON.parse(threadData.textBody)} />}</MainPost>
                 <RenderPostFooter />
             </InnerCont>  
         </Container>

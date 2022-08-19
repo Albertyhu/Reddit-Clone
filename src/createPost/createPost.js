@@ -30,11 +30,9 @@ import { BsExclamationTriangle, BsListUl, BsListOl } from 'react-icons/bs';
 import { ImListNumbered } from 'react-icons/im';
 import uuid from 'react-uuid'; 
 import { getAuth } from 'firebase/auth'; 
-import { doc, setDoc, collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, Timestamp, getDoc } from 'firebase/firestore';
 import { db, storage } from '../firebaseComponent.js';
-import firebase from 'firebase/compat/app';
-import PeekingOver from '../helperTools/assets/PeekingOver.jpg'; 
-import { getStorage, ref as StorageRef, uploadBytes } from "firebase/storage";
+
 
 const auth = getAuth(); 
 
@@ -48,13 +46,10 @@ const ALIGN_OBJECT = {
 const CreatePostScreen = props => {
     const location = useLocation(); 
     const {
-        communityID,
-        community
+        community_ID,
     } = location.state; 
 
-    const {
-        communityTitle,
-    } = community;
+    const [community, setCommunity] = useState(null)
 
     const {
         normalMode,
@@ -63,9 +58,6 @@ const CreatePostScreen = props => {
         currentUserData, 
     } = useContext(AppContext);
 
-    const context = {
-        ...community, 
-    }
     const CHAR_LIMIT = 300;
     const [threadTitle, setThreadTitle] = useState(''); 
     const [titleCharCont, setTitleCharCont] = useState(0); 
@@ -80,7 +72,6 @@ const CreatePostScreen = props => {
             setThreadTitle(userInput); 
         }
     }
-
 
     const RenderCharacterCont = () => {
         return (
@@ -336,9 +327,10 @@ const CreatePostScreen = props => {
     }
 
     const navigate = useNavigate(); 
-    const ToThread = useCallback(threadID => navigate('./thread', {
+    const ToThread = useCallback(threadID => navigate('../thread', {
         state: {
             threadID: threadID, 
+            community_ID: community_ID, 
         },
     }), [navigate])
 
@@ -387,7 +379,7 @@ const CreatePostScreen = props => {
                   .then(() => {
                       Reset(); 
                       //Need to change renderThread.js in order for this to work 
-                     // ToThread(threadID); 
+                      ToThread(threadID); 
                   })
                   .catch(error => {
                       alert(`${error.code}: ${error.message}`); 
@@ -432,27 +424,9 @@ const CreatePostScreen = props => {
                     downvote: false,
                     dateVoted: timeObj,
                 },
-                {
-                    userID: 'MmyETCNAfcgCjw9b2qPl0kOV19f2',
-                    upvote: true,
-                    downvote: false,
-                    dateVoted: timeObj,
-                },
-                {
-                    userID: 'U1X1e6fisuPaqSzCsGSoiaJZT7w2',
-                    upvote: true,
-                    downvote: false,
-                    dateVoted: timeObj,
-                },
-                {
-                    userID: 'smIEjcmmgJRdXZfXqUoI3zrgE1H2',
-                    upvote: true,
-                    downvote: false,
-                    dateVoted: timeObj,
-                },
             ],
-            community: communityTitle,
-            communityID: communityID, 
+            community: community.communityTitle,
+            communityID: community_ID, 
             title: threadTitle, 
             restricted: false, 
             authorID: userID, 
@@ -465,6 +439,25 @@ const CreatePostScreen = props => {
         return obj; 
     }
 
+    const retrieveCommunity = async () => {
+        
+        const docRef = doc(db, "Communities", community_ID)
+        const snapshot = await getDoc(docRef)
+            .then(snap => { setCommunity(snap.data());})
+            .catch(error => {
+                console.log(`${error.code}: ${error.message}`)
+            });
+                
+        };
+
+    useEffect(() => {
+        if (community === null || community === undefined)
+            retrieveCommunity();
+    }, [community_ID])
+
+    const context = {
+        ...community,
+    }
 
     return (
         <CreatePostContext.Provider value={context}>
@@ -563,7 +556,7 @@ const CreatePostScreen = props => {
                         </Container> 
                         </PanelContainer>
                     <SideBar>
-                            {communityID ? <RenderSideBar contextItem={CreatePostContext} /> : null}
+                            {community !== null && community !== undefined ? <RenderSideBar contextItem={CreatePostContext} /> : null}
                     </SideBar>
                 </MainContainer>
             </ThemeProvider> 

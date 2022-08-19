@@ -16,10 +16,12 @@ import RenderReplyTextArea from './richTextEditor.js';
 import uuid from 'react-uuid'; 
 import { RenderAllCommentsContext } from './contextItem.js'; 
 import RenderAllComments from '../thread/renderAllComments';
+import { RenderTimePosted } from './renderTimePosted.js'; 
 
+//Serialize is responsible for converting the comments retrived from Firestore from JSON to HTML 
+import { Serialize } from './slateJSComponents/serializer.js'; 
 
-// Import the Slate components and React plugin.
-import { Slate, Editable, withReact } from 'slate-react'
+import { RenderVerticalVoting } from './votingComponent.js'; 
 
 const Comment = props => {
     //isLastDescendant determinse if the comment is the last reply in the chain. 
@@ -27,6 +29,7 @@ const Comment = props => {
     const { authorName,
         commentID,
         bodyText,
+        textBody, 
         children, 
         timePosted,
         votes,
@@ -34,17 +37,23 @@ const Comment = props => {
         isLastDescendant = true,
         count = 0,
         parentComment,
-        ancestors } = props; 
+        ancestors,
+
+        //CommentIndex is the index of the current comment in the sorted array in renderAllComments.js
+        CommentIndex,  
+    } = props; 
 
     const {
         sortedComments,
         getSortedComments, 
+        setSortedCom,
     } = useContext(RenderAllCommentsContext); 
 
     const {
         normalMode,
         DefaultTheme,
         DarkTheme,
+        currentUserData,
     } = useContext(AppContext);
 
     //Edit option is displayed if the current comment belongs to the current user
@@ -76,6 +85,42 @@ const Comment = props => {
     const [containerElem, setContainerElem] = useState(null); 
     const ExpandIconID= `expandIconID-${commentID}`
 
+
+    //Array of all votes owned by the thread 
+    //This is used to update the 'votes' array in firestore
+    const [voteArray, setVoteArray] = useState([])
+
+    //function for processing voting data retrieved from Firebase
+    const extractVoteData = () => {
+        var upvotes = 0;
+        var downvotes = 0;
+        votes.forEach(vote => {
+            if (vote.upvote) {
+                upvotes++;
+                //if the current vote is owned by the currently logged in user
+                if (currentUserData !== null && currentUserData !== undefined && vote.userID == currentUserData.userID) { setUpvoted(true) }
+            }
+            if (vote.downvote) {
+                downvotes++;
+                //if the current vote is owned by the currently logged in user
+                if (currentUserData !== null && currentUserData !== undefined && vote.userID == currentUserData.userID) { setDownvoted(true) }
+            }
+
+        })
+        //store the votes array into the voteArray useState object
+        setVoteArray(votes)
+        setUpvoteNum(upvotes);
+        setDownvoteNum(downvotes);
+    }
+
+    useEffect(() => {
+        if (votes !== null && votes !== undefined) {
+            extractVoteData();
+            // setUpvoteNum(votes.upvote)
+            // setDownvoteNum(votes.downvote)
+        }
+    }, [votes])
+
     //Maintains the width of the reply text area accordingly to the width
     //...of the main comment container. The more threadlines the comment
     //...has, the smaller the width is. 
@@ -92,6 +137,7 @@ const Comment = props => {
     }
     const [replyContWidth, setReplyContWidth] = useState(measureReplyWidth())
 
+    /*
     const upvoteOnclick = () => {
         if (upvoted) {
             setUpvoted(false)
@@ -119,7 +165,7 @@ const Comment = props => {
                 setUpvoted(false)
             }
         }
-    }
+    }*/
 
     const toggleDisplayReply = () => {
         setDisplayReplyInput(prev => !prev)
@@ -127,6 +173,33 @@ const Comment = props => {
 
     const context = {
         isLastDescendant, 
+        upvoted,
+        downvoted,
+        upvoteNum,
+        downvoteNum, 
+        voteArray,
+        changeUpvoted: num => {
+            setUpvoted(num)
+        },
+        changeDownvoted: num => {
+            setDownvoted(num)
+        },
+        changeUpvoteNum: num => {
+            setUpvoteNum(num)
+        },
+        changeDownvoteNum: num => {
+            setDownvoteNum(num)
+        },
+        ID: commentID, 
+        isVertical: false, 
+        FirestoreCollectionType: "Comments", 
+
+        //data for updating sorted array of comments 
+        index: CommentIndex, 
+        sortedArray: sortedComments,
+        dispatchFunction: setSortedCom,
+        shouldUpdateSortedArray: false,
+        commentID,
     }
 
     //The following code is give the user the ability to hide a parent comment
@@ -144,17 +217,10 @@ const Comment = props => {
             ancestors.forEach(item => {
                 containerElem.classList.add(`childOf_${item}`)
             })
-            
         }
     }, [containerElem])
-    /*
-    useEffect(() => {
-        if (sortedComments !== undefined && sortedComments !== null && sortedComments.length !== 0) {
-            console.log("SortedComments: ")
-            console.log(sortedComments)
-        }
-    }, [sortedComments])
-    */
+
+
     return (
         <CommentContext.Provider value={context}  >
             <CommentContainer columnFormat={columnFormat} id={`CommentContainer-${commentID}`} ref={mainRef}>
@@ -169,8 +235,8 @@ const Comment = props => {
                                 id={ExpandIconID}
                            />
                         <Avatar src={CrossedArms} />
-                        <UserName>{authorName}</UserName>
-                        <TimePosted> &#x2022; 1 hour ago</TimePosted>
+                        <UserName>Posted by {authorName}</UserName>
+                        <TimePosted> &#x2022; {RenderTimePosted(timePosted)}</TimePosted>
                     </CommentHeader>
                     <InnerContainer
                         id={`CommentInnerContainer-${commentID}`}
@@ -191,19 +257,9 @@ const Comment = props => {
                             id="CommentSecondInnerCont"
                             widthVal={replyContWidth}
                             >
-                            <TextArea>{bodyText}</TextArea>
+                            <TextArea><Serialize data={JSON.parse(textBody)} /></TextArea>
                             <CommentFooter>
-                                {upvoted ?
-                                    <VoteIcon src={upvote} onClick={upvoteOnclick} />
-                                    :
-                                    <VoteIcon src={normalMode ? upArrow : UpArrowDarkMode} onClick={upvoteOnclick} />
-                                }
-                                <VoteNumber>{upvoteNum - downvoteNum}</VoteNumber>
-                                {downvoted ?
-                                    <VoteIcon src={downvote} onClick={downvoteOnclick} />
-                                    :
-                                    <VoteIcon src={normalMode ? downArrow : DownArrowDarkMode} onClick={downvoteOnclick} />
-                                }
+                                <RenderVerticalVoting contextType={CommentContext} />
                                 <ReplyDiv onClick={toggleDisplayReply}><FaRegCommentAlt id="CommentIcon" style={commentIconStyle} /> <FooterText>Reply</FooterText></ReplyDiv>
                                 <Wrapper>Share</Wrapper>
                                 <Wrapper>Report</Wrapper>
@@ -387,8 +443,8 @@ const unhideChildren = (childrenArr) => {
 }
 
 
-
 const ReplyInput = props => {
+    const { commentID } = useContext(CommentContext)
     const [borderStyle, setBorder, replyContWidth] = useState("2px solid #d6d6d6")
     const replyRef = useRef(); 
     const clickEvent = e => {
@@ -408,7 +464,7 @@ const ReplyInput = props => {
     return (
         <ReplyInnerContainer widthVal={replyContWidth} id ="ReplyInnerContainer">
             <Thread dispatchFunc={null} />
-            <RenderReplyTextArea />
+            <RenderReplyTextArea parentID={commentID}/>
         </ReplyInnerContainer>
         )
 } 

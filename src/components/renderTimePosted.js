@@ -1,7 +1,7 @@
 //returns a string that indicates how long alot a thread or comment as been posted 
 export function RenderTimePosted(timePosted) {
     var currentTime = new Date(Date.now()); 
-    var difference = (currentTime.getTime() - timePosted.getTime())
+    var difference = (currentTime.getTime() - timePosted.toDate().getTime())
     var totalSeconds = Math.round(difference / 1000);
     var totalMinutes = Math.round(totalSeconds / 60);
     var totalHours = Math.round(totalMinutes / 60);
@@ -51,7 +51,9 @@ export function RenderTimePosted(timePosted) {
     if (totalSeconds !== 0) {
         if (totalSeconds > 1)
             return `${totalSeconds} seconds ago`;
-        else 
+        else
             return "1 second ago"
     }
+    return "just now."
+   
 }

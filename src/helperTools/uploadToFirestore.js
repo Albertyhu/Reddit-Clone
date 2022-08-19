@@ -1,14 +1,15 @@
 import { doc, setDoc, collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { db, storage } from '../firebaseComponent.js';
-import { SampleCommunity, FunnyCommunity } from './dummyData.js';
+import { db } from '../firebaseComponent.js';
+import { SampleCommunity, FunnyCommunity, LosAngelesCommunity  } from './dummyData.js';
 import uuid from 'react-uuid'; 
 import { getStorage } from 'firebase/storage'; 
+import { genKey } from '../components/randGen.js'; 
 
 const auth = getAuth(); 
 
 export const UploadCommunities = async () => {
-    FunnyCommunity.forEach(async item => {
+    SampleCommunity.forEach(async item => {
         var DateCreated = new Date(item.dateCreated);
         var dateCreatedTS = Timestamp.fromDate(DateCreated)
         var obj = {
@@ -20,7 +21,7 @@ export const UploadCommunities = async () => {
             onlineMembers: item.onlineMembers, 
             dateCreated: dateCreatedTS, 
             communityHeaderTitle: item.communityHeaderTitle, 
-            comunityTheme: item.communityTheme, 
+            communityTheme: item.communityTheme, 
             description: item.description, 
             rules: item.rules, 
             moderators: item.moderators, 

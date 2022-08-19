@@ -1009,7 +1009,7 @@ export const SampleCommunity = [
         customNamedMembers: '', 
         onlineMembers: 150, 
         dateCreated: "2008-01-25",
-        communityHeaderTitle: "News on Reddit", 
+        communityHeaderTitle: "News on Reddit",
         communityTheme: {
             banner: '',
             background: '', 
@@ -1471,13 +1471,14 @@ export const SampleCommunity = [
         ]
     },
     {
-        communityTitle: 'LosAngles',
+        communityTitle: 'LosAngeles',
         communityID: 'LOSAngeleserwtwer',
         communityImage: LosAnglesCommunityLogo,
         members: 6451,
         customNamedMembers: 'LA natives',
         onlineMembers: 1800,
         dateCreated: "2008-04-14",
+        communityHeaderTitle: "Los Angeles news, meet-ups, events, and more!", 
         description: "The official subreddit of Los Angeles, California! The international epicenter of entertainment and home of the Dodgers, Lakers, Kings, Rams, Giltinis, Sparks, LAFC, Clippers, Galaxy, Angel City FC, and Chargers! We also have wildfires, earthquakes, movie stars, television studios, music, world-class food, beaches, mountains, traffic jams, museums, theme parks, and the most beautiful Redditors of all time. This is LA!",
         communityTheme: {
             PanelBackgroundColor: "#1c1c38",
@@ -1547,5 +1548,235 @@ export const SampleCommunity = [
                 userID: "fawsgsegsfsef",
             },
         ]
+    },
+]
+
+export const LosAngelesCommunity = [
+    {
+        communityTitle: 'LosAngeles',
+        communityID: 'LOSAngeleserwtwer',
+        communityImage: LosAnglesCommunityLogo,
+        members: 6451,
+        customNamedMembers: 'LA natives',
+        onlineMembers: 1800,
+        dateCreated: "2008-04-14",
+        communityHeaderTitle: "Los Angeles news, meet-ups, events, and more!", 
+        description: "The official subreddit of Los Angeles, California! The international epicenter of entertainment and home of the Dodgers, Lakers, Kings, Rams, Giltinis, Sparks, LAFC, Clippers, Galaxy, Angel City FC, and Chargers! We also have wildfires, earthquakes, movie stars, television studios, music, world-class food, beaches, mountains, traffic jams, museums, theme parks, and the most beautiful Redditors of all time. This is LA!",
+        communityTheme: {
+            PanelBackgroundColor: "#1c1c38",
+            TextColor: "#ffffff",
+            ButtonBackgroundC: "#ffffff",
+            ButtonBackgroundCHover: "#ececec",
+            ButtonTextC: "#1c1c38",
+            ButtonBorder: "1px solid #1c1c38",
+            InvertedButtonBackgroundC: "#1c1c38",
+            InvertedButtonBackgroundCHover: "#34346d",
+            InvertedButtonTextC: "#ffffff",
+            MessageButtonBorder: "1px solid #ffffff",
+            LinkColor: "#ffffff",
+            HeaderBackground: '',
+            banner: LosAngelesBanner,
+            bannerHeight: null,
+        },
+        rules: [
+            {
+                title: "All posts must make an attempt at humor.",
+                description: "Humor is subjective, but all posts must at least make an attempt at humor. Posts which are intentionally disruptive, inane, or nonsensical will be removed.",
+            },
+            {
+                title: "No memes, HIFW, MRW, MeIRL, DAE, or similar posts.",
+                description: "Memes of any sort are expressly forbidden. This includes any variety of memetic image or video format, any footage or photographs of memes in real-world or virtual settings (as with \"challenges\" and other imitated behaviors), and any derivation or adaptation of memetic content. HIFW, MRW, TFW, MeIRL, demotivationals, eCards, and DAE posts are similarly disallowed. Non-memetic image macros are allowed.",
+            },
+            {
+                title: "No reposts.",
+                description: "If a given piece of content has appeared on /r/Funny before, do not post it. Sites like KarmaDecay and TinEye can help to determine the uniqueness of a given submission, but since neither site is 100% accurate, original content is strongly preferred. Serial reposters will be banned.",
+            },
+            {
+                title: "No personal info, no hate speech, no harassment.",
+                description: "No personally identifying information, including anything hosted on platforms making that information public. Posts encouraging the harassment of any individual, group, community, or subreddit will be removed and may result in a ban. If necessary, a report will be made to the site administration. In accordance with Reddit's policies, there is zero tolerance for this.",
+            },
+            {
+                title: "No politics or political figures.",
+                description: "Anything which involves or includes politics or a political figure – even if they are not the focus of the post – may not be posted here. ",
+            },
+            {
+                title: "No forbidden titles, low-effort titles, or posts about Reddit cakedays.\", titles which circumvent other rules, and titles comprising",
+                description: "No asking for upvotes (in any form), no “Cake Day” posts, and no posts to communicate with another Redditor. Posts with titles such as \"I got banned from / r / ___\" or \"This got removed from / r / ___\" are not allowed. For an inclusive list, please read the complete rules page. Low-effort titles, memetic titles,excessive or disruptive emojis are similarly disallowed.",
+            },
+            {
+                title: "No gore or pornography.",
+                description: "Gore, pornography, and sexually graphic images are not allowed. Try /r/NSFWfunny. All other NSFW content must be tagged as such.",
+            },
+            {
+                title: "No unoriginal comics.",
+                description: "Comics may only be posted on Wednesdays and Sundays (measured using Pacific Time), and only by their original artists.",
+            },
+            {
+                title: "No pictures of just text.",
+                description: "Image-based submissions in which the humor can be conveyed via text alone are not allowed. This includes pictures of text with images that don't add necessary context, transcriptions of standup comedy (as with /r/standupshots), and screenshots of jokes. Here are some examples. Text posts using Reddit's native system are allowed.",
+            },
+            {
+                title: "No electronic messaging or social media content (including Reddit).",
+                description: "Social media content of any kind is not allowed. This includes anything from any form of \"comments section\" on the Internet, as well as content accompanied by text from those platforms. Screenshots of electronic messages of any variety are not allowed. Images with added Snapchat text are allowed, as long as all UI elements have been removed.",
+            },
+        ],
+        moderators: [
+            {
+                userName: "AngelFire",
+                userID: "segaigaSGGEex",
+            },
+            {
+                userName: "CrowdSource",
+                userID: "fawsgsegsfsef",
+            },
+        ]
+    },
+]
+
+export const SampleFunnyComments = [
+    {
+        authorName: 'Pikachu',
+        authorID: 'gasefse343',
+        threadID: 'SGASEFxgs423',
+        commentID: 'Gesre',
+        bodyText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat le a pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        votes: {
+            upvote: 1000,
+            downvote: 33,
+        },
+        timePosted: new Date(2022, 6, 28, 14, 39, 7),
+        parentComment: null,
+        grandParents: [],
+        replies: ['GefseEFsf', 'EFEFSesfse'],
+    },
+    {
+        authorName: 'OswaldCobblesworth',
+        threadID: 'SGASEFxgs423',
+        commentID: 'GefseEFsf',
+        bodyText: "Replying to Pikachu",
+        votes: {
+            upvote: 900,
+            downvote: 33,
+        },
+        timePosted: new Date(2022, 6, 29, 12, 15, 7),
+        parentComment: "Gesre",
+        grandParents: ['Gesre'],
+    },
+    {
+        authorName: 'GearCloud',
+        threadID: 'SGASEFxgs423',
+        commentID: 'EFEFSesfse',
+        bodyText: "Replying to OswaldCobblesworth",
+        votes: {
+            upvote: 9990,
+            downvote: 33,
+        },
+        timePosted: new Date(2022, 6, 29, 14, 25, 7),
+        parentComment: 'GefseEFsf',
+        grandParents: ['GefseEFsf'],
+    },
+    {
+        authorName: 'AmazonOrders',
+        threadID: 'SGASEFxgs423',
+        commentID: 'wywgvWE',
+        bodyText: "Amazing work you have here.",
+        votes: {
+            upvote: 241,
+            downvote: 33,
+        },
+        timePosted: new Date(2022, 6, 26, 23, 39, 7),
+        parentComment: null,
+        grandParents: [],
+    },
+    {
+        authorName: 'Rockworth',
+        threadID: 'SGASEFxgs423',
+        commentID: 'gegseeF',
+        bodyText: "I'd love to see a video of how it works.",
+        votes: {
+            upvote: 200,
+            downvote: 33,
+        },
+        timePosted: new Date(2022, 6, 29, 17, 39, 7),
+        parentComment: null,
+        grandParents: [],
+    },
+    {
+        authorName: 'Terraform',
+        threadID: 'SGASEFxgs423',
+        commentID: 'ktjygn',
+        bodyText: "Navigation, typography, colours, work. Fabulous, friend.",
+        votes: {
+            upvote: 1270,
+            downvote: 33,
+        },
+        timePosted: new Date(2022, 6, 28, 8, 30, 7),
+        parentComment: null,
+        grandParents: [],
+    },
+    {
+        authorName: 'HenryTownsend',
+        threadID: 'SGASEFxgs423',
+        commentID: 'GsesgPO',
+        bodyText: "Replying to Rockworth",
+        votes: {
+            upvote: 70,
+            downvote: 33,
+        },
+        timePosted: new Date(2022, 6, 30, 14, 41, 7),
+        parentComment: "gegseeF",
+        grandParents: ["gegseeF"],
+    },
+    {
+        authorName: 'MickeyBrown',
+        threadID: 'SGASEFxgs423',
+        commentID: 'Avweerge',
+        bodyText: "Replying to HenryTownsend",
+        votes: {
+            upvote: 400,
+            downvote: 45,
+        },
+        timePosted: new Date(2022, 6, 30, 14, 59, 7),
+        parentComment: "GsesgPO",
+        grandParents: ["GsesgPO"],
+    },
+    {
+        authorName: 'WellingtonMans',
+        threadID: 'SGASEFxgs423',
+        commentID: 'BBvwegsefe',
+        bodyText: "Replying to HenryTownsend",
+        votes: {
+            upvote: 780,
+            downvote: 45,
+        },
+        timePosted: new Date(2022, 6, 30, 15, 25, 7),
+        parentComment: "GsesgPO",
+        grandParents: ["GsesgPO"],
+    },
+    {
+        authorName: 'WellingtonMans',
+        threadID: 'SGASEFxgs423',
+        commentID: 'B89wegsefe',
+        bodyText: "Replying to HenryTownsend2",
+        votes: {
+            upvote: 320,
+            downvote: 45,
+        },
+        timePosted: new Date(2022, 6, 30, 23, 5, 7),
+        parentComment: "GsesgPO",
+        grandParents: ["GsesgPO"],
+    },
+    {
+        authorName: 'MathDamon',
+        threadID: 'SGASEFxgs423',
+        commentID: 'Bee9wgasefe',
+        bodyText: "Replying to WellingtonMans",
+        votes: {
+            upvote: 30,
+            downvote: 5,
+        },
+        timePosted: new Date(2022, 6, 30, 23, 15, 7),
+        parentComment: "B89wegsefe",
+        grandParents: ["B89wegsefe"],
     },
 ]

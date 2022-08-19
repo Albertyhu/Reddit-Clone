@@ -1,11 +1,15 @@
-import React, { useEffect, useState, useContext } from 'react'; 
-import RenderFeed from '../../feed/renderFeed.js';
-import { sampleUser, threads, SampleCommunity } from '../../helperTools/dummyData.js'; 
+import React, { useEffect, useState, useContext, useCallback } from 'react'; 
+import RenderFeed from '../feed/renderFeed.js';
+import { sampleUser, threads, SampleCommunity } from '../helperTools/dummyData.js'; 
 import { useLocation } from 'react-router-dom'; 
-import { CommunityContext } from '../../components/contextItem.js'; 
+import { CommunityContext } from '../components/contextItem.js'; 
 import styled, { ThemeProvider } from 'styled-components'; 
-import { AppContext } from '../../components/contextItem.js'; 
-import RenderRIcon from '../../asset/icons/r_icon.js';
+import { AppContext } from '../components/contextItem.js'; 
+import RenderRIcon from '../asset/icons/r_icon.js';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebaseComponent.js';
+import { SortArray } from '../sort/sortMethods.js'; 
+import { useNavigate } from 'react-router'; 
 
 const RENDER_THREADS = 'RENDER_ THREADS';
 
@@ -25,30 +29,65 @@ const RenderCommunity = () => {
         normalMode,
         DefaultTheme,
         DarkTheme,
-        useCommunityTheme
+        useCommunityTheme,
+        allCommunities,
+        retrieveCommunities, 
     } = useContext(AppContext);
 
-    //This gathers all the threads of a selected community 
-    //To be changed 
-    const gatherCommunityThreads = () => {
-        var Arr = threads.filter(val => val.communityID === communityID)
-        return Arr;
-    }
+    //retrieves all threads relevant to the target community 
+    const retrieveData = useCallback(async () => {
+        var arr = []
+        const docRef = query(collection(db, "Threads"), where("communityID", "==", communityID))
+        const snapshot = await getDocs(docRef)
+            .catch(e => { console.log(`${e.code}: ${e.message}`) })
+        snapshot.forEach(snap => {
+            arr.push(snap.data())
+ 
+        })
+        setThreadData(arr)
+    }, [communityID])
 
-    const context = {
-        ...community, 
-        communityID, 
-        threadData, 
-    }
-
-
-    //to be changed 
-    useEffect(() => {
-        if (communityID !== undefined && communityID !== null) {
-            setThreadData(gatherCommunityThreads())
-            setCommunity(SampleCommunity.find(val => val.communityID === communityID))
+    //retrives all all data relevant to the target community 
+    const retrieveCommunity = useCallback(async () => {
+        if (allCommunities === null || allCommunities === undefined || allCommunities.length === 0) {
+            const docRef = doc(db, "Communities", communityID)
+            const snapshot = await getDoc(docRef)
+            setCommunity(snapshot.data());
+        }
+        else {
+            setCommunity(allCommunities.find(val => val.communityID === communityID))
         }
     }, [communityID])
+
+    const navigate = useNavigate();
+
+    const GoCreatePostPage = useCallback(() => {
+        navigate('../submit', {
+            state: {
+                community_ID: communityID,
+              //  communityData: community,
+            }
+        })
+    }, [navigate])
+
+    const context = {
+        ...community,
+        communityID,
+        threadData,
+        retrieveData, 
+        GoCreatePostPage, 
+    }
+
+    useEffect(() => {
+        if (communityID !== undefined && communityID !== null) {
+            retrieveData();
+
+            if(community === null || community === undefined)
+                retrieveCommunity();
+        }
+    }, [])
+
+
 
     const RenderHeader = props => {
         return (
@@ -56,7 +95,7 @@ const RenderCommunity = () => {
                 <HeaderContainer id ="HeaderContainer">
                     <HeaderBannerWrapper
                         id="HeaderBannerWrapper"
-                        banner={useCommunityTheme ? community.communityTheme.banner ? community.communityTheme.banner : null : null} /> 
+                        banner={useCommunityTheme ? community.communityTheme ? community.communityTheme.banner : null : null} /> 
                     <HeaderBar id ="HeaderBar">
                         <HeaderBarShell id="HeaderBarShell">
                             <EmptyDiv id ="static"/>
@@ -66,8 +105,11 @@ const RenderCommunity = () => {
                                     isHeaderIcon={true}
                                 />
                             </LogoWrapper>
-                            <HeaderBarGrid>
-                                <TitleWrapper><span>{community.communityHeaderTitle}</span><Button>Join</Button></TitleWrapper>
+                            <HeaderBarGrid id = "HeaderBarGrid">
+                                <TitleWrapper id="TitleWrapper">
+                                    <span id="CommunityHeaderTitle">{community.communityHeaderTitle}</span>
+                                    <Button>Join</Button>
+                                </TitleWrapper>
                                 <BreadCrumb>r/{community.communityTitle}</BreadCrumb>
                             </HeaderBarGrid>
                         </HeaderBarShell>
@@ -88,32 +130,24 @@ const RenderCommunity = () => {
                         <RenderHeader />
                         <RenderFeed
                             data={threadData}
-                            isCommunity={true} />
+                            isCommunity={true}
+                           
+                        />
                     </>
                     :
-                    null;
+                    <ErrorMessageWrapper></ErrorMessageWrapper>;
             default:
                 return null;
         }
     }
 
 
-    /*
-    return threadData !== undefined && threadData !== null ?
-        <CommunityContext.Provider value={context}>
-            <RenderHeader />
-            <RenderFeed
-                data={threadData}
-                isCommunity={true} />
-        </CommunityContext.Provider>
-        :
-        null;
-        */
-    return (
+    return community ? 
         <CommunityContext.Provider value={context}>
             <RenderMainBody functionality={functionality} />
-        </CommunityContext.Provider>
-       )
+        </CommunityContext.Provider >
+            :
+        <ErrorMessageWrapper></ErrorMessageWrapper>    
 }
 
 export default RenderCommunity;
@@ -165,7 +199,7 @@ width: 741px;
 resize: none;
 height: 100%;
 display: grid; 
-grid-template-columns: 13% 50%; 
+grid-template-columns: 13% 87%; 
 @media screen and (max-width: 540px){
     min-width: 0;
     width: 100%;
@@ -185,6 +219,7 @@ display: flex;
     font-family: 'Verdana'; 
     font-weight: bold;
     margin: auto 0;
+    width: fit-content;
     color: ${props => props.theme.TextColor};
 }
 `
@@ -233,4 +268,8 @@ const Button = styled.div`
     &:hover{
         background-color: ${props => props.theme.ButtonBackgroundCHover}; 
 }
+`
+
+const ErrorMessageWrapper = styled.div`
+    margin: auto; 
 `

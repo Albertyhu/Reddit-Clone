@@ -669,6 +669,7 @@ color: ${props => props.theme.TextColor};
     border: none;
     outline: none;
     }
+background-color: ${props => props.theme.PanelBackgroundColor}; 
 `
 
 const InputWrapper = styled.div`

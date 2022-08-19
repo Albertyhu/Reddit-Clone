@@ -23,8 +23,13 @@ const auth = getAuth();
 
 const RenderThread = props => {
     const location = useLocation();
-   // const { threadID ='efb13f6-774b-ca56-be62-e5ad21be142' } = location.state; 
-    const threadID = '5a4357a-3f56-278a-26af-f8f3802cd4'; 
+    const {
+        threadID,
+
+        //threadIndex is the index of the current thread in the sorted array in renderAllComments.js 
+        threadIndex, 
+    } = location.state; 
+
     //threadData stores the information about the individual thread
     //...such as the body of the text, the author's name, etc. 
     const [threadData, setThreadData] = useState(null)
@@ -34,6 +39,8 @@ const RenderThread = props => {
 
     //commentArr stores all the comments that have the threadID
     const [commentArr, setCommentArr] = useState(comments.filter(elem => elem.threadID === threadID))
+
+
 
     //filterOption is the current setting for how the comments should be sorted 
     const [filterOption, setFilter] = useState("Top")
@@ -53,9 +60,9 @@ const RenderThread = props => {
 
     const [useCommunityTheme, setCommunityTheme] = useState(false);
 
-
     const context = {
-        ...threadData, 
+        ...threadData,
+        threadID, 
         filterOption,
         commentArr,
         setCommentArr,
@@ -77,24 +84,71 @@ const RenderThread = props => {
         changeDownvoteNum: num => {
             setDownvoteNum(num)
         },
+        ID: threadID, 
+        isVertical: true,
+        FirestoreCollectionType: "Threads", 
         //passes all data of desired community 
         ...community,
 
+        //threadIndex is the index of the current thread in the sorted array in renderAllComments.js
+        index: threadIndex, 
+        shouldUpdateSortedArray: false, 
+       
     }
 
     const retrieveThread = async (ID) => {
+        console.log("threadID: " + ID)
         const docRef = doc(db, "Threads", ID)
-        const docData = await getDoc(docRef)
-            .catch(e => { console.log(`${e.code}: ${e.message}`)})
-        if (docData.exists()) {
-            setThreadData(docData.data())
+        await getDoc(docRef)
+            .then(snap => {
+                console.log(snap.data())
+                if (snap.exists()) {
+                    setThreadData(snap.data());
+                    extractVoteData(snap.data().votes)
+                    retrieveCommunity(snap.data().communityID);
+                }
+                else {
+                    console.log("This data doesn\'t exist")
+                }
+            })
+          .catch(e => { console.log(`${e.code}: ${e.message}`)})
+    }
+
+    //retrieve data about the community that the thread belongs to
+    const retrieveCommunity = async ID => {
+        console.log("ID: " + ID)
+        if (allCommunities !== null && allCommunities !== undefined) {
+            setCommunityData(allCommunities.find(val => val.communityID === ID))
         }
         else {
-            console.log("This data doesn\'t exist")
+            const docRef = doc(db, "Communities", ID)
+
+            const snapshot = await getDoc(docRef);
+            if (snapshot.exists()) {
+                setCommunityData(snapshot.data())
+            }
+            else {
+                console.log("This community doesn\'t exist")
+            }
         }
     }
 
+    //retieve all comments posted on the thread 
+    const retrieveComments = async Thread_ID => {
+        const q = query(collection(db, "Comments"), where("threadID", "==", Thread_ID)); 
+        var newCommentsArr = []; 
+        const querySnapshot = await getDocs(q)
+            .then(snapshot => {
+                snapshot.forEach(item => {
+                    newCommentsArr.push(item.data())
+                })
+                setCommentArr(newCommentsArr); 
+            })
+            .catch(e => { console.log(`${e.code}: ${e.message}`) })
+    }
+
     //function for processing voting data retrieved from Firebase
+    /*
     const extractVoteData = () => {
         var upvotes = 0;
         var downvotes = 0; 
@@ -115,21 +169,51 @@ const RenderThread = props => {
         setVoteArray(threadData.votes)
         setUpvoteNum(upvotes);
         setDownvoteNum(downvotes); 
+    }*/
+
+    const extractVoteData = (data) => {
+        var upvotes = 0;
+        var downvotes = 0;
+        console.log("data")
+        console.log(data)
+        for (var i in data){
+            if (data[i].upvote) {
+                upvotes++;
+                //if the current vote is owned by the currently logged in user
+                if (data[i].userID == currentUserData.userID) { setUpvoted(true) }
+            }
+            if (data[i].downvote) {
+                downvotes++;
+                //if the current vote is owned by the currently logged in user
+                if (data[i].userID == currentUserData.userID) { setDownvoted(true) }
+            }
+
+        }
+        //store the votes array into the voteArray useState object
+        setVoteArray(data)
+        setUpvoteNum(upvotes);
+        setDownvoteNum(downvotes);
     }
 
     useEffect(() => {
         if (threadID !== null || threadID !== undefined || threadID !== '') {
             retrieveThread(threadID)
-           // setThreadData(threads.find(elem => elem.threadID === threadID))
+            retrieveComments(threadID)
         }
     }, [threadID])
 
+
+    //This block of code is created for the purpose of updating the sorted array of comments
+    //When the user votes on a comment, the sortedComments has to be updated 
+    //When the user switches filter option
+    useEffect(() => {
+        retrieveComments(threadID)
+    }, [filterOption])
+
     //needs to be updated when the voting gets 
     useEffect(() => {
-        if (threadData !== null) {
-            extractVoteData();
-            //get relevent community data that the thread belongs to 
-            setCommunityData(SampleCommunity.find(elem => elem.communityID === threadData.communityID))
+        if (threadData !== null || threadData !== undefined) {
+           // extractVoteData();
         }
     }, [threadData])
 
@@ -138,7 +222,31 @@ const RenderThread = props => {
         DefaultTheme,
         DarkTheme,
         currentUserData,
+        allCommunities, 
     } = useContext(AppContext);
+
+    if (!threadID) {
+        return (
+            <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
+                <MainContainer>
+                    <div>
+                        There aren't any threads to show.
+                    </div>
+                     <SideBar id="ThreadSideBar">
+                        {community !== undefined && community !== null ?
+                            <RenderSideBar contextItem={ThreadContext} />
+                            :
+                            null
+                        }
+                    </SideBar>
+                </MainContainer>
+            </ThemeProvider>
+        )
+    }
+
+    if (threadData === null || threadData === undefined) {
+        return(<></>)
+    }
 
     return (
         <ThreadContext.Provider value={context}>
@@ -152,7 +260,8 @@ const RenderThread = props => {
                                 marginRight="auto"
                                 ReplyWidth="90%"
                                 marginTop="20px"
-                                author="author"
+                                author={currentUserData ? currentUserData.username : null}
+                                parentID={null}
                             /> 
                         </CommentWrapper>
                         <RenderCommentSort

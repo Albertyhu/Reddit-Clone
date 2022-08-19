@@ -8,7 +8,7 @@ import RenderSwitchButton from '../components/switchButton.js';
 import uuid from 'react-uuid';
 import { AppContext } from '../components/contextItem.js'; 
 import { AiOutlineMail } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, Link } from 'react-router-dom'; 
 
 const MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -17,6 +17,7 @@ const RenderSideBar = props => {
     const { contextItem } = props; 
     const {
         threadData, 
+        GoCreatePostPage,
         ...community
     } = useContext(contextItem); 
 
@@ -31,7 +32,7 @@ const RenderSideBar = props => {
         rules,
         moderators,
         communityImage, 
-        communityID
+        communityID, 
     } = community;
 
     const {
@@ -42,9 +43,10 @@ const RenderSideBar = props => {
         toggleCommunityTheme,
     } = useContext(AppContext);
 
-    const dateObj = new Date(dateCreated)
+  //  const dateObj = new Date(dateCreated)
+    const dateObj = dateCreated.toDate();
     const formatedDate = `${MONTH[dateObj.getMonth()]} ${dateObj.getDate() + 1} ${dateObj.getFullYear()}`
-
+    
     //community options 
     const [openCommunityOptions, setOpenComOpt] = useState(false)
     const toggleCommunityOpt = () => {
@@ -89,14 +91,6 @@ const RenderSideBar = props => {
         }
     }), [navigate])
 
-    const GoCreatePostPage = useCallback(() => navigate('../submit', {
-        state: {
-            communityID: communityID, 
-            community: community, 
-        },
-    }), [navigate])
-
-
     return (
         <ThemeProvider theme={normalMode ? (useCommunityTheme ? (!!communityTheme ? communityTheme : DefaultTheme) : DefaultTheme) : DarkTheme}>
             <MainContainer id="SideBarMainContainer">
@@ -129,7 +123,8 @@ const RenderSideBar = props => {
                         <Button>Join Community</Button> 
                         {//Only the side bars on comment.js and renderThread.js will have threadData
                          //createPost.js will not. Thus, this button won't show up on createPost.js 
-                            threadData && <Button onClick={GoCreatePostPage}>Create Post</Button>
+                          threadData && <Button onClick={()=>GoCreatePostPage()}>Create Post</Button>
+
                         }
                         <Divider />
                         <Button

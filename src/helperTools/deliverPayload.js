@@ -1,7 +1,9 @@
 import { UploadCommunities } from '../helperTools/uploadToFirestore.js'; 
 import styled from 'styled-components'; 
+import { useLocation } from 'react-router'
 
 const RenderPayloadDeliverer = () => {
+
     const handleEvent = () => {
         try {
             UploadCommunities();

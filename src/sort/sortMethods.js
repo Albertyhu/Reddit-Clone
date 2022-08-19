@@ -3,36 +3,68 @@ export const SortByBest = data => {
     return data; 
 } 
 
-//to be changed 
 export const SortByTop = data => {
-    var arr = data;
-    /*
-    console.log("sortedArr")
-    console.log(arr)*/
+    var arr = CalcVoteTotal(data);
     for (var i = 0; i < arr.length; i++) {
         for (var j = i + 1; j < arr.length; j++) {
-            var iVote = arr[i].votes.upvote - arr[i].votes.downvote; 
-            var jVote = arr[j].votes.upvote - arr[j].votes.downvote; 
-            if (jVote > iVote) {
+            if (arr[j].totalVotes > arr[i].totalVotes) {
                 var obj = arr[j];
-                /*
-                arr = arr.filter(ele => ele.commentID !== obj.commentID)
-                arr.splice(i, 0, obj);*/
-
                 arr[j] = arr[i];
-                arr[i] = obj; 
-              //  j--;
+                arr[i] = obj;
+
             }
         }
     }
-
-    return arr; 
+    return arr;
 } 
+
+//This calculates the total votes based on upvotes - downvotes for each comment and thread 
+//It then returns an array with the total votes for each object. 
+export const CalcVoteTotal = Data => {
+    var Arr = Data; 
+    Arr.forEach(elem => {
+        var voteArray = elem.votes; 
+        var totalVote = 0; 
+        voteArray.forEach(vote => {
+            if (vote.upvote) {
+                totalVote++; 
+            }
+            if (vote.downvote) {
+                totalVote--; 
+            }
+        })
+        elem.totalVotes = totalVote; 
+    })
+
+    return Arr; 
+}
+
+//calculate the total upvotes and downvotes for each element 
+//This function is a supplement to sortByControversy 
+export const CalcTotalUpvoteAndDownvote = Data => {
+    var Arr = Data; 
+    Arr.forEach(elem => {
+        var upvoteTotal = 0; 
+        var downvoteTotal = 0; 
+        elem.votes.forEach(vote => {
+            if (vote.upvote) {
+                upvoteTotal++; 
+            }
+            if (vote.downvote) {
+                downvoteTotal++; 
+            }
+        })
+        elem.upvoteTotal = upvoteTotal;
+        elem.downvoteTotal = downvoteTotal; 
+    })
+    return Arr; 
+}
+
 
 //Sort the comments by the ammount of controversy each on has
 //Controversy is defined as having the near same number of upvotes and downvotes
 export const SortByControversial = data => {
-    var arr = data;
+    var arr = CalcTotalUpvoteAndDownvote(data);
 
     //Controvery is measured by magnitude of each of the upvote and downvotes 
     //...and if the ratio of the upvote to downvotes is equal to 1
@@ -51,8 +83,8 @@ export const SortByControversial = data => {
 
     for (var i = 0; i < arr.length; i++) {
         for (var j = i + 1; j < arr.length; j++) {
-            var iControversy = calcControversy(arr[i].votes.upvote, arr[i].votes.downvote);
-            var jControversy = calcControversy(arr[j].votes.upvote, arr[j].votes.downvote);
+            var iControversy = calcControversy(arr[i].upvoteTotal, arr[i].downvoteTotal);
+            var jControversy = calcControversy(arr[j].upvoteTotal, arr[j].downvoteTotal);
             if (jControversy > iControversy) {
                 /*
                 console.log("Switching " + arr[i].commentID + " with " + arr[j].commentID)
@@ -60,11 +92,6 @@ export const SortByControversial = data => {
                 console.log("jControversy: " + jControversy);
                 */
                 var obj = arr[j];
-                /*
-                    arr = arr.filter(ele => ele.commentID !== obj.commentID)
-                    arr.splice(i, 0, obj);
-                    j--;
-                 */
                 arr[j] = arr[i];
                 arr[i] = obj
             }

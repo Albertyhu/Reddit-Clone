@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useContext, useMemo, useCallback } from 'react'; 
 import styled from 'styled-components'; 
-import { AppContext } from './contextItem.js';
+import { AppContext, ThreadContext } from './contextItem.js';
 // Import the Slate editor factory.
 import {
     createEditor,
@@ -23,6 +23,11 @@ import { FaQuoteRight } from 'react-icons/fa';
 import { BsExclamationTriangle, BsListUl, BsListOl } from 'react-icons/bs';
 import { ImListNumbered } from 'react-icons/im';
 
+import { doc, setDoc, collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { db, storage } from '../firebaseComponent.js';
+import uuid from 'react-uuid'
+
 const ALIGN_OBJECT = {
     "alignLeft": "left",
     "alignRight": "right",
@@ -30,13 +35,36 @@ const ALIGN_OBJECT = {
 } 
 
 const RenderReplyTextArea = props => {
+    //What it needs 
+    //threadID 
+    //If the current comment is a reply to a parent comment, then the parentComment ID is needed 
+
+    //commentID will be generated 
+    //timePOsted will be generated 
+    //votes will be generated 
+    
     const {
         marginLeft,
         marginRight,
         ReplyWidth,
         marginTop,
-        author,
+        //missing in text replies 
+        parentID, 
     } = props;
+
+    //currentUserData provides the following 
+    //userID
+    //username 
+    const {
+        normalMode,
+        currentUserData, 
+    } = useContext(AppContext);
+
+    const {
+        commentArr,
+        setCommentArr,
+        threadID, 
+    } = useContext(ThreadContext)
 
     const initialValue = [
         {
@@ -210,7 +238,7 @@ const RenderReplyTextArea = props => {
         Transforms.setNodes(editor, newProperties); 
     }
 
-    const {normalMode} = useContext(AppContext);
+
 
     const RenderButton = props => {
         const { style } = props; 
@@ -284,35 +312,79 @@ const RenderReplyTextArea = props => {
         )
     }
 
+    //you will need to a way to tell renderAllCommments.js that a comment is posted, so that it will update the tree 
     const SubmitEvent = () => {
-        //check if the reply is empty 
-        var isValid = false; 
-        if (response.length !== 0) {
-            response.forEach(child => {
-                child.children.forEach(val => {
-                    if (val.text !== '') {
-                        isValid = true;
-                    }
+        if (currentUserData !== null && currentUserData !== undefined) {
+            //check if the reply is empty 
+            var isValid = false;
+            if (response.length !== 0) {
+                response.forEach(child => {
+                    child.children.forEach(val => {
+                        if (val.text !== '') {
+                            isValid = true;
+                        }
+                    })
+
                 })
-
-            })
-        }
-        //if it is not empty, execute the following block of code
-        if (isValid) {
+            }
+            //if it is not empty, execute the following block of code
+            if (isValid) {
+     
                 // Save the value to Local Storage.
-                const content = JSON.stringify(response)
-                console.log(content)
-                localStorage.setItem('content', content)
-
-            //The following block of code resets the editor 
-            Transforms.delete(editor, {
-                at: {
-                    anchor: Editor.start(editor, []),
-                    focus: Editor.end(editor, []),
-                },
-            })
-            setResponse(initialValue)
+                const content = JSON.stringify(response);
+                PostToFirestore(content);
+                //The following block of code resets the editor 
+                Transforms.delete(editor, {
+                    at: {
+                        anchor: Editor.start(editor, []),
+                        focus: Editor.end(editor, []),
+                    },
+                })
+                setResponse(initialValue)
+            }
+            else {
+                alert('You must type something.')
+            }
         }
+        else {
+            alert("You must be signed in to comment.")
+        }
+    }
+
+    const PostToFirestore = async (content) => {
+        const commentID = uuid(); 
+        const currentTime = new Date(Date.now());
+        var timeObj = Timestamp.fromDate(currentTime); 
+       // var Parent_ID = parentID !== null && parentID !== undefined ? parentID : null; 
+        var Parent_ID = parentID; 
+        console.log("Parent_ID: " + parentID)
+        const docRef = doc(db, "Comments", commentID)
+        var obj = {
+            authorName: currentUserData.username, 
+            authorID: currentUserData.userID,
+            threadID: threadID, 
+            commentID: commentID, 
+            textBody: content, 
+            votes: [
+                {
+                    userID: currentUserData.userID, 
+                    upvote: true, 
+                    downvote: false, 
+                    dateVoted: timeObj, 
+                }, 
+            ],
+            timePosted: timeObj, 
+            parentComment: parentID, 
+        } 
+        //update the current comment tree being displayed in the UI
+        var newCommentArr = commentArr; 
+        newCommentArr.unshift(obj)
+        //It's necessary to write it like this way "prev => [...newCommentArr]" if we want to see the new comment 
+        //...to immediately appear first on the thread after the user presses the 'Comment' button.
+        setCommentArr(prev => [...newCommentArr]); 
+
+        await setDoc(docRef, obj)
+            .catch(error => {console.log(`${error.code}: ${error.message}`)})
     }
 
     return (
@@ -323,8 +395,8 @@ const RenderReplyTextArea = props => {
             MarginTop={marginTop}
             ReplyWidth={ReplyWidth}
         >
-                {author ?
-                    <Gap><span>Comment as </span><UserName>{author}</UserName></Gap>
+            {currentUserData ?
+                <Gap><span>Comment as </span><UserName>{currentUserData.username}</UserName></Gap>
                     :
                     null
                 }

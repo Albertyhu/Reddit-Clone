@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\components",
-    "\\src\\components\\old_files",
-    "\\src\\createPost",
-    "\\src\\guest",
-    "\\src\\navBar",
+    "\\src\\helperTools",
+    "\\src\\old",
     "\\src\\screens",
     "\\src\\screens\\community",
+    "\\src\\sort",
+    "\\src\\test",
     "\\src\\thread"
   ],
-  "SelectedNode": "\\src\\thread\\renderMainPost.js",
+  "SelectedNode": "\\notes.txt",
   "PreviewInSolutionExplorer": false
 }

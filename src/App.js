@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, } from 'react'; 
+import React, { useState, useRef, useEffect, useCallback} from 'react'; 
 import styled from "styled-components"; 
 import RenderThread from './thread/renderThread.js'; 
 import RenderNavBar from './navBar/navBar.js'; 
@@ -8,10 +8,11 @@ import { sampleUser, threads, SampleCommunity } from './helperTools/dummyData.js
 import { gatherTopCommunity } from './components/communityMethods.js'; 
 import { BrowserRouter, Routes, Route} from "react-router-dom";
 import Home from './screens/home.js'; 
-import RenderCommunity from './screens/community/community.js';
+import RenderCommunity from './screens/community.js';
 import RenderGuestPanel from './guest/GuestPanel.js'; 
 import { onAuthStateChanged, getAuth } from 'firebase/auth'; 
-import { doc, getDoc } from 'firebase/firestore'; 
+import { doc, updateDoc, getDocs, collection, query } from 'firebase/firestore'; 
+import { db } from './firebaseComponent.js';
 import { retrieveUserData } from './firebaseMethod/firestoreMethods.js'; 
 import CreatePostScreen from './createPost/createPost.js'; 
 import RenderPayloadDeliverer from './helperTools/deliverPayload.js'; 
@@ -22,7 +23,7 @@ function App() {
     window.onload = function () {
         initFirebaseAuth();
     }
-    function initFirebaseAuth() {
+    const initFirebaseAuth = ()=> {
         // Listen to auth state changes.
         onAuthStateChanged(auth, authStateObserver);
     }
@@ -31,20 +32,36 @@ function App() {
         return auth.currentUser;
     }
 
+
+    //For allowing the user to control whether or not they want the 
+    //...page to be displayed with the community theme. 
+    //This information will be passed to sidebar.js 
+    //The screens displayed comment.js and renderThread.js will have to gather the Community Data which will passed to the side bar
+    const [useCommunityTheme, setCommunityTheme] = useState(true);
+
     async function authStateObserver(user) {
         if (user) { // User is signed in!
-            setCurrentUser(getUserName()); 
-            setCurrentUserData(await retrieveUserData(auth.currentUser.uid, setCurrentUserData)); 
+            setCurrentUser(getUserName());
+            setCurrentUserData(await retrieveUserData(auth.currentUser.uid, setCommunityTheme)); 
 
         } else { // User is signed out!
             setCurrentUser('')
             setCurrentUserData(null); 
         }
+    
     }
 
-
     const [currentUser, setCurrentUser] = useState(''); 
+
     //currentUserData will contain username, email and UID of current logged in user
+        /*
+        * Data that currentUserData stores:
+        email,
+        username,
+        userID,
+        userCommunityTheme,
+        Karma,
+        */
     const [currentUserData, setCurrentUserData] = useState(null)
 
     useEffect(() => {
@@ -68,14 +85,27 @@ function App() {
 
     const [normalMode, setNormal] = useState(true)
 
-    //To be adjusted once Firebase is implemented 
-    const [topCommunities, setTopCommunities] = useState(gatherTopCommunity(SampleCommunity, 5))
+    const [allCommunities, setCommunities] = useState(null)
 
-    //For allowing the user to control whether or not they want the 
-    //...page to be displayed with the community theme. 
-    //This information will be passed to sidebar.js 
-    //The screens displayed comment.js and renderThread.js will have to gather the Community Data which will passed to the side bar
-    const [useCommunityTheme, setCommunityTheme] = useState(true);
+    //To be adjusted once Firebase is implemented 
+    const [topCommunities, setTopCommunities] = useState(null)
+
+    const retrieveCommunities = async () => {
+        const q = query(collection(db, "Communities")); 
+        var arr = []; 
+        const snapshot = await getDocs(q)
+            .catch(error => {console.log(`${error.code}: ${error.message}`)})
+        snapshot.forEach(snap => {
+            arr.push(snap.data())
+        })
+        setCommunities(arr) 
+    }
+
+    useEffect(() => {
+        if (allCommunities !== null && allCommunities !== undefined && allCommunities.length > 0) {
+            setTopCommunities(gatherTopCommunity(allCommunities, 5))
+        }
+    }, [allCommunities])
 
     const DefaultTheme = {
         //PanelBackgroundColor applies to the navbar 
@@ -140,6 +170,8 @@ function App() {
     }
 
     const context = {
+        allCommunities, 
+        retrieveCommunities, 
         DefaultTheme, 
         DarkTheme, 
         normalMode,
@@ -148,6 +180,8 @@ function App() {
         userData: sampleUser[0], 
         //returns array of the top 5 communities 
         topCommunities, 
+
+        //for navigation bar 
         openLogIn: () => {
             setGuestPanel(true)
             setWindowClarity(false); 
@@ -171,18 +205,27 @@ function App() {
         currentUserData, 
         setCurrentUserData,
         getUserName, 
+        auth, 
 
         //Allows users to decide whether threads and community screens should be rendered with their corresponding community theme
         useCommunityTheme, 
-        toggleCommunityTheme: () => { setCommunityTheme(prev => !prev) }, 
+        toggleCommunityTheme: async () => {
+            var boolVal = useCommunityTheme; 
+            setCommunityTheme(prev => !prev)
+            const docRef = doc(db, 'users', currentUserData.userID)
+            await updateDoc(docRef, {
+                useCommunityTheme: !boolVal, 
+            })
+                .catch(error => { console.log(`${error.code}: ${error.message}`)})
+        }, 
     }
 
-    /*
-     * Data that currentUserData stores: 
-        email,
-        username,
-        userID,
-     */
+
+    useEffect(() => {
+        if (allCommunities === null || allCommunities === undefined) {
+            retrieveCommunities(); 
+        }
+    }, [])
 
     return (
         <AppContext.Provider value={context}>

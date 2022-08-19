@@ -8,11 +8,13 @@ import RenderRIcon from '../asset/icons/r_icon.js';
 import { SampleCommunity } from '../helperTools/dummyData.js';
 import { RenderTimePosted } from '../components/renderTimePosted.js'; 
 import { useNavigate } from "react-router-dom";
+import { Serialize } from '../components/slateJSComponents/serializer.js'; 
 
 const RenderCardItem = props => {
     const { normalMode,
         DefaultTheme,
         DarkTheme,
+        currentUserData,
     } = useContext(AppContext);
 
     const {
@@ -27,7 +29,14 @@ const RenderCardItem = props => {
         timePosted, 
         votes, 
         commentNumber, 
+
+        //threadIndex is the index of the current thread in the sorted array in renderAllComments.js 
+        threadIndex, 
+        sortedArray, 
+        dispatchFunction,
+
     } = props; 
+
 
 
     //This part needs to change based on the user's voting history on the current thread
@@ -36,11 +45,17 @@ const RenderCardItem = props => {
     const [upvoteNum, setUpvoteNum] = useState(0);
     const [downvoteNum, setDownvoteNum] = useState(0)
 
+    //Array of all votes owned by the thread 
+    //This is used to update the 'votes' array in firestore
+    const [voteArray, setVoteArray] = useState([])
+
     const context = {
         upvoted,
         downvoted,
         upvoteNum,
         downvoteNum,
+        voteArray,
+        setVoteArray,
         changeUpvoted: num => {
             setUpvoted(num)
         },
@@ -53,23 +68,66 @@ const RenderCardItem = props => {
         changeDownvoteNum: num => {
             setDownvoteNum(num)
         },
+        ID: threadID, 
+        isVertical: true, 
+        FirestoreCollectionType: "Threads", 
+
+        //Data for updated the sorted array of threads 
+        index: threadIndex, 
+        sortedArray,
+        dispatchFunction, 
+        shouldUpdateSortedArray: true, 
     }
 
-    //needs to be updated when the voting gets 
+    //function for processing voting data retrieved from Firebase
+    const extractVoteData = () => {
+        var upvotes = 0;
+        var downvotes = 0;
+        votes.forEach(vote => {
+            if (vote.upvote) {
+                upvotes++;
+                //if the current vote is owned by the currently logged in user
+                
+                if (currentUserData !== null && currentUserData !== undefined && vote.userID == currentUserData.userID)
+                { setUpvoted(true) }
+            }
+            if (vote.downvote) {
+                downvotes++;
+                //if the current vote is owned by the currently logged in user
+                if (currentUserData !== null && currentUserData !== undefined && vote.userID == currentUserData.userID)
+                { setDownvoted(true) }
+            }
+
+        })
+        //store the votes array into the voteArray useState object
+        setVoteArray(votes)
+        setUpvoteNum(upvotes);
+        setDownvoteNum(downvotes);
+    }
+
     useEffect(() => {
-        if (votes !== null) {
-            setUpvoteNum(votes.upvote)
-            setDownvoteNum(votes.downvote)
+        if (votes !== null && votes !== undefined) {
+            extractVoteData();
+           // setUpvoteNum(votes.upvote)
+           // setDownvoteNum(votes.downvote)
         }
     }, [votes])
 
-    const [communityData, setCommunityData] = useState(SampleCommunity.find(val => val.communitID === communityID))
+    const [communityData, setCommunityData] = useState(SampleCommunity.find(val => val.communityID === communityID))
 
+    //old 
+    /*
     const RenderBodyText = useCallback(() => {
         return (
             <BodyText onClick={ToThread}><p>{textBody}</p></BodyText>
         )
-    }, []); 
+    }, []); */
+
+    const RenderBodyText = useCallback(() => {
+        return (
+            <BodyText onClick={ToThread}><Serialize data={JSON.parse(textBody)} /></BodyText>
+        )
+    }, []);
 
     const navigate = useNavigate(); 
     const ToCommunity = useCallback(() => navigate('./community', {
@@ -80,6 +138,7 @@ const RenderCardItem = props => {
     const ToThread = useCallback(() => navigate('../thread', {
         state: {
             threadID: threadID, 
+            threadIndex: threadIndex, 
         }
     }), [navigate])
 
@@ -123,6 +182,7 @@ const MainContainer = styled.div`
     margin: 10px auto;
     font-family: "Verdana";
     border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.0); 
     &:hover{
         border: ${props => props.theme.CardBorderHover};
 }
@@ -195,11 +255,13 @@ const ThreadTitle = styled.div`
     color: ${props => props.theme.TextColor || "#000000"};
 `
 
+
+//This is responsible for creating the fading effect seen on each card 
 const BodyText = styled.div`
     position: relative; 
     max-height: 350px; 
     overflow-y: hidden;
-       &:after{
+    &:after{
               z-index: 0;
               position: absolute;
               bottom: 0;  

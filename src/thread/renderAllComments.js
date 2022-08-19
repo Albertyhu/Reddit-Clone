@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import Comment from '../components/comment.js';
 import styled from "styled-components"; 
-import { ThreadContext, RenderAllCommentsContext, AppContext } from '../components/contextItem.js'; 
+import { ThreadContext, RenderAllCommentsContext } from '../components/contextItem.js'; 
 import { SortArray } from '../sort/sortMethods.js'; 
 import uuid from 'react-uuid'; 
 //Overall Goal: 
@@ -16,12 +16,15 @@ const RenderAllComments = () => {
     //commentArr stores all the comments of the thread, but they are not 
     //...sorted in the right order yet.
     //ThreadContext provides information from renderThread.js 
-    const { filterOption, commentArr } = useContext(ThreadContext)
+    const {
+        filterOption,
+        commentArr,
+    } = useContext(ThreadContext)
+    //contains the sorted comments. The sorting will be handled in renderAllComments.js'; 
     const [sortedComments, setSortedCom] = useState([]);
-
     useEffect(() => {
         const MyPromise = new Promise((resolve, reject) => {
-            resolve(CreateCommentTree(commentArr, null, filterOption, []));
+            resolve(CreateCommentTree(commentArr, null, filterOption));
         })
         MyPromise.then(function (arrayVal) {
             //The following two lines of code is written to make sure that 
@@ -38,25 +41,26 @@ const RenderAllComments = () => {
             arrayVal = removeClone(arrayVal, "children")
             setSortedCom(removeClone(arrayVal, "ancestors"))
         })
-    }, [commentArr, filterOption])
-
+    }, [commentArr])
       
     const context = {
         sortedComments,
         getSortedComments: () => sortedComments,
+        setSortedCom,
     }
 
     return (
         <RenderAllCommentsContext.Provider value = {context}>
-        <Container id="RenderAllCommentsContainer">
-            {sortedComments !== null && sortedComments.length !== 0 ? 
-                sortedComments.map(elem => <Comment
-                    {...elem}
-                    key={uuid()}
-                />)
-                :
-                null
-                }
+            <Container id="RenderAllCommentsContainer">
+                {sortedComments !== null && sortedComments.length !== 0 ? 
+                    sortedComments.map((elem, ind) => <Comment
+                        {...elem}
+                        CommentIndex={ind}
+                        key={uuid()}
+                    />)
+                    :
+                    null
+                    }
             </Container>
         </RenderAllCommentsContext.Provider>
         )
@@ -77,7 +81,7 @@ const GatherComments = (data, parentID )=> {
 //returns an array of all comments in the right order so they can be rendered correctly
 //When passing the function for expanding and collapsing a parent and its children
 //use DOM manipulation 
-const CreateCommentTree = (data, parentID, sortMethod, parentFunc) => {
+const CreateCommentTree = (data, parentID, sortMethod) => {
     //Gather the children 
     var arr = GatherComments(data, parentID) 
 
@@ -86,11 +90,11 @@ const CreateCommentTree = (data, parentID, sortMethod, parentFunc) => {
         return null; 
     }
 
-    //sort the array 
+    //sort the array of children
     arr = SortArray(arr, sortMethod); 
     if (arr !== null && arr.length !== 0) {
         arr.forEach(async (elem, ind) => {
-            var childArr = await CreateCommentTree(data, elem.commentID, sortMethod, [])
+            var childArr = await CreateCommentTree(data, elem.commentID, sortMethod)
             if (childArr !== null && childArr.length !== 0) {
                 //Get the position of where to insert the child comments 
                 //usually the position is right after the parent comment
@@ -123,7 +127,6 @@ const CreateCommentTree = (data, parentID, sortMethod, parentFunc) => {
                         ChildrenArr.unshift(child.commentID)
 
                     if (elem.children === undefined || elem.children === null || elem.children.length === 0) {
-
                         arr[arr.indexOf(elem)].children = ChildrenArr
                     }
                     else {

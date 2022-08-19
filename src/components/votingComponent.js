@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react'; 
+import { useContext, useEffect, useState } from 'react'; 
 import { downArrow, upArrow, upvote, downvote, UpArrowDarkMode, DownArrowDarkMode  } from '../asset/icons'; 
 import styled, { ThemeProvider } from 'styled-components'; 
 import { AppContext } from './contextItem.js'; 
@@ -10,9 +10,10 @@ import { db } from '../firebaseComponent.js';
 //... the elements of this component to align 
 
 //Go to render thread for writing the appropriate code for drawing voting info from firebase 
-//This function can only be used for threads 
+//This function can used for the threads in a feed or the comments in a thread post
 export const RenderVerticalVoting = props => {
     const { contextType } = props; 
+    const [shouldUpdate, setShouldUpdate] = useState(false);  
     const {
         upvoted,
         downvoted, 
@@ -23,8 +24,20 @@ export const RenderVerticalVoting = props => {
         changeUpvoteNum,
         changeDownvoteNum,
         voteArray,
-        setVoteArray,
-        threadID, 
+        ID, 
+
+        //Threads use vertical alignment. Comments use horizontal alignment 
+        isVertical, 
+
+        //This tells the component if the update is made on a thread or a comment 
+        FirestoreCollectionType, 
+
+        //The following four items are no longer in use
+        index, 
+        sortedArray, 
+        dispatchFunction, 
+        shouldUpdateSortedArray, 
+
     } = useContext(contextType); 
 
     const {
@@ -47,6 +60,7 @@ export const RenderVerticalVoting = props => {
                 changeDownvoteNum(prev => prev - 1)
             }
         }
+        setShouldUpdate(true)
     }
 
     const downvoteOnclick = () => {
@@ -62,12 +76,12 @@ export const RenderVerticalVoting = props => {
                 changeUpvoted(false)
             }
         }
+        setShouldUpdate(true)
+
     }
 
-    const UpdateVoteInFirestore = async () => {
-        const currentTime = new Date(Date.now());
-        var timeObj = Timestamp.fromDate(currentTime); 
-        var docRef = doc(db, "Threads", threadID); 
+    const UpdateVoteInFirestore = async (timeObj) => {
+        var docRef = doc(db, FirestoreCollectionType, ID); 
         var updatedVote = {
             dateVoted: timeObj,
             upvote: upvoted,
@@ -80,26 +94,104 @@ export const RenderVerticalVoting = props => {
             await updateDoc(docRef, {
                 votes: arr,
             })
-        } catch (e){ console.log(`${e.code}: ${e.message}`)}
+        } catch (e) { console.log(`${e.code}: ${e.message}`) }
     }
 
+    //NO LONGER IN USE: The reason is that this method causes the sorted array for comments/threads to rerender
+    //...this in turn causes the voting components to flicker
+    //The alternative solution is not update the sorted array when the user votes on the comment/thread,
+    //...but only update it when the user switches filter option or thread/renderfeed reloads. 
+    //Whenever the user votes on a thread/comment, not only does the thread/comment need to be updated in firestore
+    //...but it also needs to be updated in the useState array that renders the tree 
+    //What is needed for the parent components
+    //sortedArray
+    //dispatchFunction
+    //index
+    const updateVoteInSortedArray = (timeObj) => {
+        //copy the entire thread/comment array, but leave out the one thread/comment that is to be updated 
+        var tempArr = sortedArray.filter((val, ind) => ind !== index );
+        //copy the one thread/comment that is to be updated 
+        var updatedObj = sortedArray[index];
+        //copy the votes, but leave out the vote that is to be updated, if it exists 
+        var voteArray = updatedObj.votes.filter(val => val.userID !== currentUserData.userID)
+
+        //created a new vote item based on the updated situation 
+        var newVote = {
+            dateVoted: timeObj,
+            upvote: upvoted,
+            downvote: downvoted,
+            userID: currentUserData.userID,
+        }
+        //add the vote into the voteArray
+        voteArray.push(newVote);
+        //give the vote array of the thread/comment a new array
+        updatedObj.votes = voteArray
+
+        //add the updated thread/comment to the thread/comment array
+        tempArr.splice(index, 0, updatedObj)
+
+        //give the useState sortedArray object a new value 
+        dispatchFunction(tempArr);
+    }
+
+  //  var sideMarginValue = isVertical ? "0px" : "0px"; 
+    var iconSize = isVertical ? "24px" : "20px"
+
+    //This part is necessary
+    //This updates the user's vote in firestore whenever the thread/comment is upvoted or downvoted. 
+    //The if-statement is used to prevent useEffect from executing the body of the code whenever the voting component is mounted
     useEffect(() => {
-        UpdateVoteInFirestore();  
+        if (shouldUpdate) {
+            const currentTime = new Date(Date.now());
+            var timeObj = Timestamp.fromDate(currentTime); 
+            UpdateVoteInFirestore(timeObj);
+            setShouldUpdate(false)
+            if (shouldUpdateSortedArray) {
+                updateVoteInSortedArray(timeObj)
+            }
+        }
     }, [upvoted, downvoted])
 
     return (
         <ThemeProvider theme = {normalMode ? DefaultTheme : DarkTheme}>
-            <Container>
+            <Container
+                Display={isVertical ? "block" : "flex"}
+                Width={isVertical ? "auto" : "70px"}
+                id = "Container"
+            >
                 {upvoted ?
-                    <VoteIcon src={upvote} onClick={upvoteOnclick} />
+                    <VoteIcon
+                        src={upvote}
+                        onClick={upvoteOnclick}
+                        SideMargin={"0px"}
+                        Size={iconSize} />
                     :
-                    <VoteIcon src={normalMode ? upArrow : UpArrowDarkMode} onClick={upvoteOnclick} />
+                    <VoteIcon
+                        src={normalMode ? upArrow : UpArrowDarkMode}
+                        onClick={upvoteOnclick}
+                        SideMargin={"0px"}
+                        Size={iconSize} 
+                    />
                 }
-                <VoteNumber>{upvoteNum - downvoteNum}</VoteNumber>
-                {downvoted ?
-                    <VoteIcon src={downvote} onClick={downvoteOnclick} />
+                {upvoteNum !== undefined && downvoteNum !== undefined ? 
+                    <VoteNumber>{upvoteNum - downvoteNum}</VoteNumber>
                     :
-                    <VoteIcon src={normalMode ? downArrow : DownArrowDarkMode} onClick={downvoteOnclick} />
+                    <></>
+                    }
+                {downvoted ?
+                    <VoteIcon
+                        src={downvote}
+                        onClick={downvoteOnclick}
+                        SideMargin={"0px"}
+                        Size={iconSize} 
+                    />
+                    :
+                    <VoteIcon
+                        src={normalMode ? downArrow : DownArrowDarkMode}
+                        onClick={downvoteOnclick}
+                        SideMargin={"0px"}
+                        Size={iconSize} 
+                    />
                 }
                 </Container>
             </ThemeProvider>
@@ -108,13 +200,15 @@ export const RenderVerticalVoting = props => {
 
 const Container = styled.div`
     text-align: center; 
+    display: ${props => props.Display || "block"};
+    width: ${props => props.Width || "auto"}; 
+    resize: none;
 `
 
 const VoteIcon = styled.img`
-width: 24px; 
-height: 24px; 
-margin-top: auto;
-margin-bottom: auto;
+width: ${props => props.Size || "24px"}; 
+height: ${props => props.Size || "24px"}; 
+margin: auto ${props => props.SideMargin || "0px"};
 cursor: pointer;
 `
 
@@ -126,5 +220,7 @@ margin-bottom: auto;
 font-weight: bold;
 font-size: 12px;
 font-family: "Verdana";
+resize: none;
+width: 30px;
 color: ${props => props.theme.TextColor}; 
 `
