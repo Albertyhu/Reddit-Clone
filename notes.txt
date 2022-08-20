@@ -171,3 +171,6 @@ The function needs to be defined at the top level component community.js.
 A way to calculate Karma is with the following: 
 Every time the users creates a post or comment.
 Every time someone else votes on the post or comment. 
+
+//fixed 
+15.) Voting as a nonmember should be fixed 

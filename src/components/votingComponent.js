@@ -48,35 +48,45 @@ export const RenderVerticalVoting = props => {
     } = useContext(AppContext);
 
     const upvoteOnclick = () => {
-        if (upvoted) {
-            changeUpvoted(false)
-            changeUpvoteNum(prev => prev - 1)
+        if (currentUserData !== null && currentUserData !== undefined) {
+            if (upvoted) {
+                changeUpvoted(false)
+                changeUpvoteNum(prev => prev - 1)
+            }
+            else {
+                changeUpvoted(true)
+                changeUpvoteNum(prev => prev + 1)
+                if (downvoted) {
+                    changeDownvoted(false)
+                    changeDownvoteNum(prev => prev - 1)
+                }
+            }
+            setShouldUpdate(true)
         }
         else {
-            changeUpvoted(true)
-            changeUpvoteNum(prev => prev + 1)
+            alert('You must be signed in as a registered user to do that.')
+        }
+    }
+
+    const downvoteOnclick = () => {
+        if (currentUserData !== null && currentUserData !== undefined) {
             if (downvoted) {
                 changeDownvoted(false)
                 changeDownvoteNum(prev => prev - 1)
             }
-        }
-        setShouldUpdate(true)
-    }
-
-    const downvoteOnclick = () => {
-        if (downvoted) {
-            changeDownvoted(false)
-            changeDownvoteNum(prev => prev - 1)
+            else {
+                changeDownvoted(true)
+                changeDownvoteNum(prev => prev + 1)
+                if (upvoted) {
+                    changeUpvoteNum(prev => prev - 1)
+                    changeUpvoted(false)
+                }
+            }
+                setShouldUpdate(true)
         }
         else {
-            changeDownvoted(true)
-            changeDownvoteNum(prev => prev + 1)
-            if (upvoted) {
-                changeUpvoteNum(prev => prev - 1)
-                changeUpvoted(false)
-            }
+            alert('You must be signed in as a registered user to do that.')
         }
-        setShouldUpdate(true)
 
     }
 
