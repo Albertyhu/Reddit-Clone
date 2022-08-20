@@ -550,7 +550,14 @@ const CreatePostScreen = props => {
                             </ReplyCont>
                             <PostButtonContainer id = "PostButtonContainer">
                                 <PostButtonWrapper id = "PostButtonWrapper">
-                                    <SubmitButton onClick={SubmitEvent} id = "PostButton">Post</SubmitButton>
+                                    <SubmitButton onClick={() => {
+                                        if (currentUserData !== null && currentUserData !== undefined) {
+                                            SubmitEvent()
+                                        }
+                                        else {
+                                            alert("You must be signed in to do that.")
+                                        }
+                                    }} id="PostButton">Post</SubmitButton>
                                 </PostButtonWrapper>
                             </PostButtonContainer>
                         </Container> 

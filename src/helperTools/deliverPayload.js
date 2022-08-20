@@ -1,4 +1,4 @@
-import { UploadCommunities } from '../helperTools/uploadToFirestore.js'; 
+import { UploadCommunities, AddCommunities } from '../helperTools/uploadToFirestore.js'; 
 import styled from 'styled-components'; 
 import { useLocation } from 'react-router'
 
@@ -6,7 +6,7 @@ const RenderPayloadDeliverer = () => {
 
     const handleEvent = () => {
         try {
-            UploadCommunities();
+            //AddCommunities();
             alert("Payload successfully delivered")
         } catch (e) { alert(`${e.code}: ${e.message}`)}
     }
@@ -34,6 +34,7 @@ color: #B6B6B6;
 width: fit-content;
 cursor: pointer;
 font-size: 15px;
+margin: 50px auto;
 &:hover{
     background-color: #464646;
 }

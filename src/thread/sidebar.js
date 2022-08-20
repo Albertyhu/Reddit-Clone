@@ -9,6 +9,7 @@ import uuid from 'react-uuid';
 import { AppContext } from '../components/contextItem.js'; 
 import { AiOutlineMail } from 'react-icons/ai';
 import { useNavigate, Link } from 'react-router-dom'; 
+import RenderMembershipButtons from '../components/membershipButton.js'; 
 
 const MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -41,6 +42,7 @@ const RenderSideBar = props => {
         DarkTheme,
         useCommunityTheme, 
         toggleCommunityTheme,
+        currentUserData, 
     } = useContext(AppContext);
 
   //  const dateObj = new Date(dateCreated)
@@ -91,6 +93,8 @@ const RenderSideBar = props => {
         }
     }), [navigate])
 
+    const [isMember, setIsMember] = useState(currentUserData ? currentUserData.communityMembership.some(val => val === communityID) : false) 
+
     return (
         <ThemeProvider theme={normalMode ? (useCommunityTheme ? (!!communityTheme ? communityTheme : DefaultTheme) : DefaultTheme) : DarkTheme}>
             <MainContainer id="SideBarMainContainer">
@@ -120,11 +124,22 @@ const RenderSideBar = props => {
                             <GiCakeSlice />
                             <DateCreated>Created {formatedDate}</DateCreated>
                         </DateContainer>
-                        <Button>Join Community</Button> 
+                        <RenderMembershipButtons
+                            isMember={isMember}
+                            setIsMember={setIsMember}
+                            communityID={communityID}
+                            communityTheme={communityTheme}
+                        />
                         {//Only the side bars on comment.js and renderThread.js will have threadData
                          //createPost.js will not. Thus, this button won't show up on createPost.js 
-                          threadData && <Button onClick={()=>GoCreatePostPage()}>Create Post</Button>
-
+                            threadData && <Button onClick={() => {
+                                if (currentUserData !== null && currentUserData !== undefined) {
+                                 GoCreatePostPage()
+                                     }
+                                else {
+                                    alert("You must be signed in to do that.")
+                                }
+                            }}>Create Post</Button>
                         }
                         <Divider />
                         <Button

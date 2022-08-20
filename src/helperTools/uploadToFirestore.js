@@ -1,4 +1,4 @@
-import { doc, setDoc, collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs, Timestamp, runTransaction } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { db } from '../firebaseComponent.js';
 import { SampleCommunity, FunnyCommunity, LosAngelesCommunity  } from './dummyData.js';
@@ -32,6 +32,23 @@ export const UploadCommunities = async () => {
             })
     })
 } 
+
+export const AddCommunities = async () => {
+    const docRef = collection(db, "users")
+
+    try {
+        await runTransaction(db, async (transaction) => {
+            const snapshot = await transaction.get(docRef);
+            if (!snapshot.exists()) {
+                throw "Document does not exist!"; 
+
+            }
+
+            transaction.update(docRef, {communityMembership: []})
+        })
+    }
+    catch (e){ console.log(`Transaction failed. ${e.code}: ${e.message}`)}
+}
 
 /*
 const SubmitEvent = async () => {

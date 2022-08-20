@@ -97,11 +97,9 @@ const RenderThread = props => {
     }
 
     const retrieveThread = async (ID) => {
-        console.log("threadID: " + ID)
         const docRef = doc(db, "Threads", ID)
         await getDoc(docRef)
             .then(snap => {
-                console.log(snap.data())
                 if (snap.exists()) {
                     setThreadData(snap.data());
                     extractVoteData(snap.data().votes)
@@ -116,7 +114,6 @@ const RenderThread = props => {
 
     //retrieve data about the community that the thread belongs to
     const retrieveCommunity = async ID => {
-        console.log("ID: " + ID)
         if (allCommunities !== null && allCommunities !== undefined) {
             setCommunityData(allCommunities.find(val => val.communityID === ID))
         }
@@ -148,44 +145,21 @@ const RenderThread = props => {
     }
 
     //function for processing voting data retrieved from Firebase
-    /*
-    const extractVoteData = () => {
-        var upvotes = 0;
-        var downvotes = 0; 
-        threadData.votes.forEach(vote => {
-            if (vote.upvote) {
-                upvotes++; 
-                //if the current vote is owned by the currently logged in user
-                if (vote.userID == currentUserData.userID) {setUpvoted(true) }
-            }
-            if (vote.downvote) {
-                downvotes++; 
-                //if the current vote is owned by the currently logged in user
-                if (vote.userID == currentUserData.userID) { setDownvoted(true)}
-            }
-           
-        })
-        //store the votes array into the voteArray useState object
-        setVoteArray(threadData.votes)
-        setUpvoteNum(upvotes);
-        setDownvoteNum(downvotes); 
-    }*/
-
     const extractVoteData = (data) => {
         var upvotes = 0;
         var downvotes = 0;
-        console.log("data")
-        console.log(data)
         for (var i in data){
             if (data[i].upvote) {
                 upvotes++;
                 //if the current vote is owned by the currently logged in user
-                if (data[i].userID == currentUserData.userID) { setUpvoted(true) }
+                if (currentUserData !== null && currentUserData !== undefined)
+                     if (data[i].userID == currentUserData.userID) { setUpvoted(true) }
             }
             if (data[i].downvote) {
                 downvotes++;
                 //if the current vote is owned by the currently logged in user
-                if (data[i].userID == currentUserData.userID) { setDownvoted(true) }
+                if (currentUserData !== null && currentUserData !== undefined)
+                    if (data[i].userID == currentUserData.userID) { setDownvoted(true) }
             }
 
         }

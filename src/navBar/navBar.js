@@ -106,7 +106,7 @@ const MainContainer = styled.div`
 `
 const Logo = styled.img`
     height: 60%; 
-    width: fit-content; 
+    width: 90px; 
     margin: auto 0 auto 20px;
     cursor: pointer;
     &#silhouette{

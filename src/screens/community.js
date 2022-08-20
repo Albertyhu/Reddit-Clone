@@ -10,6 +10,7 @@ import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firesto
 import { db } from '../firebaseComponent.js';
 import { SortArray } from '../sort/sortMethods.js'; 
 import { useNavigate } from 'react-router'; 
+import { JoinCommunity } from '../components/membershipButton.js' 
 
 const RENDER_THREADS = 'RENDER_ THREADS';
 
@@ -32,6 +33,8 @@ const RenderCommunity = () => {
         useCommunityTheme,
         allCommunities,
         retrieveCommunities, 
+        addMembership, 
+        currentUserData,
     } = useContext(AppContext);
 
     //retrieves all threads relevant to the target community 
@@ -87,7 +90,13 @@ const RenderCommunity = () => {
         }
     }, [])
 
+    const [isMember, setIsMember] = useState(currentUserData !== null && currentUserData !== undefined ? currentUserData.communityMembership.some(val => val === communityID) : null)
 
+    useEffect(() => {
+        if (currentUserData !== null && currentUserData !== undefined) {
+            setIsMember(currentUserData.communityMembership.some(val => val === communityID))
+        }
+    }, [currentUserData])
 
     const RenderHeader = props => {
         return (
@@ -108,7 +117,22 @@ const RenderCommunity = () => {
                             <HeaderBarGrid id = "HeaderBarGrid">
                                 <TitleWrapper id="TitleWrapper">
                                     <span id="CommunityHeaderTitle">{community.communityHeaderTitle}</span>
-                                    <Button>Join</Button>
+                                    {!isMember &&
+                                        <Button
+                                        onClick={() => {
+                                            if (currentUserData !== null && currentUserData !== undefined) {
+                                                JoinCommunity(
+                                                    currentUserData.userID,
+                                                    communityID,
+                                                    setIsMember,
+                                                    addMembership
+                                                )
+                                            }
+                                            else {
+                                                alert("You must be signed in to do that.")
+                                            }
+                                        }}
+                                    >Join</Button>}
                                 </TitleWrapper>
                                 <BreadCrumb>r/{community.communityTitle}</BreadCrumb>
                             </HeaderBarGrid>
@@ -119,7 +143,6 @@ const RenderCommunity = () => {
             </ThemeProvider>
             )
     }
-
 
     const RenderMainBody = ({ functionality }) => {
         const { threadData } = useContext(CommunityContext);

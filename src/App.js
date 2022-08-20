@@ -202,8 +202,24 @@ function App() {
         displaySignIn, 
         currentUser,
         setCurrentUser, 
-        currentUserData, 
+        currentUserData,
         setCurrentUserData,
+
+        //function for adding the community ID after the user joins that community
+        addMembership: (ID) => {
+            var arr = currentUserData.communityMembership; 
+            if (!arr.some(val => val === ID)) {
+                arr.push(ID)
+                console.log(arr)
+                currentUserData.communityMembership = arr; 
+            }
+        }, 
+        removeMembership: (ID) => {
+            var arr = currentUserData.communityMembership.filter(val => val !== ID);
+            console.log(arr)
+            currentUserData.communityMembership = arr;
+        }, 
+
         getUserName, 
         auth, 
 
@@ -212,14 +228,15 @@ function App() {
         toggleCommunityTheme: async () => {
             var boolVal = useCommunityTheme; 
             setCommunityTheme(prev => !prev)
-            const docRef = doc(db, 'users', currentUserData.userID)
-            await updateDoc(docRef, {
-                useCommunityTheme: !boolVal, 
-            })
-                .catch(error => { console.log(`${error.code}: ${error.message}`)})
+            if (currentUserData !== null && currentUserData !== undefined) {
+                const docRef = doc(db, 'users', currentUserData.userID)
+                await updateDoc(docRef, {
+                    useCommunityTheme: !boolVal,
+                })
+                    .catch(error => { console.log(`${error.code}: ${error.message}`) })
+            }
         }, 
     }
-
 
     useEffect(() => {
         if (allCommunities === null || allCommunities === undefined) {

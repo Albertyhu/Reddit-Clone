@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\components",
-    "\\src\\helperTools",
-    "\\src\\old",
+    "\\src\\createPost",
+    "\\src\\firebaseMethod",
+    "\\src\\guest",
+    "\\src\\navBar",
     "\\src\\screens",
     "\\src\\screens\\community",
-    "\\src\\sort",
-    "\\src\\test",
     "\\src\\thread"
   ],
-  "SelectedNode": "\\notes.txt",
+  "SelectedNode": "\\src\\navBar\\signInComponent.js",
   "PreviewInSolutionExplorer": false
 }

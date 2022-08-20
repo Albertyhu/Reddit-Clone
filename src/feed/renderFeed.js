@@ -56,6 +56,7 @@ const RenderFeed = props => {
                         threadIndex={ind}
                         sortedArray={sortedData}
                         dispatchFunction={setSortedData}
+                        isCommunity={isCommunity}
                     />)}
                 </PanelContainer> 
                 <SideBar id= "FeedSideBar">

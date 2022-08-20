@@ -1,4 +1,4 @@
-import React, {  useContext, useCallback} from 'react'; 
+import React, {  useContext, useCallback, useState, useEffect} from 'react'; 
 import styled, { ThemeProvider } from 'styled-components'; 
 import { AppContext } from '../components/contextItem.js'; 
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
@@ -6,6 +6,7 @@ import uuid from 'react-uuid';
 import BackgroundBanner from '../asset/images/banner-background.png'; 
 import { useNavigate } from 'react-router-dom';
 import RenderRIcon from '../asset/icons/r_icon.js'; 
+import { JoinCommunity } from '../components/membershipButton.js' 
 
 const RenderSideBar = props => {
     const navigate = useNavigate(); 
@@ -14,6 +15,8 @@ const RenderSideBar = props => {
         normalMode,
         DefaultTheme,
         DarkTheme,
+        addMembership,
+        currentUserData,
     } = useContext(AppContext);
     const ToCommunity = useCallback((ID) =>navigate('../community', {
         state: {
@@ -21,11 +24,20 @@ const RenderSideBar = props => {
         },
     
     }), [navigate])
+
     const RenderCommunityItem = ({
         index,
         communityImage,
         communityTitle,
-        communityID}, props) => {
+        communityID }, props) => {
+
+        const [isMember, setIsMember] = useState(currentUserData !== null && currentUserData !== undefined ? currentUserData.communityMembership.some(val => val === communityID) : null)
+
+        useEffect(() => {
+            if (currentUserData !== null && currentUserData !== undefined) {
+                setIsMember(currentUserData.communityMembership.some(val => val === communityID))
+            }
+        }, [currentUserData])
         return (
             <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
                 <CommunityItem >
@@ -46,7 +58,22 @@ const RenderSideBar = props => {
                     <Text
                         onClick={() => ToCommunity(communityID)}
                     >r/{communityTitle}</Text>
-                <Button>Join</Button>
+                    {!isMember &&
+                        <Button
+                        onClick={() => {
+                            if (currentUserData !== null && currentUserData !== undefined) {
+                                JoinCommunity(currentUserData.userID,
+                                    communityID,
+                                    setIsMember,
+                                    addMembership
+                                    )
+                                }
+                            else {
+                                alert("You must be signed in to do that.")
+                            }
+                        }}
+                    >Join</Button>
+                    }
                </CommunityItem>
             </ThemeProvider>
             )

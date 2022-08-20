@@ -114,11 +114,15 @@ const RenderGuestPanel = props => {
                 email: currentEmail.toLowerCase(),
                 username: userName,
                 userID: GoogleID,
+                Karma: 0, 
+                communityMembership: [], 
             }).then(() => {
                 setCurrentUserData({
                     email: currentEmail.toLowerCase(),
                     username: userName,
                     userID: GoogleID,
+                    Karma: 0, 
+                    communityMembership: [], 
                 })
                 addUserToList(userName, currentEmail.toLowerCase(), GoogleID);
                 resetInput();
@@ -132,6 +136,7 @@ const RenderGuestPanel = props => {
                         alert(error.code + ": " + error.message)
                 })
         }
+        //If account is created with email and password 
         else {
             createUserWithEmailAndPassword(auth, currentEmail, password)
                 .then(async (userCredentials) => {
@@ -139,11 +144,15 @@ const RenderGuestPanel = props => {
                         email: currentEmail.toLowerCase(),
                         username: userName.split(' ').join(''),
                         userID: auth.currentUser.uid,
+                        Karma: 0,
+                        communityMembership: [], 
                     })
                     setCurrentUserData({
                         email: currentEmail.toLowerCase(),
                         username: userName,
                         userID: auth.currentUser.uid,
+                        Karma: 0,
+                        communityMembership: [], 
                     })
                     console.log("success!")
                     addUserToList(userName, currentEmail.toLowerCase(), auth.currentUser.uid);

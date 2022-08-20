@@ -14,7 +14,7 @@ import { SiHotjar } from 'react-icons/si';
 import { FaHeadSideCough } from 'react-icons/fa';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 
-const SORT_OPTIONS = ["Top", "New", "Old", "Controversial", "Hot"]
+const SORT_OPTIONS = ["Top", "New", "Old", "Controversial"]
 
 //This component is for the thread page
 //This displays the select element that allows users to choose methods of sorting through comments 
@@ -105,19 +105,6 @@ export const RenderSortThreadOptions = props => {
     useEffect(() => {
         return () => document.removeEventListener("resize", resizeEvent);
     }, [])
-
-    /*
-    useEffect(() => {
-        if (window.innerWidth > 540) {
-            setDesktopView(true)
-            setOpenMobileMenu(false)
-        }
-        else {
-            setDesktopView(false)
-        }
-    }, [window.innerWidth])
-    */
-
 
     const MobileSort = () => {
         return (

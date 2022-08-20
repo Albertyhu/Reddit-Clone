@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useContext, useCallback, useMemo, useRef } from 'react';
 import styled, { ThemeProvider } from 'styled-components'; 
 import { AppContext, CardContext  } from '../components/contextItem.js'; 
 import { RenderVerticalVoting } from '../components/votingComponent.js'; 
@@ -9,12 +9,14 @@ import { SampleCommunity } from '../helperTools/dummyData.js';
 import { RenderTimePosted } from '../components/renderTimePosted.js'; 
 import { useNavigate } from "react-router-dom";
 import { Serialize } from '../components/slateJSComponents/serializer.js'; 
+import { JoinCommunity } from '../components/membershipButton.js'; 
 
 const RenderCardItem = props => {
     const { normalMode,
         DefaultTheme,
         DarkTheme,
         currentUserData,
+        addMembership, 
     } = useContext(AppContext);
 
     const {
@@ -35,6 +37,9 @@ const RenderCardItem = props => {
         sortedArray, 
         dispatchFunction,
 
+        //This boolean value is to determine whether or not the feed being rendered on the home page or community page 
+        //Does the app can decide whether or not the join button should rendered. 
+        isCommunity,
     } = props; 
 
 
@@ -108,24 +113,19 @@ const RenderCardItem = props => {
     useEffect(() => {
         if (votes !== null && votes !== undefined) {
             extractVoteData();
-           // setUpvoteNum(votes.upvote)
-           // setDownvoteNum(votes.downvote)
         }
     }, [votes])
 
     const [communityData, setCommunityData] = useState(SampleCommunity.find(val => val.communityID === communityID))
 
-    //old 
-    /*
-    const RenderBodyText = useCallback(() => {
-        return (
-            <BodyText onClick={ToThread}><p>{textBody}</p></BodyText>
-        )
-    }, []); */
 
     const RenderBodyText = useCallback(() => {
         return (
-            <BodyText onClick={ToThread}><Serialize data={JSON.parse(textBody)} /></BodyText>
+            <BodyText
+                BackgroundStatus={JSON.parse(textBody).length < 50}
+                onClick={ToThread}
+            ><Serialize data={JSON.parse(textBody)} />
+            </BodyText>
         )
     }, []);
 
@@ -142,10 +142,20 @@ const RenderCardItem = props => {
         }
     }), [navigate])
 
+    var MainContainerID = `MainContainer-${threadID}`
+
+    const [isMember, setIsMember] = useState(currentUserData !== null && currentUserData !== undefined ? currentUserData.communityMembership.some(val => val === communityID) : null) 
+
+    useEffect(() => {
+        if (currentUserData!== null && currentUserData !== undefined) {
+            setIsMember(currentUserData.communityMembership.some(val => val === communityID))
+        }
+    }, [currentUserData])
+
     return (
         <CardContext.Provider value={context}>
             <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
-                <MainContainer>
+                <MainContainer id={MainContainerID}>
                     <VotingColumn>
                         <RenderVerticalVoting
                             contextType={CardContext}
@@ -160,7 +170,15 @@ const RenderCardItem = props => {
                                     <Author>Posted by u/{authorName} </Author>
                                     <TimePosted> {RenderTimePosted(timePosted)}</TimePosted>
                              </ComunityTitleSecondaryWrapper>
-                            <Button>Join</Button>
+                            {!isCommunity && !isMember && (currentUserData === null || currentUserData === undefined) &&
+                                <Button
+                                onClick={()=>JoinCommunity(
+                                    currentUserData.userID,
+                                    communityID, 
+                                    setIsMember,
+                                    addMembership
+                                )}
+                                >Join</Button>}
                         </CommunityTitleWrapper>
                         <ThreadTitle onClick={ToThread} >{title}</ThreadTitle>
                         <RenderBodyText />
@@ -183,6 +201,7 @@ const MainContainer = styled.div`
     font-family: "Verdana";
     border-radius: 5px;
     border: 1px solid rgba(0,0,0,0.0); 
+    overflow-y: hidden;
     &:hover{
         border: ${props => props.theme.CardBorderHover};
 }
@@ -220,10 +239,14 @@ const Button = styled.div`
     color: ${props => props.theme.ButtonTextC}; 
     &:hover{
         background-color: ${props => props.theme.ButtonBackgroundCHover}; 
-}
+    }
+    @media screen and (max-width: 540px){
+        min-width: 40px;
+    }
 `
 
 const CommunityTitleWrapper = styled.div`
+margin-top: 10px; 
 display: grid;
 grid-template-columns: 90% 10%; 
 `
@@ -252,6 +275,7 @@ const TimePosted = styled.div`
 const ThreadTitle = styled.div`
     font-size: 18px;
     font-weight: 500;
+    margin: 10px 0px;
     color: ${props => props.theme.TextColor || "#000000"};
 `
 
@@ -261,6 +285,7 @@ const BodyText = styled.div`
     position: relative; 
     max-height: 350px; 
     overflow-y: hidden;
+    min-height: 200px;
     &:after{
               z-index: 0;
               position: absolute;
@@ -268,6 +293,6 @@ const BodyText = styled.div`
               height: 100%;
               width: 100%;
               content: "";
-              background: ${props => props.theme.CardTextLinearGradColor};
+              background: ${props => props.theme.CardTextLinearGradColor }; 
     }
 `
