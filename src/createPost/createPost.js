@@ -645,14 +645,17 @@ const ListElement = props => {
 }
 
 const Container = styled.div`
-    margin-left: ${props => props.MarginLeft || "10px"};
-    margin-right: ${props => props.MarginRight || "10px"};
+    margin-left: 10px;
+    margin-right: 10px;
     margin-top: ${props => props.MarginTop || 0};
     width: ${props => props.ReplyWidth || "100%"};  
     background-color: ${props => props.theme.PanelBackgroundColor}; 
     border-radius: 5px; 
     display: block;
     padding: 20px 0;
+ @media screen and (max-width: 540px){
+    margin: 0;
+ }
 `
 
 

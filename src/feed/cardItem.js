@@ -215,6 +215,16 @@ const VotingColumn = styled.div`
 const MainColumn = styled.div`
     margin: 0 20px;
     cursor: pointer;
+@media screen and (max-width: 540px){
+    margin: 0px;
+
+}
+    & > * {
+        @media screen and (max-width: 540px){
+            margin-left: 0px;
+
+        }
+    }
 `
 
 const Button = styled.div`
@@ -256,6 +266,18 @@ const ComunityTitleSecondaryWrapper = styled.div`
         font-size: 12px;
         margin: auto 5px; 
     }
+@media screen and (max-width: 540px){
+    & > *{
+    font-size: 12px;
+    margin: auto;
+    }
+}
+@media screen and (max-width: 360px){
+    & > *{
+    font-size: 8px;
+    margin: auto;
+    }
+}
 `
 
 const CommunityTitle = styled.div`

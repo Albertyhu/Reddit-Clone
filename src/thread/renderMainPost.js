@@ -79,6 +79,12 @@ const Header = styled.div`
         color: #adadad; 
         font-size: 12px;
     }
+@media screen and (max-width: 540px){
+    & > *{font-size: 10px;}
+}
+@media screen and (max-width: 360px){
+    & > *{font-size: 8px;}
+}
 `
 
 const Community = styled.div`

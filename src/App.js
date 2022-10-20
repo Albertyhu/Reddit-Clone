@@ -80,8 +80,8 @@ function App() {
 
     const GuestPanelRef = useRef(); 
 
+    //controls whether background will be blurred or clear 
     const [WindowClarity, setWindowClarity] = useState(true)
-
 
     const [normalMode, setNormal] = useState(true)
 
@@ -169,6 +169,29 @@ function App() {
         GuestInputBorder: "1px solid rgba(255,255,255,0.5)", 
     }
 
+    //Controlls whether the site will be desktop or mobile version 
+    const [desktopView, setDesktopView] = useState(window.innerWidth > 540 ? true : false)
+   
+    const resizeEvent = event => {
+        if (window.innerWidth > 540) {
+            setDesktopView(true)
+        }
+        else {
+            setDesktopView(false)
+        }
+
+    }
+
+    window.addEventListener('resize', resizeEvent);
+    useEffect(() => {
+        resizeEvent(); 
+        return () => {window.removeEventListener('resize', resizeEvent) }
+    }, [])
+
+    useEffect(() => {
+        console.log("desktopView: " + desktopView); 
+    }, [desktopView])
+
     const context = {
         allCommunities, 
         retrieveCommunities, 
@@ -236,6 +259,7 @@ function App() {
                     .catch(error => { console.log(`${error.code}: ${error.message}`) })
             }
         }, 
+        desktopView, 
     }
 
     useEffect(() => {

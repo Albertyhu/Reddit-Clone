@@ -45,6 +45,9 @@ font-size: 20px;
 margin-top: 10px;
 margin-bottom: 10px;
 line-height: 5px;
+@media screen and (max-width: 540px){
+    line-height: 20px;
+}
 `
 
 export const Divider = styled.div`

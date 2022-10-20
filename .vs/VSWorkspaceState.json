@@ -1,16 +1,17 @@
 {
   "ExpandedNodes": [
     "",
+    "\\.github",
+    "\\.github\\workflows",
+    "\\public",
     "\\src",
+    "\\src\\asset",
+    "\\src\\asset\\icons",
+    "\\src\\asset\\images",
     "\\src\\components",
-    "\\src\\createPost",
-    "\\src\\firebaseMethod",
-    "\\src\\guest",
-    "\\src\\navBar",
-    "\\src\\screens",
-    "\\src\\screens\\community",
-    "\\src\\thread"
+    "\\src\\components\\slateJSComponents",
+    "\\src\\navBar"
   ],
-  "SelectedNode": "\\src\\navBar\\signInComponent.js",
+  "SelectedNode": "\\src\\components\\slateJSComponents\\serializer.js",
   "PreviewInSolutionExplorer": false
 }

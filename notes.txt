@@ -174,3 +174,6 @@ Every time someone else votes on the post or comment.
 
 //fixed 
 15.) Voting as a nonmember should be fixed 
+
+16.) Voting on a comment doesn't update the comment array that renders the comment tree. 
+After voting on a comment and then making a reply, the vote reverts back to its original number and status. 

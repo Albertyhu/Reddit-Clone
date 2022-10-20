@@ -17,6 +17,7 @@ import uuid from 'react-uuid';
 import { RenderAllCommentsContext } from './contextItem.js'; 
 import RenderAllComments from '../thread/renderAllComments';
 import { RenderTimePosted } from './renderTimePosted.js'; 
+import { IoEllipsisHorizontal } from "react-icons/io5";
 
 //Serialize is responsible for converting the comments retrived from Firestore from JSON to HTML 
 import { Serialize } from './slateJSComponents/serializer.js'; 
@@ -54,10 +55,12 @@ const Comment = props => {
         DefaultTheme,
         DarkTheme,
         currentUserData,
+        desktopView, 
     } = useContext(AppContext);
 
     //Edit option is displayed if the current comment belongs to the current user
     const [displayEdit, setDisplayEdit] = useState(false); 
+    const [divWidth, setDivWidth] = useState(740)
     const DIVWIDTH = 740; 
 
 
@@ -137,36 +140,6 @@ const Comment = props => {
     }
     const [replyContWidth, setReplyContWidth] = useState(measureReplyWidth())
 
-    /*
-    const upvoteOnclick = () => {
-        if (upvoted) {
-            setUpvoted(false)
-            setUpvoteNum(prev => prev - 1)
-        }
-        else {
-            setUpvoted(true)
-            setUpvoteNum(prev => prev + 1)
-            if (downvoted) {
-                setDownvoted(false)
-                setDownvoteNum(prev => prev - 1)
-            }
-        }
-    }
-    const downvoteOnclick = () => {
-        if (downvoted) {
-            setDownvoted(false)
-            setDownvoteNum(prev => prev - 1)
-        }
-        else {
-            setDownvoted(true)
-            setDownvoteNum(prev => prev + 1)
-            if (upvoted) {
-                setUpvoteNum(prev => prev - 1)
-                setUpvoted(false)
-            }
-        }
-    }*/
-
     const toggleDisplayReply = () => {
         setDisplayReplyInput(prev => !prev)
     }
@@ -178,6 +151,7 @@ const Comment = props => {
         upvoteNum,
         downvoteNum, 
         voteArray,
+        replyContWidth, 
         changeUpvoted: num => {
             setUpvoted(num)
         },
@@ -220,6 +194,38 @@ const Comment = props => {
         }
     }, [containerElem])
 
+    //code for hidden mobile panel that contains the buttons to the left of the Reply button
+    const [displayHiddenPanel, setDisplay] = useState(false)
+    const toggleDisplay = () => {
+        setDisplay(prev => !prev);
+    }
+    const closeDisplay = () => {
+        setDisplay(false)
+    } 
+
+    const CommentMobilePanelRef = useRef(); 
+    var CommentMobilePanelElem = document.getElementById('CommentMobilePanelCont'); 
+
+    useEffect(() => {
+        if (CommentMobilePanelRef.current) {
+            CommentMobilePanelElem = document.getElementById('CommentMobilePanelCont'); 
+        }
+    }, [CommentMobilePanelRef.current])
+
+    const checkIfClickedOuside = event => {
+        CommentMobilePanelElem = document.getElementById('CommentMobilePanelCont'); 
+        if (CommentMobilePanelRef.current && displayHiddenPanel && !CommentMobilePanelRef.current.contains(event.target)) {
+            setDisplay(false)
+        }
+    }
+    const closePanel = () => {
+        setDisplay(false)
+    }
+
+    document.addEventListener('mousedown', checkIfClickedOuside);
+    useEffect(() => {
+        return () => { document.removeEventListener('mousedown', checkIfClickedOuside); }
+    }, [])
 
     return (
         <CommentContext.Provider value={context}  >
@@ -235,8 +241,10 @@ const Comment = props => {
                                 id={ExpandIconID}
                            />
                         <Avatar src={CrossedArms} />
-                        <UserName>Posted by {authorName}</UserName>
-                        <TimePosted> &#x2022; {RenderTimePosted(timePosted)}</TimePosted>
+                        <CommentHeaderShell>
+                             <UserName>Posted by {authorName}</UserName>
+                            <TimePosted> &#x2022; {RenderTimePosted(timePosted)}</TimePosted>
+                        </CommentHeaderShell>
                     </CommentHeader>
                     <InnerContainer
                         id={`CommentInnerContainer-${commentID}`}
@@ -255,16 +263,35 @@ const Comment = props => {
                         /> 
                         <SecondInnerCont
                             id="CommentSecondInnerCont"
-                            widthVal={replyContWidth}
+                           // widthVal={`${replyContWidth}px`}
+                            widthVal = 'auto'
                             >
                             <TextArea><Serialize data={JSON.parse(textBody)} /></TextArea>
                             <CommentFooter>
                                 <RenderVerticalVoting contextType={CommentContext} />
                                 <ReplyDiv onClick={toggleDisplayReply}><FaRegCommentAlt id="CommentIcon" style={commentIconStyle} /> <FooterText>Reply</FooterText></ReplyDiv>
-                                <Wrapper>Share</Wrapper>
-                                <Wrapper>Report</Wrapper>
-                                <Wrapper>Save</Wrapper>
-                                <Wrapper>Follow</Wrapper>
+                                {desktopView ? 
+                                    <>
+                                        <Wrapper>Share</Wrapper>
+                                        <Wrapper>Report</Wrapper>
+                                        <Wrapper>Save</Wrapper>
+                                        <Wrapper>Follow</Wrapper>
+                                    </>
+                                    :
+                                    <MobilePanelWrapper>
+                                        {displayHiddenPanel && 
+                                            <MobilePanelCont id="CommentMobilePanelCont" ref={CommentMobilePanelRef}>
+                                            <Wrapper onClick={closePanel}>Share</Wrapper>
+                                            <Wrapper onClick={closePanel}>Report</Wrapper>
+                                            <Wrapper onClick={closePanel}>Save</Wrapper>
+                                            <Wrapper onClick={closePanel}>Follow</Wrapper>
+                                            <Wrapper onClick={closePanel}>Close Menu</Wrapper>
+                                            </MobilePanelCont>
+                                        }
+                                        <Dots dispatch={toggleDisplay}></Dots>
+                                    </MobilePanelWrapper>
+                                    }
+
                             </CommentFooter>
                             {displayReplyInput && <ReplyInput replyContWidth={replyContWidth} />}
                         </SecondInnerCont>
@@ -444,8 +471,10 @@ const unhideChildren = (childrenArr) => {
 
 
 const ReplyInput = props => {
-    const { commentID } = useContext(CommentContext)
-    const [borderStyle, setBorder, replyContWidth] = useState("2px solid #d6d6d6")
+    const { commentID, replyContWidth } = useContext(CommentContext)
+//    const [borderStyle, setBorder, replyContWidth] = useState("2px solid #d6d6d6")
+    const [borderStyle, setBorder] = useState("2px solid #d6d6d6")
+
     const replyRef = useRef(); 
     const clickEvent = e => {
         if (replyRef.current && replyRef.current.contains(e.target)) {
@@ -469,7 +498,28 @@ const ReplyInput = props => {
         )
 } 
 
+const Dots = props => <Wrapper id="dots" onClick={props.dispatch}><IoEllipsisHorizontal /></Wrapper>
+
 export default Comment; 
+
+const Button = styled.div`
+    display:flex; 
+    whitespace: nowrap; 
+    cursor: pointer;
+    & > p {
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: 5px;
+}
+    &:hover{
+     background-color: #cdcdcd; 
+    }
+    &#dots{
+        font-size: 30px;
+        z-index: 10;
+        width: fit-content;
+    }
+`
 
 const CommentContainer = styled.div`
     display: ${props => props.displayVal || "grid"}; 
@@ -499,11 +549,20 @@ const ReplyInnerContainer = styled.div`
 
 const SecondInnerCont = styled.div`
 max-width: 720px;
-width: ${props =>props.widthVal}px;
+width: ${props => props.widthVal};
+@media screen and (max-width: 540px){
+    max-width: 224px;
+}
 `
 
 const CommentHeader = styled.div`
 display: flex; 
+`
+
+const CommentHeaderShell = styled.div`
+@media screen and (max-width: 540px){
+    display: grid;
+}
 `
 
 const Avatar = styled.img`
@@ -603,6 +662,11 @@ const Wrapper = styled.div`
     &:hover{
        background-color: ${props => props.theme.HoverColor || "#cdcdcd"}; 
     }
+    &#dots{
+        font-size: 30px;
+        z-index: 10;
+        width: fit-content;
+    }
 `
 
 const ReplyDiv = styled.div`
@@ -621,6 +685,7 @@ const ReplyDiv = styled.div`
     &:hover{
      background-color: ${props => props.theme.HoverColor || "#cdcdcd"}; 
     }
+
 `
 
 const commentIconStyle = {
@@ -635,4 +700,16 @@ const SideThreadCont = styled.div`
 
 `
 
-const AuthorContainer= styled.div``
+const AuthorContainer = styled.div``
+
+
+const MobilePanelWrapper = styled.div`
+    position: relative; 
+`
+const MobilePanelCont = styled.div`
+    display: grid; 
+    position: absolute; 
+    background-color: #ffffff; 
+    border: 1px solid #000000;
+    z-index:99;
+`

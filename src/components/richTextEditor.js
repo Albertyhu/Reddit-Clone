@@ -58,6 +58,7 @@ const RenderReplyTextArea = props => {
     const {
         normalMode,
         currentUserData, 
+        desktopView, 
     } = useContext(AppContext);
 
     const {
@@ -238,8 +239,6 @@ const RenderReplyTextArea = props => {
         Transforms.setNodes(editor, newProperties); 
     }
 
-
-
     const RenderButton = props => {
         const { style } = props; 
         var isActive = getActiveStyles(editor).has(style);
@@ -291,6 +290,9 @@ const RenderReplyTextArea = props => {
             case 'alignRight':
                 display = <AiOutlineAlignRight alt="align right" />;
                 break; 
+            case 'Format':
+                display = <b>F</b>;
+                break;
             default:
                 break; 
         }
@@ -387,6 +389,84 @@ const RenderReplyTextArea = props => {
             .catch(error => {console.log(`${error.code}: ${error.message}`)})
     }
 
+    const MobileCommentButtonCont = props => {
+        const [format, setFormat] = useState(false); 
+        const [list, setList] = useState(false);
+        const [alignment, setAlignment] = useState(false)
+        const toggleFormat = () => {
+            setFormat(prev => !prev); 
+            if(list)
+                setList(false);
+            if(alignment)
+                setAlignment(false)
+        }
+        const toggleListFormat = () => {
+            setList(prev => !prev)
+            if(format)
+                setFormat(false)
+            if(alignment)
+             setAlignment(false)
+        } 
+
+        const toggleAlignmentFormat = () => {
+            setAlignment(prev => !prev); 
+            if (format)
+                setFormat(false)
+            if (list)
+                setList(false)
+        }
+        return (
+            <>
+                {format && <MobileFormatButtons />}
+                {list && <MobileListButtons />}
+                {alignment && <MobileAlignButtons />}
+                <CommentButtonContainer id="MobileCommentButtGrid">
+                    <StylingButton onClick={toggleFormat} id="categoryButton">F</StylingButton>
+                    <StylingButton onClick={toggleListFormat} id="categoryButton"><span><BsListUl /></span></StylingButton>
+                    <StylingButton onClick={toggleAlignmentFormat} id="categoryButton"><span><AiOutlineAlignRight /></span></StylingButton>
+                    <SubmitButton
+                        onMouseDown={SubmitEvent}
+                    >Comment</SubmitButton>
+                </CommentButtonContainer>
+            </>
+        )
+    }
+
+    const MobileFormatButtons = props => {
+        return (
+            <CommentButtonContainer id = "MobileCommentButtCont">
+                <RenderButton style='bold' />
+                <RenderButton style='italic' />
+                <RenderButton style='underline' />
+                <RenderButton style='lineThrough' />
+                <RenderButton style='code' />
+                <RenderButton style='super' />
+                <RenderButton style='heading' />
+                <RenderButton style='quote' />
+                <RenderButton style='spoiler' />
+            </CommentButtonContainer>
+            )
+    }
+
+    const MobileListButtons = () => {
+        return (
+            <CommentButtonContainer id="MobileCommentButtCont">
+                <RenderButton style='bulleted' />
+                <RenderButton style='orderedList' />
+            </CommentButtonContainer>
+            )
+    }
+
+    const MobileAlignButtons = () => {
+        return (
+            <CommentButtonContainer id="MobileCommentButtCont">
+                <RenderButton style='alignLeft' />
+                <RenderButton style='alignCenter' />
+                <RenderButton style='alignRight' />
+            </CommentButtonContainer>
+        )
+    }
+
     return (
         <Container
             borderFocus={borderStyle}
@@ -455,26 +535,30 @@ const RenderReplyTextArea = props => {
                             }
                         }}
                     />
-                        
-                    <CommentButtonContainer>
-                        <RenderButton style='bold' />
-                        <RenderButton style='italic' />
-                        <RenderButton style='underline' />
-                        <RenderButton style='lineThrough' />
-                        <RenderButton style='code' />
-                        <RenderButton style='super' />
-                        <RenderButton style='heading' />
-                        <RenderButton style='quote' />
-                        <RenderButton style='spoiler' />
-                        <RenderButton style='bulleted' />
-                        <RenderButton style='orderedList' />
-                        <RenderButton style='alignLeft' />
-                        <RenderButton style='alignCenter' />
-                        <RenderButton style='alignRight' />
-                        <SubmitButton
-                            onMouseDown={SubmitEvent}
-                        >Comment</SubmitButton>
-                    </CommentButtonContainer>
+                    {desktopView ? 
+                        <CommentButtonContainer>
+                            <RenderButton style='bold' />
+                            <RenderButton style='italic' />
+                            <RenderButton style='underline' />
+                            <RenderButton style='lineThrough' />
+                            <RenderButton style='code' />
+                            <RenderButton style='super' />
+                            <RenderButton style='heading' />
+                            <RenderButton style='quote' />
+                            <RenderButton style='spoiler' />
+                            <RenderButton style='bulleted' />
+                            <RenderButton style='orderedList' />
+                            <RenderButton style='alignLeft' />
+                            <RenderButton style='alignCenter' />
+                            <RenderButton style='alignRight' />
+                            <SubmitButton
+                                onMouseDown={SubmitEvent}
+                            >Comment</SubmitButton>
+                        </CommentButtonContainer>
+                        :
+                        <MobileCommentButtonCont />
+                        }    
+
                 </Slate>
                 </ReplyCont>
         </Container> 
@@ -576,15 +660,7 @@ export const makeList = (children) => {
     var Arr = []; 
     var newline = 0;
     const regEx = /\r|\n/;
-   // console.log(children.length)
-    /*
-    for (var i = 0; i < children.length; i++) {
-        if (regEx.exec(children.charAt(i))) {
-            Arr.push(children.substring(newline, i))
-            newline = i + 1; 
-        } 
-    }
-    return Arr; */
+
 }
 
 const ReplyTextArea = styled.textarea`
@@ -623,7 +699,7 @@ const SlateStyle = {
     borderWidth: "0",
     margin: "5px",
     fontFamily: "Verdana",
-    overflowY: 'auto',
+    //overflowY: 'auto',
 }
 
 const StylingButton = styled.div`
@@ -642,6 +718,19 @@ margin-right: 5px;
 &:hover{
     background-color: #bbbbbb; 
 }
+
+&#categoryButton {
+    white-space: nowrap;
+    margin: 0 10px;
+    width: auto;
+    font-weight: bold;
+    justify-content: center;
+ align-items: center;
+}
+&#categoryButton > span {
+    margin: auto;
+    align-items: center;
+}
 `
 
 const SubmitButton = styled.div`
@@ -653,8 +742,13 @@ background-color: ${props => props.theme.ButtonBackgroundC || "#0a73dd"};
 color: ${props => props.theme.ButtonTextC || "#ffffff"};
 padding-top: 5px;
 padding-bottom: 5px;
+text-align: center;
 &:hover{
     background-color: ${props => props.theme.ButtonBackgroundCHover || "#1B90E7"};
+}
+@media screen and (max-width: 540px){
+    padding: 5px 0;
+    font-size: 12px;
 }
 `
 
@@ -668,6 +762,13 @@ background-color: ${props => props.theme.ContentBodyBackgroundColor || "#e5e5e5"
     margin-top: auto;
     margin-bottom: auto;
     cursor: pointer;
+}
+&#MobileCommentButtGrid{
+display: grid; 
+grid-template-columns: 21% 21% 21% 37%; 
+}
+&#MobileCommentButtCont{
+display: grid: 
 }
 `
 
