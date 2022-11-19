@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback} from 'react'; 
-import styled from "styled-components"; 
+import styled, { ThemeProvider } from "styled-components"; 
 import RenderThread from './thread/renderThread.js'; 
 import RenderNavBar from './navBar/navBar.js'; 
 import { AppContext } from './components/contextItem.js'; 
@@ -272,32 +272,34 @@ function App() {
         <AppContext.Provider value={context}>
             <BrowserRouter>
                 {displayGuestPanel && <RenderGuestPanel />}
-                <MainContainer Opacity={WindowClarity ? "1.0" : "0.3"}>
-            <RenderNavBar />
-            <div id="EmptyDiv" style={{ height: "50px", width: "100%", resize: "none", }}></div>
-                <Routes>
-                    <Route
-                        path="/"
-                        element={<Home /> }
-                    />
-                    <Route
-                        path='/community'
-                        element={<RenderCommunity />}
-                    />
-                    <Route
-                        path='/thread'
-                        element={<RenderThread />}
+            <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
+            <MainBody Opacity={WindowClarity ? "1.0" : "0.3"}>
+                <RenderNavBar />
+                <div id="EmptyDiv" style={{ height: "50px", width: "100%", resize: "none", }}></div>
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={<Home /> }
                         />
-                    <Route
-                        path='/submit'
-                        element={<CreatePostScreen  />}
+                        <Route
+                            path='/community'
+                            element={<RenderCommunity />}
                         />
-                    <Route
-                        path='/deliverpayload'
-                            element={<RenderPayloadDeliverer />}
-                    />
-                    </Routes>
-                </MainContainer>
+                        <Route
+                            path='/thread'
+                            element={<RenderThread />}
+                            />
+                        <Route
+                            path='/submit'
+                            element={<CreatePostScreen  />}
+                            />
+                        <Route
+                            path='/deliverpayload'
+                                element={<RenderPayloadDeliverer />}
+                        />
+                        </Routes>
+                    </MainBody>
+                </ThemeProvider>
             </BrowserRouter>
                
         </AppContext.Provider>
@@ -306,6 +308,7 @@ function App() {
 
 export default App;
 
-const MainContainer = styled.div`
+const MainBody= styled.div`
     opacity:${props => props.Opacity || "1.0"}; 
+    background-color: ${props => props.theme.MainBackgroundColor || "#dae0e6"};
 `

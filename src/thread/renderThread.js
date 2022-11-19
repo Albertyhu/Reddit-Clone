@@ -5,6 +5,7 @@ import {
     PanelContainer,
     SideBar,
     Title, 
+    Shell, 
 } from '../global/styledComponents.js'; 
 import { threads, comments, SampleCommunity } from '../helperTools/dummyData.js'; 
 import { ThreadContext, AppContext } from '../components/contextItem.js'; 
@@ -202,18 +203,20 @@ const RenderThread = props => {
     if (!threadID) {
         return (
             <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
-                <MainContainer>
-                    <div>
-                        There aren't any threads to show.
-                    </div>
-                     <SideBar id="ThreadSideBar">
-                        {community !== undefined && community !== null ?
-                            <RenderSideBar contextItem={ThreadContext} />
-                            :
-                            null
-                        }
-                    </SideBar>
-                </MainContainer>
+                <Shell className="RenderThread_Shell">
+                    <MainContainer>
+                        <div>
+                            There aren't any threads to show.
+                        </div>
+                         <SideBar id="ThreadSideBar">
+                            {community !== undefined && community !== null ?
+                                <RenderSideBar contextItem={ThreadContext} />
+                                :
+                                null
+                            }
+                        </SideBar>
+                    </MainContainer>
+                    </Shell>
             </ThemeProvider>
         )
     }
@@ -225,41 +228,43 @@ const RenderThread = props => {
     return (
         <ThreadContext.Provider value={context}>
             <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
-                <MainContainer id = "ThreadMainContainer">
-                    <PanelContainer id="ThreadPanelContainer">
-                        <RenderMainPost /> 
-                        <CommentWrapper> 
-                            <RenderReplyTextArea
-                                marginLeft="auto"
-                                marginRight="auto"
-                                ReplyWidth="90%"
-                                marginTop="20px"
-                                author={currentUserData ? currentUserData.username : null}
-                                parentID={null}
-                            /> 
-                        </CommentWrapper>
-                        <RenderCommentSort
-                            selected={filterOption}
-                            optionsArr={sortOptions}
-                            dispatchFunc={setFilter}
-                        />
-                        {commentArr !== null && commentArr.length !== 0 ?
-                            <RenderAllComments
-                                filterOption={filterOption}
-                                commentArr={commentArr}
+                <Shell className="RenderThread_Shell">
+                    <MainContainer id = "ThreadMainContainer">
+                        <PanelContainer id="ThreadPanelContainer">
+                            <RenderMainPost /> 
+                            <CommentWrapper> 
+                                <RenderReplyTextArea
+                                    marginLeft="auto"
+                                    marginRight="auto"
+                                    ReplyWidth="90%"
+                                    marginTop="20px"
+                                    author={currentUserData ? currentUserData.username : null}
+                                    parentID={null}
+                                /> 
+                            </CommentWrapper>
+                            <RenderCommentSort
+                                selected={filterOption}
+                                optionsArr={sortOptions}
+                                dispatchFunc={setFilter}
                             />
-                            : 
-                            null
-                            }
-                    </PanelContainer>
-                    <SideBar id="ThreadSideBar">
-                        {community !== undefined && community !== null ?
-                            <RenderSideBar contextItem={ThreadContext} />
-                            : 
-                            null
-                            }
-                    </SideBar>
-                    </MainContainer> 
+                            {commentArr !== null && commentArr.length !== 0 ?
+                                <RenderAllComments
+                                    filterOption={filterOption}
+                                    commentArr={commentArr}
+                                />
+                                : 
+                                null
+                                }
+                        </PanelContainer>
+                        <SideBar id="ThreadSideBar">
+                            {community !== undefined && community !== null ?
+                                <RenderSideBar contextItem={ThreadContext} />
+                                : 
+                                null
+                                }
+                        </SideBar>
+                    </MainContainer>
+                </Shell>
                 </ThemeProvider>
         </ThreadContext.Provider>
         )

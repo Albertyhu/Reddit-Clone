@@ -2,15 +2,15 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import styled, { ThemeProvider } from 'styled-components'; 
 import { AppContext, CommunityContext } from '../components/contextItem.js'; 
 import {
-    MainContainer,
     PanelContainer,
     SideBar,
-  
+    Shell,
 } from '../global/styledComponents.js'; 
+import { MainContainer } from './feedStyle.js'; 
 import { SortArray } from '../sort/sortMethods.js'; 
 import RenderHomeSideBar from './HomeSideBar.js'; 
 import { RenderSortThreadOptions } from '../sort/sortComponent.js'; 
-import RenderCardItem from './cardItem.js'; 
+import RenderCardItem from './cardItem/cardItem.js'; 
 import uuid from 'react-uuid';
 import RenderSideBar from '../thread/sidebar.js';  
 
@@ -45,6 +45,7 @@ const RenderFeed = props => {
     }, [data])*/
     return (
         <ThemeProvider theme={normalMode ? DefaultTheme : DarkTheme}>
+            <Shell className="Feed_Shell">
             <MainContainer id = "RenderFeed_MainContainer">
                 <PanelContainer id = "RenderFeed_PanelContainer">
                     <RenderSortThreadOptions
@@ -64,9 +65,9 @@ const RenderFeed = props => {
                         <RenderSideBar contextItem={CommunityContext} />
                         :
                         <RenderHomeSideBar />}
- 
                 </SideBar>
-            </MainContainer>
+                </MainContainer>
+            </Shell>
         </ThemeProvider>
         )
 }

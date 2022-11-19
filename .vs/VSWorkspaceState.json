@@ -1,17 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\.github",
-    "\\.github\\workflows",
-    "\\public",
     "\\src",
-    "\\src\\asset",
-    "\\src\\asset\\icons",
-    "\\src\\asset\\images",
     "\\src\\components",
     "\\src\\components\\slateJSComponents",
-    "\\src\\navBar"
+    "\\src\\createPost",
+    "\\src\\feed",
+    "\\src\\global",
+    "\\src\\navBar",
+    "\\src\\screens",
+    "\\src\\thread"
   ],
-  "SelectedNode": "\\src\\components\\slateJSComponents\\serializer.js",
+  "SelectedNode": "\\src\\thread\\postFooter.js",
   "PreviewInSolutionExplorer": false
 }

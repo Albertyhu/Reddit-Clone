@@ -1,15 +1,28 @@
 import React, { useState, useEffect, useContext, useCallback, useMemo, useRef } from 'react';
 import styled, { ThemeProvider } from 'styled-components'; 
-import { AppContext, CardContext  } from '../components/contextItem.js'; 
-import { RenderVerticalVoting } from '../components/votingComponent.js'; 
-import RenderPostFooter from '../thread/postFooter.js'; 
-import { Divider } from '../global/styledComponents.js'; 
-import RenderRIcon from '../asset/icons/r_icon.js'; 
-import { SampleCommunity } from '../helperTools/dummyData.js';
-import { RenderTimePosted } from '../components/renderTimePosted.js'; 
+import { AppContext, CardContext  } from '../../components/contextItem.js'; 
+import { RenderVerticalVoting } from '../../components/votingComponent.js'; 
+import RenderPostFooter from '../../thread/postFooter.js'; 
+import { Divider } from '../../global/styledComponents.js'; 
+import RenderRIcon from '../../asset/icons/r_icon.js'; 
+import { SampleCommunity } from '../../helperTools/dummyData.js';
+import { RenderTimePosted } from '../../components/renderTimePosted.js'; 
 import { useNavigate } from "react-router-dom";
-import { Serialize } from '../components/slateJSComponents/serializer.js'; 
-import { JoinCommunity } from '../components/membershipButton.js'; 
+import { Serialize } from '../../components/slateJSComponents/serializer.js'; 
+import { JoinCommunity } from '../../components/membershipButton.js'; 
+import {
+    MainContainer,
+    VotingColumn,
+    MainColumn, 
+    Button,
+    CommunityTitleWrapper, 
+    ComunityTitleSecondaryWrapper, 
+    CommunityTitle, 
+    Author, 
+    TimePosted, 
+    ThreadTitle, 
+    BodyText, 
+} from './cardStyle.js'; 
 
 const RenderCardItem = props => {
     const { normalMode,
@@ -162,13 +175,13 @@ const RenderCardItem = props => {
                         />
                     </VotingColumn>
                     <MainColumn>
-                        <CommunityTitleWrapper>
-                            <ComunityTitleSecondaryWrapper onClick={ToThread}>
+                        <CommunityTitleWrapper className= "Card_CommunityTitleWrappe">
+                            <ComunityTitleSecondaryWrapper onClick={ToThread} className="Card_CommunityTitleSecondaryWrapper">
                                     <RenderRIcon image={communityData ? communityData.communityImage : null} />
-                                    <CommunityTitle>r/{community} </CommunityTitle>
+                                    <CommunityTitle className="Card_CommunityTitle">r/{community} </CommunityTitle>
                                     <span> &#x2022;</span>
-                                    <Author>Posted by u/{authorName} </Author>
-                                    <TimePosted> {RenderTimePosted(timePosted)}</TimePosted>
+                                    <Author className="Card_Author">Posted by u/{authorName} </Author>
+                                    <TimePosted className="Card_TimePosted">{RenderTimePosted(timePosted)}</TimePosted>
                              </ComunityTitleSecondaryWrapper>
                             {!isCommunity && !isMember && (currentUserData === null || currentUserData === undefined) &&
                                 <Button
@@ -191,130 +204,3 @@ const RenderCardItem = props => {
 }
 
 export default RenderCardItem; 
-
-const MainContainer = styled.div`
-    display: grid; 
-    grid-template-columns: 8% 92%; 
-    background-color: ${props => props.theme.PanelBackgroundColor}; 
-    color: ${props => props.theme.TextColor}; 
-    margin: 10px auto;
-    font-family: "Verdana";
-    border-radius: 5px;
-    border: 1px solid rgba(0,0,0,0.0); 
-    overflow-y: hidden;
-    &:hover{
-        border: ${props => props.theme.CardBorderHover};
-}
-` 
-
-const VotingColumn = styled.div`
-    background-color: ${props => props.theme.SearchBarBackgroundColor};
-    padding: 10px 0px;
-`
-
-const MainColumn = styled.div`
-    margin: 0 20px;
-    cursor: pointer;
-@media screen and (max-width: 540px){
-    margin: 0px;
-
-}
-    & > * {
-        @media screen and (max-width: 540px){
-            margin-left: 0px;
-
-        }
-    }
-`
-
-const Button = styled.div`
-    justify-content: center;
-    margin-top: 12px;
-    margin-bottom: 10px;
-    font-family: Noto Sans,Arial,sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: unset;
-    line-height: 17px;
-    text-transform: unset;
-    padding: 5px 6px;
-    min-width: 10px;
-    witdh: fit-content;
-    align-items: center; 
-    border-radius: 99999px; 
-    text-align: center; 
-    cursor: pointer;
-    margin-right: 5px;
-    background-color: ${props => props.theme.ButtonBackgroundC}; 
-    color: ${props => props.theme.ButtonTextC}; 
-    &:hover{
-        background-color: ${props => props.theme.ButtonBackgroundCHover}; 
-    }
-    @media screen and (max-width: 540px){
-        min-width: 40px;
-    }
-`
-
-const CommunityTitleWrapper = styled.div`
-margin-top: 10px; 
-display: grid;
-grid-template-columns: 90% 10%; 
-`
-const ComunityTitleSecondaryWrapper = styled.div`
-        display: flex;
-    & > * {
-        font-size: 12px;
-        margin: auto 5px; 
-    }
-@media screen and (max-width: 540px){
-    & > *{
-    font-size: 12px;
-    margin: auto;
-    }
-}
-@media screen and (max-width: 360px){
-    & > *{
-    font-size: 8px;
-    margin: auto;
-    }
-}
-`
-
-const CommunityTitle = styled.div`
-    font-size: 12px;
-    font-weight: bold; 
-    color: ${props => props.theme.TextColor || "#000000"}; 
-`
-
-const Author = styled.div`
-    color: ${props => props.theme.SoftTextColor}; 
-`
-
-const TimePosted = styled.div`
-    color: ${props => props.theme.SoftTextColor}; 
-`
-
-const ThreadTitle = styled.div`
-    font-size: 18px;
-    font-weight: 500;
-    margin: 10px 0px;
-    color: ${props => props.theme.TextColor || "#000000"};
-`
-
-
-//This is responsible for creating the fading effect seen on each card 
-const BodyText = styled.div`
-    position: relative; 
-    max-height: 350px; 
-    overflow-y: hidden;
-    min-height: 200px;
-    &:after{
-              z-index: 0;
-              position: absolute;
-              bottom: 0;  
-              height: 100%;
-              width: 100%;
-              content: "";
-              background: ${props => props.theme.CardTextLinearGradColor }; 
-    }
-`

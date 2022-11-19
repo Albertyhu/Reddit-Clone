@@ -12,6 +12,6 @@ body {
 
 @media screen and (max-width: 540px) {
     body {
-        width: fit-content;
+        /*width: fit-content;*/
     }
 }

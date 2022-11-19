@@ -1,38 +1,64 @@
 import styled from 'styled-components'; 
 
 //This component is mainly for pages with two columns such as the thread page and the home page
+//export const MainContainer = styled.div`
+//display: grid; 
+//grid-template-columns: 64% 36%; 
+//grid-column-gap: 24px;
+//width: 100%; 
+//background-color: ${props => props.theme.MainBackgroundColor || "#e6e6e6"};
+//padding-bottom: 10px;
+//@media screen and (max-width: 540px){
+//    display: inline-table; 
+//    grid-template-columns: 100%; 
+//}
+//`
+
 export const MainContainer = styled.div`
-display: grid; 
-grid-template-columns: 64% 36%; 
-grid-column-gap: 24px;
+display: inline-table; 
 width: 100%; 
 background-color: ${props => props.theme.MainBackgroundColor || "#e6e6e6"};
 padding-bottom: 10px;
-@media screen and (max-width: 540px){
-    display: inline-table; 
-    grid-template-columns: 100%; 
+margin: 0 auto;
+@media screen and (min-width: 976px){
+    //display: grid; 
+    //grid-template-columns: 64% 36%; 
+    //grid-column-gap: 24px;
+display: flex;
 }
 `
+
 //justify-self with the value flex-end placed the element to the right against the wall of the grid area  
 export const PanelContainer = styled.div`
-    width: 640px; 
+    width: 100%; 
     justify-self: flex-end;
     margin-top: 20px;
     margin-bottom: 20px;
     padding-bottom: 20px;
-@media screen and (min-width: 960px){
-    width: 740px; 
+@media screen and (min-width: 640px){
+    width: 660px; 
+    margin: 20px auto;
 }
-@media screen and (max-width: 540px){
-    width: 100%;  
+@media screen and (min-width: 976px){
+    width: 600px; 
+}
+@media screen and (min-width: 992px){
+    width: 640px;
 }
 `
 
+export const Shell = styled.div`
+    width: fit-content; 
+    margin: 0 auto;
+`
+
 export const SideBar = styled.div`
+display: none; 
 width: 312px; 
 margin-top: 20px;
-@media screen and (max-width: 540px){
-    display: none; 
+margin-left: 20px;
+@media screen and (min-width: 976px){
+    display: block;
 }
 &#FeedSideBar{
     position: relative;
